@@ -1,8 +1,15 @@
 'use client'
-import { Box, Button, Field, Flex, Image, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Field, Flex, Image, Input, Text, Tabs, Link } from "@chakra-ui/react";
 import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { LuUser, LuFolder, LuSquareCheck } from "react-icons/lu";
 
 export default function Login() {
+  const [tabSelected, setTabSelected] = useState("login");
+  
+  const handleTabChange = (value: string) => {
+    setTabSelected(value);
+  }
   const router = useRouter();
   return (
     <Flex
@@ -38,6 +45,7 @@ export default function Login() {
         </Flex>
         
         <Flex style={{
+          height: '70vh',
           flexDirection: 'column',
           backgroundColor: 'rgba(247, 247, 247, 0.99)',
           padding: '20px',
@@ -52,33 +60,96 @@ export default function Login() {
           <Text>
             Este é um sistema de administração para gerenciar processos jurídicos.
           </Text>
+         
           <Flex 
             flexDir='column'
             w='100%'
-            gap='2rem'
-            >
-            <Field.Root required>
-              <Field.Label fontSize="lg">
-                E-mail <Field.RequiredIndicator />
-              </Field.Label>
-              <Input placeholder="exemplo@exemplo.com" backgroundColor="#f0f0f0" type="text" padding={2}/>
-            </Field.Root>
+          >
+            <Tabs.Root defaultValue="login" >
+              <Tabs.List bg="bg.muted" gap="2rem" justifyContent="center">
+                <Tabs.Trigger value="login" p="2">
+                  <LuUser />
+                  Entrar
+                </Tabs.Trigger>
+
+                <Tabs.Trigger value="register" p="2">
+                  <LuSquareCheck />
+                  Cadastrar
+                </Tabs.Trigger>
+              <Tabs.Indicator rounded="l2" />
+            </Tabs.List>
+            <Tabs.Content value="login" p="5" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2rem',
+              marginTop: '1rem',
+            }}>
+              <Field.Root required>
+                <Field.Label fontSize="lg">
+                  E-mail <Field.RequiredIndicator />
+                </Field.Label>
+                <Input placeholder="exemplo@exemplo.com" backgroundColor="#f0f0f0" type="text" padding={2}/>
+              </Field.Root>
+              
+              <Field.Root required>
+                <Field.Label fontSize="lg">
+                  Senha <Field.RequiredIndicator />
+                </Field.Label>
+                <Input placeholder="Senha" type="password" backgroundColor="#f0f0f0" padding={2}/>
+              </Field.Root>
+              <Link href="#">
+                <Text fontSize="sm" color="blue.500" textAlign="right">
+                  Esqueceu sua senha?
+                </Text>
+              </Link>
+              <Button
+                type="submit"
+                backgroundColor="#4A90E2"
+                fontSize="lg"
+                onClick={() => router.push('/home')}
+              >
+                Entrar
+              </Button>
+
+            </Tabs.Content>
+            <Tabs.Content value="register" p="5" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2rem',
+              marginTop: '1rem',
+            }}>
+              <Field.Root required>
+                <Field.Label fontSize="lg">
+                  Nome <Field.RequiredIndicator />
+                </Field.Label>
+                <Input placeholder="Ex: Maria João Silva" backgroundColor="#f0f0f0" type="text" padding={2}/>
+              </Field.Root>
+              <Field.Root required>
+                <Field.Label fontSize="lg">
+                  E-mail <Field.RequiredIndicator />
+                </Field.Label>
+                <Input placeholder="exemplo@exemplo.com" backgroundColor="#f0f0f0" type="text" padding={2}/>
+              </Field.Root>
+              
+              <Field.Root required>
+                <Field.Label fontSize="lg">
+                  Senha <Field.RequiredIndicator />
+                </Field.Label>
+                <Input placeholder="Senha" type="password" backgroundColor="#f0f0f0" padding={2}/>
+              </Field.Root>
+              <Button
+                type="submit"
+                backgroundColor="#4A90E2"
+                fontSize="lg"
+                onClick={() => router.push('/home')}
+              >
+                Cadastrar
+              </Button>
+            </Tabs.Content>
+          </Tabs.Root>  
+
+
             
-            <Field.Root required>
-              <Field.Label fontSize="lg">
-                Senha <Field.RequiredIndicator />
-              </Field.Label>
-              <Input placeholder="Senha" type="password" backgroundColor="#f0f0f0" padding={2}/>
-            </Field.Root>
-            
-            <Button
-              type="submit"
-              backgroundColor="#4A90E2"
-              fontSize="lg"
-              onClick={() => router.push('/home')}
-            >
-              Entrar
-            </Button>
           </Flex>
         </Flex>
       </Box>
