@@ -1,8 +1,13 @@
 'use client'
-import { Flex, Text, Image, IconButton } from "@chakra-ui/react";
+import { Flex, IconButton } from "@chakra-ui/react";
 import { CiMenuBurger } from "react-icons/ci";
 import { useState } from "react";
 import SideBar from "@/components/SideBar";
+import InicioPage from "./pages/InicioPage";
+import ProcessosPage from "./pages/ProcessosPage";
+import CadastrarProcessosPage from "./pages/CadastrarProcessosPage";
+import FuncionariosRelatoriosPage from "./pages/FuncionariosRelatoriosPage";
+import ConfiguracoesPage from "./pages/ConfiguracoesPage";
 
 
 const Home = () => {
@@ -10,21 +15,20 @@ const Home = () => {
   const [selectedOption, setSelectedOption] = useState('Início');
   const handleToggleSidebar = () => setSidebarVisible((v) => !v);
 
-  // Conteúdos para cada opção
   const renderContent = () => {
     switch (selectedOption) {
       case 'Início':
-        return <Text>Bem-vindo à página inicial!</Text>;
+        return <InicioPage />;
       case 'Processos':
-        return <Text>Lista de processos aqui.</Text>;
+        return <ProcessosPage />;
       case 'Cadastrar processos':
-        return <Text>Formulário de cadastro de processos.</Text>;
+        return <CadastrarProcessosPage />;
       case 'Funcionários e relatórios':
-        return <Text>Informações de funcionários e relatórios.</Text>;
+        return <FuncionariosRelatoriosPage />;
       case 'Configurações':
-        return <Text>Painel de configurações.</Text>;
+        return <ConfiguracoesPage />;
       default:
-        return <Text>Conteúdo Principal</Text>;
+        return <InicioPage />;
     }
   };
 
@@ -51,7 +55,11 @@ const Home = () => {
       {sidebarVisible && (
         <SideBar onSelectOption={setSelectedOption} selectedOption={selectedOption} />
       )}
-      <Flex style={{ marginLeft: sidebarVisible ? 260 : 0, padding: 32, flex: 1 }}>
+      <Flex style={{ 
+        flexDirection: "column",
+        padding: sidebarVisible ? "20px" : "20px 80px",
+        flex: 1,
+        }}>
         {renderContent()}
       </Flex>
     </Flex>
