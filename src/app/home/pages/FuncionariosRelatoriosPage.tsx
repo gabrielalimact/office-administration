@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Flex, IconButton, Input, InputGroup, Pagination, Table, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, IconButton, Input, InputGroup, Pagination, Table } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { MdPersonAdd } from "react-icons/md";
 import { IoEyeOutline, IoSearchOutline } from "react-icons/io5";

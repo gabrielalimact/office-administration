@@ -1,7 +1,7 @@
 "use client"
-import { Button, ButtonGroup, Steps, Text, Flex, Field, Fieldset, Input, Textarea, Box, FileUpload, Icon, List, Portal, Select, createListCollection, Checkbox, CloseButton, InputGroup } from '@chakra-ui/react';
+import { Button, ButtonGroup, Steps, Text, Flex, Field, Fieldset, Input, Textarea, Box, FileUpload, Icon, List, Portal, Select, createListCollection, Checkbox, CloseButton } from '@chakra-ui/react';
 import { useState } from "react"
-import { LuUpload, LuCheckCheck, LuFileUp } from 'react-icons/lu';
+import { LuUpload, LuCheckCheck } from 'react-icons/lu';
 
 const CadastrarProcessosPage = () => {
   const [stepActive, setStepActive] = useState(0)

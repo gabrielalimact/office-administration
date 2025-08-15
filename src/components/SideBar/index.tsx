@@ -1,8 +1,7 @@
 import { Flex, Image, Text, Button } from "@chakra-ui/react";
 import { JSX } from "react";
-import { IoHomeOutline, IoSettingsOutline} from "react-icons/io5";
+import { IoSettingsOutline} from "react-icons/io5";
 import { FaRegFileAlt } from "react-icons/fa";
-import { BsFileEarmarkBarGraph } from "react-icons/bs";
 import { LuFilePlus2 } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
 

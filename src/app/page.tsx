@@ -1,15 +1,9 @@
 'use client'
 import { Box, Button, Field, Flex, Image, Input, Text, Tabs, Link } from "@chakra-ui/react";
 import { useRouter } from 'next/navigation'
-import { useState } from "react";
-import { LuUser, LuFolder, LuSquareCheck } from "react-icons/lu";
+import { LuUser, LuSquareCheck } from "react-icons/lu";
 
 export default function Login() {
-  const [tabSelected, setTabSelected] = useState("login");
-  
-  const handleTabChange = (value: string) => {
-    setTabSelected(value);
-  }
   const router = useRouter();
   return (
     <Flex
