@@ -1,7 +1,7 @@
-import { Box, Button, ButtonGroup, Flex, IconButton, Input, Pagination, Table, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Flex, IconButton, Input, InputGroup, Pagination, Table, Text } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { MdPersonAdd } from "react-icons/md";
-import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOutline, IoSearchOutline } from "react-icons/io5";
 
 interface IFuncionarios {
   id: number;
@@ -130,28 +130,19 @@ const funcionariosMock: IFuncionarios[] = [
 const FuncionariosRelatoriosPage = () => {
   return (
     <Box>
-      <Flex style={{
-        alignItems: 'center',
-        gap: '8px',
-        borderBottom: "1px solid",
-        borderColor: "gray",
-        paddingBottom: "12px",
-        marginBottom: "12px"
-      }}>
-        <MdPersonAdd size={30} color="var(--darkblue)"/>
-        <Text fontSize="2xl" fontWeight="bold" color="var(--darkblue)">Gerenciar funcionários</Text>
-      </Flex>
       <Flex gap="1rem">
-        <Input placeholder="Buscar funcionário..." p={5} />
+        <InputGroup endElement={<IconButton variant="ghost" aria-label="Buscar"><IoSearchOutline /></IconButton>}>
+          <Input placeholder="Buscar funcionário..." p={5}/>
+        </InputGroup>
       
-        <Flex justifyContent="flex-end" mb={4}>
+        <Flex justifyContent="flex-end">
           <Button variant="surface" size="sm" p="20px 10px" backgroundColor="var(--darkblue)" color="white">
             <MdPersonAdd /> Adicionar Funcionário
           </Button>
         </Flex>
       </Flex>
 
-      <Table.Root size="sm" variant="outline" mb={2}>
+      <Table.Root size="sm" variant="outline" mb={2} mt={4}>
         <Table.Header height="50px" bgColor="var(--primary)">
           <Table.Row>
             <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" padding="0 20px">Funcionário</Table.ColumnHeader>
