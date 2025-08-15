@@ -7,13 +7,13 @@ import { LuFilePlus2 } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
 
 
-type OptionsMenu = {
+export type OptionsMenu = {
   icon: JSX.Element;
   label: string;
 };
 
 type SideBarProps = {
-  onSelectOption: (label: string) => void;
+  onSelectOption: (options: OptionsMenu) => void;
   selectedOption: string;
 };
 
@@ -77,7 +77,7 @@ const SideBar = ({ onSelectOption, selectedOption }: SideBarProps) => {
             display="flex"
             color="white"
             bg={selectedOption === option.label ? "rgba(255,255,255,0.15)" : undefined}
-            onClick={() => onSelectOption(option.label)}
+            onClick={() => onSelectOption(option)}
           >
             <Flex align="center" gap={2}>
               {option.icon}
