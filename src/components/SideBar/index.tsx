@@ -19,7 +19,6 @@ type SideBarProps = {
 
 const SideBar = ({ onSelectOption, selectedOption }: SideBarProps) => {
   const optionsMenu: OptionsMenu[] = [
-    { icon: <IoHomeOutline />, label: 'Início' },
     { icon: <FaRegFileAlt />, label: 'Processos' },
     { icon: <LuFilePlus2 />, label: 'Cadastrar processos' },
     { icon: <BsPersonVcard />, label: 'Funcionários e relatórios' },
@@ -35,7 +34,7 @@ const SideBar = ({ onSelectOption, selectedOption }: SideBarProps) => {
         color: 'white',
         background: "linear-gradient(209deg,rgba(36, 34, 112, 1) 0%, rgba(51, 51, 143, 1) 23%, rgba(207, 249, 255, 1) 100%)",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        height: "100vh",
+        minHeight: "100vh",
       }}
     >
       <Flex style={{
