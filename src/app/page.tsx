@@ -39,7 +39,7 @@ export default function Login() {
         </Flex>
         
         <Flex style={{
-          height: '70vh',
+          minHeight: '70vh',
           flexDirection: 'column',
           backgroundColor: 'rgba(247, 247, 247, 0.99)',
           padding: '20px',
