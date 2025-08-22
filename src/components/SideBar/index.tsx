@@ -67,14 +67,15 @@ const SideBar = ({ onSelectOption, selectedOption }: SideBarProps) => {
             justifyContent="flex-start"
             padding="12px 16px"
             variant={selectedOption === option.label ? "solid" : "ghost"}
-            borderRadius="8px"
+            borderRadius="50px"
+            border={selectedOption === option.label ? "1px solid white" : ""}
             _hover={{
-              bg: "rgba(255, 255, 255, 0.1)",
+              bg: "rgba(255, 255, 255, 0.32)",
             }}
             aria-label={option.label}
             display="flex"
             color="white"
-            bg={selectedOption === option.label ? "rgba(255,255,255,0.15)" : undefined}
+            bg={selectedOption === option.label ? "rgba(255,255,255,0.32)" : undefined}
             onClick={() => onSelectOption(option)}
           >
             <Flex align="center" gap={2}>
