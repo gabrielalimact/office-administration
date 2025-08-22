@@ -1,14 +1,86 @@
 "use client"
 import { Button, ButtonGroup, Steps, Text, Flex, Field, Fieldset, Input, Textarea, Box, FileUpload, Icon, List, Portal, Select, createListCollection, Checkbox, CloseButton } from '@chakra-ui/react';
-import { useState } from "react"
+import { CheckedChangeDetails } from '@zag-js/checkbox';
+import { JSX, useState } from "react"
 import { LuUpload, LuCheckCheck } from 'react-icons/lu';
+
+interface IProcessos {
+  name: string;
+  birthdate: string;
+  cpf: string;
+  rg: string;
+  filiation: string;
+  collaborator: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  naturalidade: string;
+  beneficio: string;
+  olharMeuInss: boolean;
+  olharPje: boolean;
+  senhaInss: string;
+  dataAtendimento: string;
+  observations: string;
+  files: unknown[];
+}
+
+interface StepRenderProps {
+  formData: IProcessos;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleSelectChange?: (value: { value: string[] }) => void;
+  handleCheckboxChange?: (name: string, checked: CheckedChangeDetails) => void;
+}
 
 const CadastrarProcessosPage = () => {
   const [stepActive, setStepActive] = useState(0)
+  const [formData, setFormData] = useState<IProcessos>({
+    name: "",
+    birthdate: "",
+    cpf: "",
+    rg: "",
+    filiation: "",
+    collaborator: "",
+    street: "",
+    number: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+    naturalidade: "",
+    beneficio: "",
+    olharMeuInss: false,
+    olharPje: false,
+    senhaInss: "",
+    dataAtendimento: "",
+    observations: "",
+    files: [],
+  });
+
 
   const handleStepChange = (e: { step: number }) => {
     setStepActive(e.step);
   }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (value: { value: string[] }) => {
+    setFormData((prev) => ({ ...prev, beneficio: value.value[0] }));
+  };
+
+  const handleCheckboxChange = (name: string, checked: CheckedChangeDetails) => {
+    setFormData((prev) => ({ ...prev, [name]: checked.checked }));
+  };
+
+  const handleSubmit = () => {
+    console.log("Objeto para backend:", formData);
+  };
 
   return (
     <Steps.Root defaultStep={1} step={stepActive}
@@ -28,7 +100,12 @@ const CadastrarProcessosPage = () => {
 
       {steps.map((step, index) => (
         <Steps.Content key={index} index={index} p="0 20px" minHeight="50vh">
-          {step.description}
+          {step.render({
+            formData,
+            handleInputChange,
+            handleSelectChange,
+            handleCheckboxChange,
+          })}
         </Steps.Content>
       ))}
       <Steps.CompletedContent>
@@ -45,7 +122,9 @@ const CadastrarProcessosPage = () => {
         </Steps.PrevTrigger>
         {stepActive !== steps.length && (
         <Steps.NextTrigger asChild>
-            <Button bgColor="var(--primary)" w="100px">
+            <Button bgColor="var(--primary)" w="100px"
+              onClick={handleSubmit}
+            >
             {stepActive < steps.length - 1 ? 'Próximo' : stepActive === steps.length - 1 ? 'Salvar' : 'Finalizado'}
             </Button>
         </Steps.NextTrigger>
@@ -56,7 +135,7 @@ const CadastrarProcessosPage = () => {
 };
 
 export default CadastrarProcessosPage;
-const frameworks = createListCollection({
+const beneficios = createListCollection({
   items: [
     { label: "LOAS/87", value: "loas-87" },
     { label: "LOAS/88", value: "loas-88" },
@@ -65,68 +144,72 @@ const frameworks = createListCollection({
     { label: "Auxílio doença", value: "auxilio-doenca" },
   ],
 })
-const steps = [
+
+const steps: {
+  title: string;
+  render: (props: StepRenderProps) => JSX.Element;
+}[] = [
   {
     title: "Informações do cliente",
-    description: (
+    render: ({ formData, handleInputChange }: StepRenderProps) => (
       <Fieldset.Root minW="full" flex={1}>
         <Fieldset.Content display="flex" flexDir="row">
           <Field.Root mt={2} required minW="70%">
             <Field.Label fontWeight="bold">Nome completo</Field.Label>
-            <Input p="12px" name="name" />
+            <Input p="12px" name="name" value={formData.name} onChange={handleInputChange} />
           </Field.Root>
 
           <Field.Root mt={2} required>
             <Field.Label fontWeight="bold">Data de nascimento</Field.Label>
-            <Input p="12px" name="birthdate" type="date" />
+            <Input p="12px" name="birthdate" type="date" value={formData.birthdate} onChange={handleInputChange} />
           </Field.Root>
         </Fieldset.Content>
         <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr">
           <Field.Root mt={2} required>
             <Field.Label fontWeight="bold">CPF</Field.Label>
-            <Input p="12px" name="cpf" />
+            <Input p="12px" name="cpf" value={formData.cpf} onChange={handleInputChange} />
           </Field.Root>
 
           <Field.Root mt={2} required>
             <Field.Label fontWeight="bold">RG</Field.Label>
-            <Input p="12px" name="rg" />
+            <Input p="12px" name="rg" value={formData.rg} onChange={handleInputChange}  />
           </Field.Root>
 
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Filiação</Field.Label>
-            <Input p="12px" name="filiation" />
+            <Input p="12px" name="filiation" value={formData.filiation} onChange={handleInputChange} />
           </Field.Root>
 
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Colaborador</Field.Label>
-            <Input p="12px" name="collaborator" />
+            <Input p="12px" name="collaborator" value={formData.collaborator} onChange={handleInputChange} />
           </Field.Root>
         </Fieldset.Content>
         <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr">
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Logradouro</Field.Label>
-            <Input p="12px" name="street" />
+            <Input p="12px" name="street" value={formData.street} onChange={handleInputChange} />
           </Field.Root>
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Número</Field.Label>
-            <Input p="12px" name="number" />
+            <Input p="12px" name="number" value={formData.number} onChange={handleInputChange} />
           </Field.Root>
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Bairro</Field.Label>
-            <Input p="12px" name="neighborhood" />
+            <Input p="12px" name="neighborhood" value={formData.neighborhood} onChange={handleInputChange} />
           </Field.Root>
 
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Cidade</Field.Label>
-            <Input p="12px" name="city" />
+            <Input p="12px" name="city" value={formData.city} onChange={handleInputChange} />
           </Field.Root>
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Estado</Field.Label>
-            <Input p="12px" name="state" />
+            <Input p="12px" name="state" value={formData.state} onChange={handleInputChange} />
           </Field.Root>
           <Field.Root mt={2}>
             <Field.Label fontWeight="bold">Naturalidade</Field.Label>
-            <Input p="12px" name="naturalidade" />
+            <Input p="12px" name="naturalidade" value={formData.naturalidade} onChange={handleInputChange} />
           </Field.Root>
 
         </Fieldset.Content>
@@ -135,10 +218,12 @@ const steps = [
   },
   {
     title: "Informações do processo",
-    description: (
+    render: ({ formData, handleInputChange, handleSelectChange, handleCheckboxChange }: StepRenderProps) => (
       <Fieldset.Root minW="full" flex={1} >
         <Fieldset.Content display="flex" gap="20px" flexDir="column">
-          <Select.Root collection={frameworks} size="md">
+          <Select.Root collection={beneficios} size="md"
+              onValueChange={handleSelectChange}
+              >
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">Benefício</Select.Label>
             <Select.Control>
@@ -152,9 +237,9 @@ const steps = [
             <Portal>
               <Select.Positioner>
                 <Select.Content>
-                  {frameworks.items.map((framework) => (
-                    <Select.Item p={2} item={framework} key={framework.value}>
-                      {framework.label}
+                  {beneficios.items.map((beneficio) => (
+                    <Select.Item p={2} item={beneficio} key={beneficio.value}>
+                      {beneficio.label}
                       <Select.ItemIndicator />
                     </Select.Item>
                   ))}
@@ -163,12 +248,14 @@ const steps = [
             </Portal>
           </Select.Root>
           <Flex gap="2rem">
-            <Checkbox.Root>
+            <Checkbox.Root checked={formData.olharMeuInss}
+                onCheckedChange={(checked) => handleCheckboxChange?.('olharMeuInss', checked)}>
               <Checkbox.HiddenInput />
               <Checkbox.Control />
               <Checkbox.Label>OLHAR MEU INSS/SAG</Checkbox.Label>
             </Checkbox.Root>
-            <Checkbox.Root>
+            <Checkbox.Root checked={formData.olharPje}
+                onCheckedChange={(checked) => handleCheckboxChange?.('olharPje', checked)}>
               <Checkbox.HiddenInput />
               <Checkbox.Control />
               <Checkbox.Label>OLHAR PJE/CRETA JUSTIÇA FEDERAL</Checkbox.Label>
@@ -177,17 +264,17 @@ const steps = [
           <Flex gap={4}>
             <Field.Root minW="60%">
               <Field.Label fontWeight="bold">Senha MEU INSS</Field.Label>
-              <Input p={5} name="senha-inss" />
+              <Input p={5} name="senha-inss" value={formData.senhaInss} onChange={handleInputChange} />
             </Field.Root>
             <Field.Root>
               <Field.Label fontWeight="bold">Data do atendimento</Field.Label>
-              <Input p={5} name="data-atendimento" type="date" />
+              <Input p={5} name="data-atendimento" type="date" value={formData.dataAtendimento} onChange={handleInputChange} />
             </Field.Root>
           </Flex>
 
           <Field.Root required minW="70%">
             <Field.Label fontWeight="bold">Observações</Field.Label>
-            <Textarea p={5} name="observations" height={200} fontSize={18}/>
+            <Textarea p={5} name="observations" height={200} fontSize={18} value={formData.observations} onChange={handleInputChange} />
           </Field.Root>
         </Fieldset.Content>
       </Fieldset.Root>
@@ -195,7 +282,7 @@ const steps = [
   },
   {
     title: "Envio de documentos",
-    description: (
+    render: ({ formData, handleInputChange }: StepRenderProps) => (
       <Box>
         <Text fontWeight="semibold" mb={2}>Documentos necessários</Text>
         <List.Root p="0 30px" mb={2} display="grid" gridTemplateColumns="1fr 1fr" gap="8px">
