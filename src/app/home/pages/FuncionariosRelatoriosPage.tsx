@@ -132,17 +132,24 @@ const FuncionariosRelatoriosPage = () => {
     <Box>
       <Flex gap="1rem">
         <InputGroup endElement={<IconButton variant="ghost" aria-label="Buscar"><IoSearchOutline /></IconButton>}>
-          <Input placeholder="Buscar funcionário..." p={5}/>
+          <Input placeholder="Buscar funcionário..." p={5} borderRadius="50px"/>
         </InputGroup>
       
         <Flex justifyContent="flex-end">
-          <Button variant="surface" size="sm" p="20px 10px" backgroundColor="var(--darkblue)" color="white">
+          <Button 
+          variant="surface" 
+          size="sm" p="20px 10px" 
+          borderRadius="50px"
+          backgroundColor="var(--darkblue)" 
+          color="white"
+          fontWeight="bold"
+          >
             <MdPersonAdd /> Adicionar Funcionário
           </Button>
         </Flex>
       </Flex>
 
-      <Table.Root size="sm" variant="outline" mb={2} mt={4}>
+      <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px">
         <Table.Header height="50px" bgColor="var(--primary)">
           <Table.Row>
             <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" padding="0 20px">Funcionário</Table.ColumnHeader>
