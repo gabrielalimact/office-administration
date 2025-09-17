@@ -1,6 +1,5 @@
 'use client';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { MdPersonAdd } from 'react-icons/md';
 import { useState } from 'react';
 
 const cargos = [
@@ -9,24 +8,8 @@ const cargos = [
     descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.',
   },
   {
-    nome: 'Advogado Sênior',
-    descricao: 'Acesso total ao sistema, pode cadastrar, editar e remover processos.',
-  },
-  {
-    nome: 'Advogado Pleno',
-    descricao: 'Pode cadastrar e editar processos, enviar relatórios.',
-  },
-  {
-    nome: 'Advogado Júnior',
-    descricao: 'Pode cadastrar processos e enviar relatórios.',
-  },
-  {
-    nome: 'Assistente Jurídico',
-    descricao: 'Pode visualizar processos e relatórios.',
-  },
-  {
-    nome: 'Estagiário',
-    descricao: 'Pode visualizar processos.',
+    nome: 'Funcionário',
+    descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.',
   },
 ];
 

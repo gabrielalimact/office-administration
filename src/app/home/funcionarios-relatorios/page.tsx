@@ -31,7 +31,6 @@ export interface IFuncionarios {
   }[];
 }
 
-
 const cargos = [
   {
     nome: 'Sócio',

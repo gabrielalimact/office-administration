@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'; 
+'use client';
 import {
   Box,
   ButtonGroup,
@@ -22,15 +22,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { processosMock } from '@/mocks/processos';
 
-
-
 const responsaveisList = createListCollection({
   items: processosMock
     .map((p) => p.responsavel)
     .filter((value, index, self) => self.indexOf(value) === index)
     .map((responsavel) => ({ label: responsavel, value: responsavel })),
 });
-
 
 const tiposProcessosList = createListCollection({
   items: processosMock
@@ -43,7 +40,7 @@ const statusOptions = createListCollection({
   items: processosMock
     .map((p) => p.status)
     .filter((value, index, self) => self.indexOf(value) === index)
-    .map((tipo) => ({ label: tipo, value: tipo }))
+    .map((tipo) => ({ label: tipo, value: tipo })),
 });
 
 const ProcessosPage = () => {
@@ -60,7 +57,7 @@ const ProcessosPage = () => {
     }
     setFormData((prev) => ({ ...prev, situacao: value.items[0].label }));
   };
-  
+
   const handleResponsavel = (value: any) => {
     if (!value.items.length) {
       setFormData((prev) => ({ ...prev, responsavel: '' }));
@@ -93,27 +90,25 @@ const ProcessosPage = () => {
         Processos
       </Text>
       <Flex gap={3} mb={3} alignItems="center">
-      <Field.Root required>
-        <Field.Label fontWeight={'bold'}>
-          Buscar
-        </Field.Label>
-        <InputGroup
-          endElement={
-            <IconButton variant="ghost" aria-label="Buscar">
-              <IoSearchOutline />
-            </IconButton>
-          }
-        >
-          <Input
-            placeholder="Buscar processo..."
-            p={5}
-            borderRadius="4px"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-          />
-        </InputGroup>
-      </Field.Root>
-        
+        <Field.Root required>
+          <Field.Label fontWeight={'bold'}>Buscar</Field.Label>
+          <InputGroup
+            endElement={
+              <IconButton variant="ghost" aria-label="Buscar">
+                <IoSearchOutline />
+              </IconButton>
+            }
+          >
+            <Input
+              placeholder="Buscar processo..."
+              p={5}
+              borderRadius="4px"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </InputGroup>
+        </Field.Root>
+
         <Select.Root
           collection={responsaveisList}
           onValueChange={(value) => handleResponsavel(value)}
@@ -170,10 +165,7 @@ const ProcessosPage = () => {
             </Select.Positioner>
           </Portal>
         </Select.Root>
-        <Select.Root
-          collection={statusOptions}
-          onValueChange={(value) => handleSituacao(value)}
-        >
+        <Select.Root collection={statusOptions} onValueChange={(value) => handleSituacao(value)}>
           <Select.HiddenSelect />
           <Select.Label fontWeight="bold">Situação</Select.Label>
           <Select.Control>
