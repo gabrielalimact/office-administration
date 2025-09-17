@@ -1,88 +1,78 @@
-import { Flex, Image, Text, Button } from "@chakra-ui/react";
-import { JSX } from "react";
-import { IoSettingsOutline} from "react-icons/io5";
-import { FaRegFileAlt } from "react-icons/fa";
-import { LuFilePlus2 } from "react-icons/lu";
-import { BsPersonVcard } from "react-icons/bs";
+import { Flex, Text } from '@chakra-ui/react';
+import { useState } from 'react';
+import { FaRegFileAlt, FaUsers } from 'react-icons/fa';
+import { LuFilePlus2 } from 'react-icons/lu';
+import { BsPersonVcard } from 'react-icons/bs';
+import Link from 'next/link';
+import { MdOutlineSpaceDashboard } from 'react-icons/md';
+import { HiUserPlus } from 'react-icons/hi2';
 
+const optionsMenu = [
+  { icon: <MdOutlineSpaceDashboard size={24} />, label: 'Painel', href: '/home' },
+  { icon: <FaUsers size={24} />, label: 'Clientes', href: '/home/clientes' },
+  { icon: <FaRegFileAlt size={24} />, label: 'Processos', href: '/home/processos' },
+  {
+    icon: <LuFilePlus2 size={24} />,
+    label: 'Cadastrar processos',
+    href: '/home/cadastrar-processos',
+  },
+  {
+    icon: <BsPersonVcard size={24} />,
+    label: 'Funcionários e relatórios',
+    href: '/home/funcionarios-relatorios',
+  },
+  {
+    icon: <HiUserPlus size={24} />,
+    label: 'Adicionar funcionário',
+    href: '/home/adicionar-funcionario',
+  },
+];
 
-export type OptionsMenu = {
-  icon: JSX.Element;
-  label: string;
-};
-
-type SideBarProps = {
-  onSelectOption: (options: OptionsMenu) => void;
-  selectedOption: string;
-};
-
-const SideBar = ({ onSelectOption, selectedOption }: SideBarProps) => {
-  const optionsMenu: OptionsMenu[] = [
-    { icon: <FaRegFileAlt />, label: 'Processos' },
-    { icon: <LuFilePlus2 />, label: 'Cadastrar processos' },
-    { icon: <BsPersonVcard />, label: 'Funcionários e relatórios' },
-    { icon: <IoSettingsOutline />, label: 'Configurações' },
-  ];
+const SideBar = () => {
+  const [expanded, setExpanded] = useState(false);
   return (
     <Flex
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
       style={{
-        position: "relative",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "20px",
+        position: 'relative',
+        flexDirection: 'column',
+        alignItems: expanded ? 'center' : 'flex-start',
+        padding: expanded ? '20px' : '20px 8px',
         color: 'white',
-        background: "linear-gradient(209deg,rgba(36, 34, 112, 1) 0%, rgba(51, 51, 143, 1) 23%, rgba(207, 249, 255, 1) 100%)",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        minHeight: "100vh",
+        background:
+          'linear-gradient(209deg,rgba(36, 34, 112, 1) 0%, rgba(51, 51, 143, 1) 23%, rgba(207, 249, 255, 1) 100%)',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        minHeight: '100vh',
+        width: expanded ? 300 : 64,
+        transition: 'width 0.2s',
+        zIndex: 100,
       }}
     >
-      <Flex style={{
-        alignItems: 'center',
-        flexDirection: 'column',
-        padding: '20px 0'
-      }}>
-        <Image src='/images/balanca.svg' alt="Logo"
-          width={50}
-          height={50}
-        />
-        <Text fontSize="xl" fontWeight='bold'>
-          Diego Oliveira Nascimento
-        </Text>
-        <Text fontSize="lg">
-          Advocacia & Consultoria
-        </Text>
-      </Flex>
-
-      <Flex style={{
-        flexDirection: "column",
-        gap: "12px",
-        marginTop: "24px",
-        width: "100%",
-      }}>
+      <Flex
+        style={{
+          flexDirection: 'column',
+          gap: '12px',
+          marginTop: expanded ? '24px' : '8px',
+          width: '100%',
+        }}
+      >
         {optionsMenu.map((option) => (
-          <Button
-            key={option.label}
-            size="xl"
-            width="100%"
-            justifyContent="flex-start"
-            padding="12px 16px"
-            variant={selectedOption === option.label ? "solid" : "ghost"}
-            borderRadius="50px"
-            border={selectedOption === option.label ? "1px solid white" : ""}
-            _hover={{
-              bg: "rgba(255, 255, 255, 0.32)",
-            }}
-            aria-label={option.label}
-            display="flex"
-            color="white"
-            bg={selectedOption === option.label ? "rgba(255,255,255,0.32)" : undefined}
-            onClick={() => onSelectOption(option)}
-          >
-            <Flex align="center" gap={2}>
+          <Link key={option.label} href={option.href} style={{ textDecoration: 'none' }}>
+            <Flex
+              align="center"
+              gap={expanded ? 2 : 0}
+              width="100%"
+              justify={expanded ? 'flex-start' : 'center'}
+              borderRadius="50px"
+              padding={expanded ? '12px 16px' : '12px 0'}
+              _hover={{ background: 'rgba(255,255,255,0.18)' }}
+              style={{ cursor: 'pointer', marginBottom: 2, background: 'none' }}
+            >
               {option.icon}
-              <Text>{option.label}</Text>
+              {expanded && <Text>{option.label}</Text>}
             </Flex>
-          </Button>
+          </Link>
         ))}
       </Flex>
     </Flex>
