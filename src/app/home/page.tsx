@@ -1,8 +1,8 @@
 'use client';
 import { Box, SimpleGrid, Text, Heading } from '@chakra-ui/react';
 import { useMemo } from 'react';
-import { processosMock, IProcessosTable } from './processos/page';
-import { funcionariosMock } from './funcionarios-relatorios/page';
+import { funcionariosMock } from '../../mocks/funcionarios';
+import { IProcessosTable, processosMock } from '../../mocks/processos';
 
 const tiposProcesso = [
   'LOAS/88',

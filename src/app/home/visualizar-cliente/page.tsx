@@ -1,7 +1,7 @@
 'use client';
 import { Box, Flex, Text, Table, Button } from '@chakra-ui/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 
 const clientesMock = [
@@ -40,7 +40,8 @@ const clientesMock = [
   },
   // ...outros clientes
 ];
-const VisualizarClientePage = () => {
+
+function VisualizarClienteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const clienteNome = searchParams.get('cliente') || '';
@@ -160,6 +161,12 @@ const VisualizarClientePage = () => {
       </Box>
     </Box>
   );
-};
+}
 
-export default VisualizarClientePage;
+export default function VisualizarClientePage() {
+  return (
+    <Suspense fallback={<Text>Carregando cliente...</Text>}>
+      <VisualizarClienteContent />
+    </Suspense>
+  );
+}
