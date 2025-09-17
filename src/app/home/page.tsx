@@ -1,68 +1,80 @@
-'use client'
-import { Flex, Icon, IconButton, Text } from "@chakra-ui/react";
-import { CiMenuBurger } from "react-icons/ci";
-import { JSX, useState } from "react";
-import SideBar, { OptionsMenu } from "@/components/SideBar";
-import ProcessosPage from "./pages/ProcessosPage";
-import CadastrarProcessosPage from "./pages/CadastrarProcessosPage";
-import FuncionariosRelatoriosPage from "./pages/FuncionariosRelatoriosPage";
-import ConfiguracoesPage from "./pages/ConfiguracoesPage";
-import { BsPersonVcard } from "react-icons/bs";
-import { FaRegFileAlt } from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
-import { LuFilePlus2 } from "react-icons/lu";
+'use client';
+import { Box, SimpleGrid, Text, Heading } from '@chakra-ui/react';
+import { useMemo } from 'react';
+import { processosMock, IProcessosTable } from './processos/page';
+import { funcionariosMock } from './funcionarios-relatorios/page';
 
-const pagesConfig: Record<string, { icon: JSX.Element; component: JSX.Element }> = {
-  "Processos": { icon: <FaRegFileAlt />, component: <ProcessosPage /> },
-  "Cadastrar processos": { icon: <LuFilePlus2 />, component: <CadastrarProcessosPage /> },
-  "Funcionários e relatórios": { icon: <BsPersonVcard />, component: <FuncionariosRelatoriosPage /> },
-  "Configurações": { icon: <IoSettingsOutline />, component: <ConfiguracoesPage /> },
-};
+const tiposProcesso = [
+  'LOAS/88',
+  'LOAS/87',
+  'PENSÃO DE MORTE URBANA OU RURAL',
+  'APOSENTADORIAS',
+  'AUXILIO DOENÇA',
+];
 
 const Home = () => {
-  const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [selectedOption, setSelectedOption] = useState<keyof typeof pagesConfig>("Processos");
+  const processosPorTipo = useMemo(() => {
+    const counts: Record<string, number> = {};
+    tiposProcesso.forEach((tipo) => {
+      counts[tipo] = processosMock.filter((p: IProcessosTable) => p.tipoProcesso === tipo).length;
+    });
+    return counts;
+  }, []);
 
-  const handleToggleSidebar = () => setSidebarVisible((v) => !v);
-
-  const handleSelectOption = (option: OptionsMenu) => {
-    if (pagesConfig[option.label]) {
-      setSelectedOption(option.label as keyof typeof pagesConfig);
-    }
-  };
-
-  const { icon, component } = pagesConfig[selectedOption];
+  const totalProcessos = processosMock.length;
+  const totalFuncionarios = funcionariosMock.length;
+  const totalClientes = new Set(processosMock.map((p: IProcessosTable) => p.cliente)).size;
 
   return (
-    <Flex>
-      <IconButton
-        variant={sidebarVisible ? "ghost" : "surface"}
-        color={sidebarVisible ? "white" : "black"}
-        _hover={{ bg: "rgba(255, 255, 255, 0.1)", borderColor: "white" }}
-        onClick={handleToggleSidebar}
-        position="fixed"
-        top="20px"
-        left="20px"
-        zIndex={1000}
-        aria-label={sidebarVisible ? "Fechar sidebar" : "Abrir sidebar"}
-      >
-        <CiMenuBurger />
-      </IconButton>
-
-      {sidebarVisible && (
-        <SideBar onSelectOption={handleSelectOption} selectedOption={selectedOption} />
-      )}
-
-      <Flex flexDirection="column" p={sidebarVisible ? "20px" : "20px 80px"} flex={1}>
-        <Flex alignItems="center" gap="8px" borderBottom="1px solid" borderColor="gray" pb="12px" mb="12px">
-          <Icon fontSize="2xl" color="var(--darkblue)">
-            {icon}
-          </Icon>
-          <Text fontSize="2xl" fontWeight="bold" color="var(--darkblue)">{selectedOption}</Text>
-        </Flex>
-        {component}
-      </Flex>
-    </Flex>
+    <Box p={8}>
+      <Text fontSize="2xl" fontWeight="bold" mb={6} color="var(--darkblue)">
+        Meu painel
+      </Text>
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={6} mb={8}>
+        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
+          <Heading size="md" mb={2}>
+            Total de Processos
+          </Heading>
+          <Text fontSize="3xl" color="var(--darkblue)">
+            {totalProcessos}
+          </Text>
+          <Text fontSize="sm">Todos os processos cadastrados</Text>
+        </Box>
+        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
+          <Heading size="md" mb={2}>
+            Total de Funcionários
+          </Heading>
+          <Text fontSize="3xl" color="var(--darkblue)">
+            {totalFuncionarios}
+          </Text>
+          <Text fontSize="sm">Equipe cadastrada</Text>
+        </Box>
+        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
+          <Heading size="md" mb={2}>
+            Total de Clientes
+          </Heading>
+          <Text fontSize="3xl" color="var(--darkblue)">
+            {totalClientes}
+          </Text>
+          <Text fontSize="sm">Clientes únicos atendidos</Text>
+        </Box>
+      </SimpleGrid>
+      <Text fontSize="xl" fontWeight="bold" mb={4} color="var(--darkblue)">
+        Processos por tipo
+      </Text>
+      <SimpleGrid columns={{ base: 1, md: 3, lg: 5 }} gap={4}>
+        {tiposProcesso.map((tipo) => (
+          <Box key={tipo} bg="#f4f8fb" borderRadius={10} p={5} boxShadow="xs">
+            <Heading size="sm" mb={2}>
+              {tipo}
+            </Heading>
+            <Text fontSize="2xl" color="var(--darkblue)">
+              {processosPorTipo[tipo]}
+            </Text>
+          </Box>
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 };
 
