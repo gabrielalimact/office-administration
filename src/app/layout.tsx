@@ -1,28 +1,45 @@
-import { Provider } from "@/components/ui/provider"
-import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
-import "./globals.css";
-
+'use client';
+import { Provider } from '@/components/ui/provider';
+import SideBar from '@/components/SideBar';
+import { Flex, Box } from '@chakra-ui/react';
+import { Montserrat } from 'next/font/google';
+import './globals.css';
+import NavBar from '@/components/NavBar';
+import { usePathname } from 'next/navigation';
 
 const montserratSans = Montserrat({
-  variable: "--font-montserrat-sans",
-  subsets: ["latin"],
+  variable: '--font-montserrat-sans',
+  subsets: ['latin'],
 });
-
-
-export const metadata: Metadata = {
-  title: "Administração - D. Oliveira Nascimento",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const showLayout = pathname !== '/';
   return (
     <html lang="pt-br" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <title>Diego O. Nascimento</title>
+        <meta name="description" content="Sistema de Administração de Escritório" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body className={`${montserratSans.variable}`}>
-        <Provider>{children}</Provider>
+        <Provider>
+          {showLayout ? (
+            <Flex direction="row" minHeight="100vh">
+              <SideBar />
+              <Box flex={1} minHeight="100vh" display="flex" flexDirection="column">
+                <NavBar />
+                <Box flex={1}>{children}</Box>
+              </Box>
+            </Flex>
+          ) : (
+            children
+          )}
+        </Provider>
       </body>
     </html>
   );
