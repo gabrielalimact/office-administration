@@ -21,16 +21,17 @@ const NavBar = () => {
         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
         alignItems: 'center',
         justifyContent: 'space-between',
-        cursor: 'pointer',
       }}
-      onClick={() => router.push('/home')}
+      
     >
       <Flex
         style={{
           alignItems: 'center',
           flexDirection: 'row',
           gap: 10,
+          cursor: 'pointer',
         }}
+        onClick={() => router.push('/home')}
       >
         <Image src="/images/balanca.svg" alt="Logo" width={10} height={10} />
         <Box>
