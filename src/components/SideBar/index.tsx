@@ -1,11 +1,13 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
+import { useUserContext } from '../UserContext';
 import { FaRegFileAlt, FaUsers } from 'react-icons/fa';
 import { LuFilePlus2 } from 'react-icons/lu';
 import { BsPersonVcard } from 'react-icons/bs';
 import Link from 'next/link';
 import { MdOutlineSpaceDashboard } from 'react-icons/md';
 import { HiUserPlus } from 'react-icons/hi2';
+import { FaFilePen } from 'react-icons/fa6';
 
 const optionsMenu = [
   { icon: <MdOutlineSpaceDashboard size={24} />, label: 'Painel', href: '/home' },
@@ -26,10 +28,22 @@ const optionsMenu = [
     label: 'Adicionar funcionário',
     href: '/adicionar-funcionario',
   },
+  {
+    icon: <FaFilePen size={22} />,
+    label: 'Enviar relatório',
+    href: '/enviar-relatorio',
+  }
 ];
 
 const SideBar = () => {
   const [expanded, setExpanded] = useState(false);
+  const { user } = useUserContext();
+  const isSocio = user?.cargo === 'Sócio' || user?.cargo === 'Sócia';
+  const filteredMenu = optionsMenu.filter(
+    (option) =>
+      isSocio ||
+      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario')
+  );
   return (
     <Flex
       onMouseEnter={() => setExpanded(true)}
@@ -57,7 +71,7 @@ const SideBar = () => {
           width: '100%',
         }}
       >
-        {optionsMenu.map((option) => (
+        {filteredMenu.map((option) => (
           <Link key={option.label} href={option.href} style={{ textDecoration: 'none' }}>
             <Flex
               align="center"

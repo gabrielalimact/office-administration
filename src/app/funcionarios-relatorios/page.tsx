@@ -13,7 +13,8 @@ import {
 } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { MdPersonAdd } from 'react-icons/md';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUserContext } from '@/components/UserContext';
 import { useLoading } from '@/components/LoadingContext';
 import { IoEyeOutline, IoSearchOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
@@ -62,6 +63,13 @@ const cargos = [
 const FuncionariosRelatoriosPage = () => {
   const router = useRouter();
   const { setLoading } = useLoading();
+  const { user } = useUserContext();
+
+  useEffect(() => {
+    if (user && user.cargo !== 'Sócio' && user.cargo !== 'Sócia') {
+      router.push('/home');
+    }
+  }, [user, router]);
 
   const handlePush = (path: string) => {
     setLoading(true);
@@ -141,7 +149,11 @@ const FuncionariosRelatoriosPage = () => {
               <Table.Cell padding="0 20px">{item.nome}</Table.Cell>
               <Table.Cell>{item.cargo}</Table.Cell>
               <Table.Cell padding="0 20px" textAlign="end">
-                <IconButton variant="ghost" aria-label="Ver relatório">
+                <IconButton
+                  variant="ghost"
+                  aria-label="Ver relatório"
+                  onClick={() => handlePush(`/visualizar-relatorio/${item.id}`)}
+                >
                   <IoEyeOutline />
                 </IconButton>
               </Table.Cell>
