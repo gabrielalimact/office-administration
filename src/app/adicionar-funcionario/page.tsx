@@ -1,6 +1,8 @@
 'use client';
+import { useUserContext } from '@/components/UserContext';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const cargos = [
   {
@@ -14,10 +16,12 @@ const cargos = [
 ];
 
 export default function AdicionarFuncionarioPage() {
+  const router = useRouter();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].nome);
+  const { user } = useUserContext();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +31,11 @@ export default function AdicionarFuncionarioPage() {
     setCargoSelecionado(cargos[0].nome);
   };
 
+  useEffect(() => {
+    if (user && user.cargo !== 'Sócio' && user.cargo !== 'Sócia') {
+      router.push('/home');
+    }
+  }, [user, router]);
   return (
     <Box mx="auto" p={8} bg="white">
       <Flex align="center" gap={3} mb={6}>
