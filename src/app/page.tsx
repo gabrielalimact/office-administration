@@ -1,10 +1,23 @@
 'use client';
 import { Box, Button, Field, Flex, Image, Input, Text, Tabs, Link } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
+import { useLoading } from '@/components/LoadingContext';
 import { LuUser, LuSquareCheck } from 'react-icons/lu';
+import { useUserContext } from '@/components/UserContext';
 
 export default function Login() {
   const router = useRouter();
+  const { setLoading } = useLoading();
+  const { setUser } = useUserContext();
+
+  const handlePush = (path: string) => {
+    setLoading(true);
+    setUser({ nome: 'Gabriela Cena', email: 'gabriela@exemplo.com', cargo: 'Sócia', avatar: '/next.svg' });
+    setTimeout(() => {
+      router.push(path);
+      setLoading(false);
+    }, 400);
+  };
   return (
     <Flex
       minH="100vh"
@@ -49,10 +62,10 @@ export default function Login() {
         <Tabs.Root defaultValue="login" w="100%">
           <Tabs.List bg="gray.100" gap="2" justifyContent="center" borderRadius="md" mb={2}>
             <Tabs.Trigger value="login" p={3} fontWeight="bold" color="#242270">
-              <LuUser  /> Entrar
+              <LuUser /> Entrar
             </Tabs.Trigger>
             <Tabs.Trigger value="register" p={3} fontWeight="bold" color="#242270">
-              <LuSquareCheck  /> Cadastrar
+              <LuSquareCheck /> Cadastrar
             </Tabs.Trigger>
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>
@@ -89,7 +102,12 @@ export default function Login() {
             </Field.Root>
             <Flex w="100%" justify="flex-end">
               <Link href="#">
-                <Text fontSize="sm" color="#4A90E2" textAlign="right" _hover={{ textDecoration: 'underline' }}>
+                <Text
+                  fontSize="sm"
+                  color="#4A90E2"
+                  textAlign="right"
+                  _hover={{ textDecoration: 'underline' }}
+                >
                   Esqueceu sua senha?
                 </Text>
               </Link>
@@ -105,7 +123,7 @@ export default function Login() {
               mt={2}
               _hover={{ bg: '#4A90E2', color: 'white', boxShadow: 'md' }}
               transition="all 0.2s"
-              onClick={() => router.push('/home')}
+              onClick={() => handlePush('/home')}
             >
               Entrar
             </Button>
@@ -165,7 +183,7 @@ export default function Login() {
               mt={2}
               _hover={{ bg: '#4A90E2', color: 'white', boxShadow: 'md' }}
               transition="all 0.2s"
-              onClick={() => router.push('/home')}
+              onClick={() => handlePush('/home')}
             >
               Cadastrar
             </Button>
@@ -179,10 +197,14 @@ export default function Login() {
         h="100vh"
         w={{ base: '100%', md: '45%' }}
         bg="white"
-        // boxShadow="2xl"
         ml={2}
       >
-        <Image src="/images/advogado.avif" alt="Banner Login/Register page" maxH="90vh" objectFit="cover" />
+        <Image
+          src="/images/advogado.avif"
+          alt="Banner Login/Register page"
+          maxH="90vh"
+          objectFit="cover"
+        />
       </Flex>
     </Flex>
   );

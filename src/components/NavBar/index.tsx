@@ -1,16 +1,27 @@
 import { Box, Flex, Image, Text, Menu, MenuItem, Portal } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { FaRegUserCircle } from 'react-icons/fa';
+import { useLoading } from '@/components/LoadingContext';
 import { IoIosArrowDown, IoIosLogOut, IoIosSettings } from 'react-icons/io';
-
-const user = {
-  name: 'Gabriela Lima',
-  avatar: '/images/advogado.avif',
-  cargo: 'Sócia',
-};
+import { useUserContext } from '../UserContext';
+import { useEffect, useState } from 'react';
 
 const NavBar = () => {
   const router = useRouter();
+  const { setLoading } = useLoading();
+
+  const { user } = useUserContext();
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const handlePush = (path: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      router.push(path);
+      setLoading(false);
+    }, 400);
+  };
   return (
     <Flex
       style={{
@@ -22,7 +33,6 @@ const NavBar = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}
-      
     >
       <Flex
         style={{
@@ -31,7 +41,7 @@ const NavBar = () => {
           gap: 10,
           cursor: 'pointer',
         }}
-        onClick={() => router.push('/home')}
+        onClick={() => handlePush('/home')}
       >
         <Image src="/images/balanca.svg" alt="Logo" width={10} height={10} />
         <Box>
@@ -41,49 +51,50 @@ const NavBar = () => {
           <Text fontSize="xs">Advocacia & Consultoria</Text>
         </Box>
       </Flex>
-      <Menu.Root>
-        <Menu.Trigger asChild>
-          <Flex align="center" gap={2} style={{ cursor: 'pointer' }}>
-            <Image
-              src={user.avatar}
-              alt={user.name}
-              height={'40px'}
-              width={'40px'}
-              style={{ borderRadius: '50%' }}
-            />
-            <Box>
-              <Text fontSize="sm" fontWeight="bold">
-                {user.name}
-              </Text>
-              <Text fontSize="xs">{user.cargo}</Text>
-            </Box>
-            <Box as="span" fontSize="lg" ml={1}>
-              <IoIosArrowDown />
-            </Box>
-          </Flex>
-        </Menu.Trigger>
-        <Portal>
-          <Menu.Positioner>
-            <Menu.Content boxShadow="sm" minW="250px">
-              <MenuItem
-                value="configuracoes"
-                p={3}
-                cursor={'pointer'}
-                onClick={() => router.push('/configuracoes')}
-              >
-                <IoIosSettings size={18} color="var(--darkblue)" />
-                Configurações
-              </MenuItem>
-              <MenuItem value="sair" p={3} cursor={'pointer'} onClick={() => router.push('/')}>
-                <IoIosLogOut size={18} color="red" />
-                Sair
-              </MenuItem>
-            </Menu.Content>
-          </Menu.Positioner>
-        </Portal>
-      </Menu.Root>
+      {hasMounted && (
+        <Menu.Root>
+          <Menu.Trigger asChild>
+            <Flex align="center" gap={2} style={{ cursor: 'pointer' }}>
+              <Image
+                src={user?.avatar}
+                alt={user?.nome}
+                height={'40px'}
+                width={'40px'}
+                style={{ borderRadius: '50%' }}
+              />
+              <Box>
+                <Text fontSize="sm" fontWeight="bold">
+                  {user?.nome}
+                </Text>
+                <Text fontSize="xs">{user?.cargo}</Text>
+              </Box>
+              <Box as="span" fontSize="lg" ml={1}>
+                <IoIosArrowDown />
+              </Box>
+            </Flex>
+          </Menu.Trigger>
+          <Portal>
+            <Menu.Positioner>
+              <Menu.Content boxShadow="sm" minW="250px">
+                <MenuItem
+                  value="configuracoes"
+                  p={3}
+                  cursor={'pointer'}
+                  onClick={() => handlePush('/configuracoes')}
+                >
+                  <IoIosSettings size={18} color="var(--darkblue)" />
+                  Configurações
+                </MenuItem>
+                <MenuItem value="sair" p={3} cursor={'pointer'} onClick={() => handlePush('/')}> 
+                  <IoIosLogOut size={18} color="red" />
+                  Sair
+                </MenuItem>
+              </Menu.Content>
+            </Menu.Positioner>
+          </Portal>
+        </Menu.Root>
+      )}
     </Flex>
   );
 };
-
 export default NavBar;

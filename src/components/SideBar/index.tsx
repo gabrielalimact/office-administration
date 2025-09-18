@@ -9,22 +9,22 @@ import { HiUserPlus } from 'react-icons/hi2';
 
 const optionsMenu = [
   { icon: <MdOutlineSpaceDashboard size={24} />, label: 'Painel', href: '/home' },
-  { icon: <FaUsers size={24} />, label: 'Clientes', href: '/home/clientes' },
-  { icon: <FaRegFileAlt size={24} />, label: 'Processos', href: '/home/processos' },
+  { icon: <FaUsers size={24} />, label: 'Clientes', href: '/clientes' },
+  { icon: <FaRegFileAlt size={24} />, label: 'Processos', href: '/processos' },
   {
     icon: <LuFilePlus2 size={24} />,
     label: 'Cadastrar processos',
-    href: '/home/cadastrar-processos',
+    href: '/cadastrar-processos',
   },
   {
     icon: <BsPersonVcard size={24} />,
     label: 'Funcionários e relatórios',
-    href: '/home/funcionarios-relatorios',
+    href: '/funcionarios-relatorios',
   },
   {
     icon: <HiUserPlus size={24} />,
     label: 'Adicionar funcionário',
-    href: '/home/adicionar-funcionario',
+    href: '/adicionar-funcionario',
   },
 ];
 

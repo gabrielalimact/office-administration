@@ -1,4 +1,4 @@
-import { IFuncionarios } from '@/app/home/funcionarios-relatorios/page';
+import { IFuncionarios } from '@/app/funcionarios-relatorios/page';
 
 export const funcionariosMock: IFuncionarios[] = [
   {
