@@ -1,15 +1,18 @@
 'use client';
 import { useUserContext } from '@/components/UserContext';
+import { cadastrarNovoUsuario, IUsuario } from '@/services/usuario-service';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const cargos = [
   {
+    label: 'SÓCIO(A)',
     nome: 'Sócio',
     descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.',
   },
   {
+    label: 'FUNCIONÁRIO(A)',
     nome: 'Funcionário',
     descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.',
   },
@@ -19,20 +22,37 @@ export default function AdicionarFuncionarioPage() {
   const router = useRouter();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
-  const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].nome);
+  const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].label);
   const { user } = useUserContext();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    cadastrarNovoUsuario({
+      nome,
+      email,
+      cpf,
+      senha,
+      cargo: cargoSelecionado,
+    } as IUsuario)
+      .then(() => {
+        alert('Funcionário cadastrado com sucesso!');
+        router.push('/funcionarios-relatorios');
+      })
+      .catch((error) => {
+        console.error('Erro ao cadastrar funcionário:', error);
+        alert('Erro ao cadastrar funcionário. Tente novamente.');
+      });
     setNome('');
     setEmail('');
+    setCpf('');
     setSenha('');
-    setCargoSelecionado(cargos[0].nome);
+    setCargoSelecionado(cargos[0].label);
   };
 
   useEffect(() => {
-    if (user && user.cargo !== 'Sócio' && user.cargo !== 'Sócia') {
+    if (user && user.cargo !== 'SÓCIO(A)') {
       router.push('/home');
     }
   }, [user, router]);
@@ -70,6 +90,17 @@ export default function AdicionarFuncionarioPage() {
               />
             </Box>
             <Box mb={2}>
+              <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>CPF *</label>
+              <Input
+                p={3}
+                type="text"
+                value={cpf}
+                onChange={(e) => setCpf(e.target.value)}
+                placeholder="CPF"
+                required
+              />
+            </Box>
+            <Box mb={2}>
               <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Senha *</label>
               <Input
                 p={3}
@@ -86,18 +117,17 @@ export default function AdicionarFuncionarioPage() {
             <Flex direction="column" gap={3}>
               {cargos.map((cargo) => (
                 <Box
-                  key={cargo.nome}
-                  as="button"
-                  onClick={() => setCargoSelecionado(cargo.nome)}
-                  bg={cargoSelecionado === cargo.nome ? 'var(--darkblue)' : '#f7f7fa'}
-                  color={cargoSelecionado === cargo.nome ? 'white' : 'black'}
+                  key={cargo.label}
+                  onClick={() => setCargoSelecionado(cargo.label)}
+                  bg={cargoSelecionado === cargo.label ? 'var(--darkblue)' : '#f7f7fa'}
+                  color={cargoSelecionado === cargo.label ? 'white' : 'black'}
                   borderRadius={8}
                   p={3}
                   mb={1}
                   textAlign="left"
-                  fontWeight={cargoSelecionado === cargo.nome ? 700 : 500}
+                  fontWeight={cargoSelecionado === cargo.label ? 700 : 500}
                   border={
-                    cargoSelecionado === cargo.nome
+                    cargoSelecionado === cargo.label
                       ? '2px solid var(--darkblue)'
                       : '1px solid #e0e0e0'
                   }
@@ -108,7 +138,7 @@ export default function AdicionarFuncionarioPage() {
                   <div
                     style={{
                       fontSize: 13,
-                      color: cargoSelecionado === cargo.nome ? 'white' : '#555',
+                      color: cargoSelecionado === cargo.label ? 'white' : '#555',
                     }}
                   >
                     {cargo.descricao}
