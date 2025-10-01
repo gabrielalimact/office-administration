@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/balanca.svg" />
         <title>Diego O. Nascimento</title>
         <meta name="description" content="Sistema de Administração de Escritório" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
