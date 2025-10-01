@@ -1,22 +1,31 @@
 'use client';
-import { Box, Button, Field, Flex, Image, Input, Text, Tabs, Link } from '@chakra-ui/react';
+import { Box, Button, Field, Flex, Image, Input, Text, Link } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useLoading } from '@/components/LoadingContext';
-import { LuUser, LuSquareCheck } from 'react-icons/lu';
 import { useUserContext } from '@/components/UserContext';
+import { login } from '@/services/auth-service';
+import { useState } from 'react';
 
 export default function Login() {
   const router = useRouter();
   const { setLoading } = useLoading();
   const { setUser } = useUserContext();
+  const [cpf, setCpf] = useState('');
+  const [senha, setSenha] = useState('');
 
   const handlePush = (path: string) => {
     setLoading(true);
-    setUser({ nome: 'Gabriela Cena', email: 'gabriela@exemplo.com', cargo: 'Sócia', avatar: '/next.svg' });
-    setTimeout(() => {
-      router.push(path);
-      setLoading(false);
-    }, 400);
+    login(cpf, senha)
+      .then((res) => {
+        setUser({ nome: res.nome, cpf: res.cpf, cargo: res.cargo, avatar: '/next.svg' });
+        router.push(path);
+      })
+      .catch((error) => {
+        alert('Falha no login. Verifique suas credenciais e tente novamente.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   return (
     <Flex
@@ -59,136 +68,64 @@ export default function Login() {
         <Text color="gray.600" textAlign="center" mb={2}>
           Gerencie processos jurídicos de forma simples e segura.
         </Text>
-        <Tabs.Root defaultValue="login" w="100%">
-          <Tabs.List bg="gray.100" gap="2" justifyContent="center" borderRadius="md" mb={2}>
-            <Tabs.Trigger value="login" p={3} fontWeight="bold" color="#242270">
-              <LuUser /> Entrar
-            </Tabs.Trigger>
-            <Tabs.Trigger value="register" p={3} fontWeight="bold" color="#242270">
-              <LuSquareCheck /> Cadastrar
-            </Tabs.Trigger>
-            <Tabs.Indicator rounded="l2" />
-          </Tabs.List>
-          <Tabs.Content
-            value="login"
-            p={0}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1rem' }}
-          >
-            <Field.Root required>
-              <Field.Label fontSize="md" color="#242270">
-                E-mail <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                placeholder="exemplo@exemplo.com"
-                backgroundColor="#f0f0f0"
-                type="text"
-                padding={3}
-                borderRadius="md"
-                fontSize="md"
-              />
-            </Field.Root>
-            <Field.Root required>
-              <Field.Label fontSize="md" color="#242270">
-                Senha <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                placeholder="Senha"
-                type="password"
-                backgroundColor="#f0f0f0"
-                padding={3}
-                borderRadius="md"
-                fontSize="md"
-              />
-            </Field.Root>
-            <Flex w="100%" justify="flex-end">
-              <Link href="#">
-                <Text
-                  fontSize="sm"
-                  color="#4A90E2"
-                  textAlign="right"
-                  _hover={{ textDecoration: 'underline' }}
-                >
-                  Esqueceu sua senha?
-                </Text>
-              </Link>
-            </Flex>
-            <Button
-              type="submit"
-              bg="#242270"
+        <Field.Root required>
+          <Field.Label fontSize="md" color="#242270">
+            CPF <Field.RequiredIndicator />
+          </Field.Label>
+          <Input
+            placeholder="000.000.000-00"
+            backgroundColor="#f0f0f0"
+            type="text"
+            padding={3}
+            borderRadius="md"
+            fontSize="md"
+            value={cpf}
+            onChange={(e) => setCpf(e.target.value)}
+          />
+        </Field.Root>
+        <Field.Root required>
+          <Field.Label fontSize="md" color="#242270">
+            Senha <Field.RequiredIndicator />
+          </Field.Label>
+          <Input
+            placeholder="Senha"
+            type="password"
+            backgroundColor="#f0f0f0"
+            padding={3}
+            borderRadius="md"
+            fontSize="md"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+          />
+        </Field.Root>
+        <Flex w="100%" justify="flex-end">
+          <Link href="#">
+            <Text
+              fontSize="sm"
               color="#4A90E2"
-              fontSize="lg"
-              borderRadius="md"
-              fontWeight="bold"
-              py={6}
-              mt={2}
-              _hover={{ bg: '#4A90E2', color: 'white', boxShadow: 'md' }}
-              transition="all 0.2s"
-              onClick={() => handlePush('/home')}
+              textAlign="right"
+              _hover={{ textDecoration: 'underline' }}
             >
-              Entrar
-            </Button>
-          </Tabs.Content>
-          <Tabs.Content
-            value="register"
-            p={0}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '1rem' }}
-          >
-            <Field.Root required>
-              <Field.Label fontSize="md" color="#242270">
-                Nome <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                placeholder="Ex: Maria João Silva"
-                backgroundColor="#f0f0f0"
-                type="text"
-                padding={3}
-                borderRadius="md"
-                fontSize="md"
-              />
-            </Field.Root>
-            <Field.Root required>
-              <Field.Label fontSize="md" color="#242270">
-                E-mail <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                placeholder="exemplo@exemplo.com"
-                backgroundColor="#f0f0f0"
-                type="text"
-                padding={3}
-                borderRadius="md"
-                fontSize="md"
-              />
-            </Field.Root>
-            <Field.Root required>
-              <Field.Label fontSize="md" color="#242270">
-                Senha <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                placeholder="Senha"
-                type="password"
-                backgroundColor="#f0f0f0"
-                padding={3}
-                borderRadius="md"
-                fontSize="md"
-              />
-            </Field.Root>
-            <Button
-              type="submit"
-              bg="#242270"
-              color="#4A90E2"
-              fontSize="lg"
-              borderRadius="md"
-              fontWeight="bold"
-              py={6}
-              mt={2}
-              _hover={{ bg: '#4A90E2', color: 'white', boxShadow: 'md' }}
-              transition="all 0.2s"
-              onClick={() => handlePush('/home')}
-            >
-              Cadastrar
-            </Button>
-          </Tabs.Content>
-        </Tabs.Root>
+              Esqueceu sua senha?
+            </Text>
+          </Link>
+        </Flex>
+        <Button
+          type="submit"
+          bg="#4A90E2"
+          color="white"
+          fontSize="lg"
+          borderRadius="md"
+          fontWeight="bold"
+          py={6}
+          mt={2}
+          w={'100%'}
+          _hover={{ bg: '#242270', boxShadow: 'md' }}
+          transition="all 0.2s"
+          onClick={() => handlePush('/home')}
+        >
+          Entrar
+        </Button>
       </Box>
       <Flex
         display={{ base: 'none', md: 'flex' }}
