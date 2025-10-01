@@ -1,9 +1,9 @@
-"use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+'use client';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface User {
   nome: string;
-  email: string;
+  cpf: string;
   cargo: string;
   avatar?: string;
 }
@@ -18,7 +18,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export function useUserContext() {
   const ctx = useContext(UserContext);
-  if (!ctx) throw new Error("useUserContext must be used within UserProvider");
+  if (!ctx) throw new Error('useUserContext must be used within UserProvider');
   return ctx;
 }
 
@@ -46,9 +46,5 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
-  return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={{ user, setUser, logout }}>{children}</UserContext.Provider>;
 }

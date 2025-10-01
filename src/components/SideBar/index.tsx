@@ -32,17 +32,17 @@ const optionsMenu = [
     icon: <FaFilePen size={22} />,
     label: 'Enviar relatório',
     href: '/enviar-relatorio',
-  }
+  },
 ];
 
 const SideBar = () => {
   const [expanded, setExpanded] = useState(false);
   const { user } = useUserContext();
-  const isSocio = user?.cargo === 'Sócio' || user?.cargo === 'Sócia';
+  const isSocio = user?.cargo === 'SÓCIO(A)';
   const filteredMenu = optionsMenu.filter(
     (option) =>
       isSocio ||
-      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario')
+      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario'),
   );
   return (
     <Flex

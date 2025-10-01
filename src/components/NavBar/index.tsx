@@ -85,7 +85,7 @@ const NavBar = () => {
                   <IoIosSettings size={18} color="var(--darkblue)" />
                   Configurações
                 </MenuItem>
-                <MenuItem value="sair" p={3} cursor={'pointer'} onClick={() => handlePush('/')}> 
+                <MenuItem value="sair" p={3} cursor={'pointer'} onClick={() => handlePush('/')}>
                   <IoIosLogOut size={18} color="red" />
                   Sair
                 </MenuItem>

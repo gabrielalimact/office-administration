@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { Box, Text, Table } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
@@ -9,7 +9,6 @@ export default function VisualizarRelatorioPage() {
   const params = useParams();
   const id = Number(params.id);
   const funcionario = funcionariosMock.find((f) => f.id === id);
-
 
   const [relatorio, setRelatorio] = useState<{ data: string; conteudo: string } | null>(null);
   useEffect(() => {
@@ -44,10 +43,18 @@ export default function VisualizarRelatorioPage() {
       <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm" mt={4}>
         <Table.Header bg="var(--primary)">
           <Table.Row>
-            <Table.ColumnHeader color="white" p={2}>Tipo de Processo</Table.ColumnHeader>
-            <Table.ColumnHeader color="white" p={2}>Descrição</Table.ColumnHeader>
-            <Table.ColumnHeader color="white" p={2}>Status</Table.ColumnHeader>
-            <Table.ColumnHeader color="white" p={2}>Data</Table.ColumnHeader>
+            <Table.ColumnHeader color="white" p={2}>
+              Tipo de Processo
+            </Table.ColumnHeader>
+            <Table.ColumnHeader color="white" p={2}>
+              Descrição
+            </Table.ColumnHeader>
+            <Table.ColumnHeader color="white" p={2}>
+              Status
+            </Table.ColumnHeader>
+            <Table.ColumnHeader color="white" p={2}>
+              Data
+            </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -71,16 +78,22 @@ export default function VisualizarRelatorioPage() {
       </Table.Root>
 
       <Box mt={8} p={4} bg="white" borderRadius={8} boxShadow="sm">
-        <Text fontWeight="bold" mb={2}>Último relatório enviado:</Text>
+        <Text fontWeight="bold" mb={2}>
+          Último relatório enviado:
+        </Text>
         {relatorio ? (
           <>
             <Text fontSize="sm" color="gray.500" mb={2}>
-              Data de envio: {new Date(relatorio.data).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+              Data de envio:{' '}
+              {new Date(relatorio.data).toLocaleString('pt-BR', {
+                dateStyle: 'short',
+                timeStyle: 'short',
+              })}
             </Text>
             <Box
               className="markdown-body"
               dangerouslySetInnerHTML={{
-                __html: marked.parse(relatorio.conteudo as string)
+                __html: marked.parse(relatorio.conteudo as string),
               }}
             />
           </>
