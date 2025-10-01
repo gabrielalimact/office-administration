@@ -66,7 +66,7 @@ const FuncionariosRelatoriosPage = () => {
   const { user } = useUserContext();
 
   useEffect(() => {
-    if (user && user.cargo !== 'Sócio' && user.cargo !== 'Sócia') {
+    if (user && user.cargo !== 'SÓCIO(A)') {
       router.push('/home');
     }
   }, [user, router]);
