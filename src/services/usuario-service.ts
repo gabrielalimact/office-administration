@@ -32,3 +32,8 @@ export async function getFuncionarios() {
   const response = await api.get<IUsuarioResponse[]>('/usuario');
   return response.data;
 }
+
+export async function getFuncionariosByID(id: number) {
+  const response = await api.get<IUsuarioResponse>(`/usuario/${id}`);
+  return response.data;
+}

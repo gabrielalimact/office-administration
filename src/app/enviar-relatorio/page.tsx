@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 import 'easymde/dist/easymde.min.css';
+import { enviarNovoRelatorio } from '@/services/relatorios-service';
 
 export default function EnviarRelatorioPage() {
   const { user } = useUserContext();
@@ -23,17 +24,28 @@ export default function EnviarRelatorioPage() {
   }
 
   function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     localStorage.setItem(
       `relatorio`,
       JSON.stringify({
-        data: new Date().toISOString(),
+        idFuncionario: user?.id,
         conteudo,
       }),
     );
-    e.preventDefault();
-    setSuccess(true);
-    setConteudo('');
-    setTimeout(() => setSuccess(false), 3000);
+
+    enviarNovoRelatorio({
+      idFuncionario: Number(user?.id),
+      conteudo,
+    })
+      .then(() => {
+        setSuccess(true);
+        setConteudo('');
+        setTimeout(() => setSuccess(false), 3000);
+      })
+      .catch((error) => {
+        console.error('Erro ao enviar relatório:', error);
+        alert('Erro ao enviar relatório. Tente novamente.');
+      });
   }
 
   return (

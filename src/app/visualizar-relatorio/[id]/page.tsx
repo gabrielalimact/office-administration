@@ -1,45 +1,67 @@
 'use client';
-import { Box, Text, Table } from '@chakra-ui/react';
+import { Box, Skeleton, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import { useParams } from 'next/navigation';
-import { funcionariosMock } from '@/mocks/funcionarios';
+import { getFuncionariosByID } from '@/services/usuario-service';
+import { getRelatoriosByFuncionarioID } from '@/services/relatorios-service';
+interface IFuncionario {
+  id: number;
+  nome: string;
+  cargo: string;
+  cpf: string;
+  email: string;
+}
+
+interface IRelatorio {
+  created_at: string;
+  conteudo: string | string[];
+}
 
 export default function VisualizarRelatorioPage() {
   const params = useParams();
   const id = Number(params.id);
-  const funcionario = funcionariosMock.find((f) => f.id === id);
+  const [isLoading, setIsLoading] = useState(true);
+  const [funcionario, setFuncionario] = useState<IFuncionario | null>(null);
 
-  const [relatorio, setRelatorio] = useState<{ data: string; conteudo: string } | null>(null);
+  const [relatorio, setRelatorio] = useState<IRelatorio[] | null>(null);
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const raw = localStorage.getItem('relatorio');
-      if (raw) {
-        try {
-          const obj = JSON.parse(raw);
-          if (obj && obj.data && obj.conteudo) {
-            setRelatorio(obj);
-            console.log(obj);
-          }
-        } catch (e) {
-          setRelatorio(null);
-        }
-      }
-    }
-  }, []);
-
-  if (!funcionario) {
-    return <Text>Funcionário não encontrado.</Text>;
-  }
+    getRelatoriosByFuncionarioID(Number(id)).then((data) => {
+      const relatorios = data.map((rel) => ({
+        created_at: rel.created_at,
+        conteudo: rel.conteudo,
+      }));
+      const funcionario = data.map((rel) => ({
+        id: rel.funcionario.id,
+        nome: rel.funcionario.nome,
+        cargo: rel.funcionario.cargo,
+        cpf: '',
+        email: '',
+      }))[0];
+      setFuncionario(funcionario);
+      setRelatorio(relatorios);
+      setIsLoading(false);
+    });
+  }, [id]);
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+      {isLoading ? (
+        <Stack>
+          <Skeleton height="20px" mb="4" />
+          <Skeleton height="16px" mb="2" />
+        </Stack>
+      ): 
+      <>
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
-        Relatórios de {funcionario.nome}
+        Relatórios de {funcionario?.nome}
       </Text>
       <Text fontSize="md" mb={2} color="gray.600">
-        Cargo: {funcionario.cargo}
+        Cargo: {funcionario?.cargo}
       </Text>
+      </>
+      }
+      
       {/* <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm" mt={4}>
         <Table.Header bg="var(--primary)">
           <Table.Row>
@@ -58,14 +80,14 @@ export default function VisualizarRelatorioPage() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {funcionario.relatorios.length === 0 ? (
+          {relatorio?.length === 0 ? (
             <Table.Row>
               <Table.Cell colSpan={4} textAlign="center">
                 Nenhum relatório encontrado para este funcionário.
               </Table.Cell>
             </Table.Row>
           ) : (
-            funcionario.relatorios.map((rel) => (
+            relatorio?.map((rel) => (
               <Table.Row key={rel.id} _hover={{ bg: '#e3eafd' }}>
                 <Table.Cell p={2}>{rel.tipoProcesso}</Table.Cell>
                 <Table.Cell p={2}>{rel.descricao}</Table.Cell>
@@ -77,30 +99,50 @@ export default function VisualizarRelatorioPage() {
         </Table.Body>
       </Table.Root> */}
 
-      <Box mt={8} p={4} bg="white" borderRadius={8} boxShadow="sm">
-        <Text fontWeight="bold" mb={2}>
-          Último relatório enviado:
-        </Text>
+      {isLoading ? (
+        <Stack>
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+        </Stack>
+      ) : (
+        <>
+<Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
+        Todos os relatórios enviados:
+      </Text>
+      <Box p={4} bg="white" borderRadius={8} boxShadow="sm">
         {relatorio ? (
-          <>
-            <Text fontSize="sm" color="gray.500" mb={2}>
-              Data de envio:{' '}
-              {new Date(relatorio.data).toLocaleString('pt-BR', {
-                dateStyle: 'short',
-                timeStyle: 'short',
-              })}
-            </Text>
+          relatorio.map((rel, index) => (
             <Box
-              className="markdown-body"
-              dangerouslySetInnerHTML={{
-                __html: marked.parse(relatorio.conteudo as string),
-              }}
-            />
-          </>
+              key={index}
+              mb={4}
+              borderBottom={index < relatorio.length - 1 ? '1px solid #e2e8f0' : 'none'}
+              pb={4}
+            >
+              <Text fontSize="sm" color="gray.500" mb={2}>
+                Data de envio:{' '}
+                {new Date(rel?.created_at).toLocaleString('pt-BR', {
+                  dateStyle: 'short',
+                  timeStyle: 'short',
+                })}
+              </Text>
+              <Box
+                className="markdown-body"
+                dangerouslySetInnerHTML={{
+                  __html: marked.parse(rel?.conteudo as string),
+                }}
+              />
+            </Box>
+          ))
         ) : (
           <Text color="gray.500">Nenhum relatório enviado ainda.</Text>
         )}
       </Box>
+        </>
+      )}
+      
     </Box>
   );
 }

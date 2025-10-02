@@ -17,7 +17,13 @@ export default function Login() {
     setLoading(true);
     login(cpf, senha)
       .then((res) => {
-        setUser({ nome: res.nome, cpf: res.cpf, cargo: res.cargo, avatar: '/next.svg' });
+        setUser({
+          id: res.id,
+          nome: res.nome,
+          cpf: res.cpf,
+          cargo: res.cargo,
+          avatar: '/next.svg',
+        });
         router.push(path);
       })
       .catch((error) => {

@@ -113,7 +113,7 @@ const FuncionariosRelatoriosPage = () => {
       </Flex>
 
       {isLoading ? (
-        <Stack>
+        <Stack mt={4}>
           <Skeleton height="40px" />
           <Skeleton height="40px" />
           <Skeleton height="40px" />
