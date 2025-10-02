@@ -41,7 +41,6 @@ const FuncionariosRelatoriosPage = () => {
   const endIndex = startIndex + pageSize;
   const funcionariosPage = funcionarios.slice(startIndex, endIndex);
 
-
   useEffect(() => {
     if (user && user.cargo !== 'SÓCIO(A)') {
       router.push('/home');
@@ -75,7 +74,7 @@ const FuncionariosRelatoriosPage = () => {
         });
       setFuncionarios(funcionarios);
       setIsLoading(false);
-    })
+    });
   };
 
   useEffect(() => {
@@ -112,7 +111,7 @@ const FuncionariosRelatoriosPage = () => {
           </Button>
         </Flex>
       </Flex>
-      
+
       {isLoading ? (
         <Stack>
           <Skeleton height="40px" />
@@ -124,64 +123,64 @@ const FuncionariosRelatoriosPage = () => {
           <Skeleton height="40px" />
         </Stack>
       ) : (
-      <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px" width="100%">
-        <Table.Header height="50px" bgColor="var(--primary)">
-          <Table.Row>
-            <Table.ColumnHeader
-              color="white"
-              fontSize="md"
-              fontWeight="bold"
-              padding="0 0 0 20px"
-              width="30%"
-            >
-              Funcionário
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
-              Cargo
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
-              CPF
-            </Table.ColumnHeader>
-            <Table.ColumnHeader
-              color="white"
-              fontSize="md"
-              fontWeight="bold"
-              textAlign="end"
-              padding="0 20px 0 0"
-              width="20%"
-            >
-              Ver relatório de atividade
-            </Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {funcionariosPage.map((item) => (
-            <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
-              <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
-              <Table.Cell>{item.cargo}</Table.Cell>
-              <Table.Cell>{item.cpf}</Table.Cell>
-              <Table.Cell padding="0 20px 0 0" textAlign="end">
-                <IconButton
-                  variant="ghost"
-                  aria-label="Ver relatório"
-                  onClick={() => handlePush(`/visualizar-relatorio/${item.id}`)}
-                >
-                  <IoEyeOutline />
-                </IconButton>
-              </Table.Cell>
+        <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px" width="100%">
+          <Table.Header height="50px" bgColor="var(--primary)">
+            <Table.Row>
+              <Table.ColumnHeader
+                color="white"
+                fontSize="md"
+                fontWeight="bold"
+                padding="0 0 0 20px"
+                width="30%"
+              >
+                Funcionário
+              </Table.ColumnHeader>
+              <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
+                Cargo
+              </Table.ColumnHeader>
+              <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
+                CPF
+              </Table.ColumnHeader>
+              <Table.ColumnHeader
+                color="white"
+                fontSize="md"
+                fontWeight="bold"
+                textAlign="end"
+                padding="0 20px 0 0"
+                width="20%"
+              >
+                Ver relatório de atividade
+              </Table.ColumnHeader>
             </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+          </Table.Header>
+          <Table.Body>
+            {funcionariosPage.map((item) => (
+              <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
+                <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
+                <Table.Cell>{item.cargo}</Table.Cell>
+                <Table.Cell>{item.cpf}</Table.Cell>
+                <Table.Cell padding="0 20px 0 0" textAlign="end">
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Ver relatório"
+                    onClick={() => handlePush(`/visualizar-relatorio/${item.id}`)}
+                  >
+                    <IoEyeOutline />
+                  </IconButton>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table.Root>
       )}
 
       <Pagination.Root
-          count={funcionarios.length}
-  pageSize={pageSize}
-  page={currentPage}
-  onPageChange={(details) => setCurrentPage(details.page)}
-  display="flex"
-  justifyContent="flex-end"
+        count={funcionarios.length}
+        pageSize={pageSize}
+        page={currentPage}
+        onPageChange={(details) => setCurrentPage(details.page)}
+        display="flex"
+        justifyContent="flex-end"
       >
         <ButtonGroup variant="ghost" size="sm" wrap="wrap">
           <Pagination.PrevTrigger asChild>
