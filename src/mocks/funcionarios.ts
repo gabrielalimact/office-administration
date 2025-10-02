@@ -1,6 +1,5 @@
-import { IFuncionarios } from '@/app/funcionarios-relatorios/page';
 
-export const funcionariosMock: IFuncionarios[] = [
+export const funcionariosMock = [
   {
     id: 1,
     nome: 'Ana Paula Souza',

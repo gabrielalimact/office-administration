@@ -40,7 +40,7 @@ export default function VisualizarRelatorioPage() {
       <Text fontSize="md" mb={2} color="gray.600">
         Cargo: {funcionario.cargo}
       </Text>
-      <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm" mt={4}>
+      {/* <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm" mt={4}>
         <Table.Header bg="var(--primary)">
           <Table.Row>
             <Table.ColumnHeader color="white" p={2}>
@@ -75,7 +75,7 @@ export default function VisualizarRelatorioPage() {
             ))
           )}
         </Table.Body>
-      </Table.Root>
+      </Table.Root> */}
 
       <Box mt={8} p={4} bg="white" borderRadius={8} boxShadow="sm">
         <Text fontWeight="bold" mb={2}>
