@@ -8,6 +8,8 @@ import {
   Input,
   InputGroup,
   Pagination,
+  Skeleton,
+  Stack,
   Table,
   Text,
 } from '@chakra-ui/react';
@@ -18,52 +20,27 @@ import { useUserContext } from '@/components/UserContext';
 import { useLoading } from '@/components/LoadingContext';
 import { IoEyeOutline, IoSearchOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
-import { funcionariosMock } from '@/mocks/funcionarios';
+import { getFuncionarios, IUsuario, IUsuarioResponse } from '@/services/usuario-service';
 
 export interface IFuncionarios {
   id: number;
   nome: string;
   cargo: string;
-  relatorios: {
-    id: number;
-    tipoProcesso: string;
-    descricao: string;
-    status: string;
-    feitoEm: string;
-  }[];
+  cpf: string;
+  email: string;
 }
-
-const cargos = [
-  {
-    nome: 'Sócio',
-    descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.',
-  },
-  {
-    nome: 'Advogado Sênior',
-    descricao: 'Acesso total ao sistema, pode cadastrar, editar e remover processos.',
-  },
-  {
-    nome: 'Advogado Pleno',
-    descricao: 'Pode cadastrar e editar processos, enviar relatórios.',
-  },
-  {
-    nome: 'Advogado Júnior',
-    descricao: 'Pode cadastrar processos e enviar relatórios.',
-  },
-  {
-    nome: 'Assistente Jurídico',
-    descricao: 'Pode visualizar processos e relatórios.',
-  },
-  {
-    nome: 'Estagiário',
-    descricao: 'Pode visualizar processos.',
-  },
-];
-
 const FuncionariosRelatoriosPage = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [funcionarios, setFuncionarios] = useState<IFuncionarios[]>([]);
   const { setLoading } = useLoading();
   const { user } = useUserContext();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const funcionariosPage = funcionarios.slice(startIndex, endIndex);
+
 
   useEffect(() => {
     if (user && user.cargo !== 'SÓCIO(A)') {
@@ -78,19 +55,32 @@ const FuncionariosRelatoriosPage = () => {
       setLoading(false);
     }, 400);
   };
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].nome);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setNome('');
-    setEmail('');
-    setSenha('');
-    setCargoSelecionado(cargos[0].nome);
+  const fetchFuncionarios = async () => {
+    setIsLoading(true);
+
+    getFuncionarios().then((data) => {
+      const funcionarios = data
+        .map((item: IUsuarioResponse) => ({
+          id: item.id,
+          nome: item.nome,
+          cargo: item.cargo,
+          cpf: item.cpf,
+          email: item.email,
+        }))
+        .sort((a, b) => {
+          if (a.cargo === 'SÓCIO(A)' && b.cargo !== 'SÓCIO(A)') return -1;
+          if (a.cargo !== 'SÓCIO(A)' && b.cargo === 'SÓCIO(A)') return 1;
+          return a.cargo.localeCompare(b.cargo);
+        });
+      setFuncionarios(funcionarios);
+      setIsLoading(false);
+    })
   };
 
+  useEffect(() => {
+    fetchFuncionarios();
+  }, []);
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
@@ -122,33 +112,55 @@ const FuncionariosRelatoriosPage = () => {
           </Button>
         </Flex>
       </Flex>
-
-      <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px">
+      
+      {isLoading ? (
+        <Stack>
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+          <Skeleton height="40px" />
+        </Stack>
+      ) : (
+      <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px" width="100%">
         <Table.Header height="50px" bgColor="var(--primary)">
           <Table.Row>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" padding="0 20px">
+            <Table.ColumnHeader
+              color="white"
+              fontSize="md"
+              fontWeight="bold"
+              padding="0 0 0 20px"
+              width="30%"
+            >
               Funcionário
             </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
+            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
               Cargo
+            </Table.ColumnHeader>
+            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" width="25%">
+              CPF
             </Table.ColumnHeader>
             <Table.ColumnHeader
               color="white"
               fontSize="md"
               fontWeight="bold"
               textAlign="end"
-              padding="0 20px"
+              padding="0 20px 0 0"
+              width="20%"
             >
               Ver relatório de atividade
             </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {funcionariosMock.map((item) => (
+          {funcionariosPage.map((item) => (
             <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
-              <Table.Cell padding="0 20px">{item.nome}</Table.Cell>
+              <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
               <Table.Cell>{item.cargo}</Table.Cell>
-              <Table.Cell padding="0 20px" textAlign="end">
+              <Table.Cell>{item.cpf}</Table.Cell>
+              <Table.Cell padding="0 20px 0 0" textAlign="end">
                 <IconButton
                   variant="ghost"
                   aria-label="Ver relatório"
@@ -161,13 +173,15 @@ const FuncionariosRelatoriosPage = () => {
           ))}
         </Table.Body>
       </Table.Root>
+      )}
 
       <Pagination.Root
-        count={funcionariosMock.length * 5}
-        pageSize={10}
-        page={1}
-        display="flex"
-        justifyContent="flex-end"
+          count={funcionarios.length}
+  pageSize={pageSize}
+  page={currentPage}
+  onPageChange={(details) => setCurrentPage(details.page)}
+  display="flex"
+  justifyContent="flex-end"
       >
         <ButtonGroup variant="ghost" size="sm" wrap="wrap">
           <Pagination.PrevTrigger asChild>
