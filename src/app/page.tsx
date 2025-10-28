@@ -1,10 +1,24 @@
 'use client';
-import { Box, Button, Field, Flex, Image, Input, Text, Link } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Field,
+  Flex,
+  Image,
+  Input,
+  Text,
+  Link,
+  IconButton,
+  InputGroup,
+} from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useLoading } from '@/components/LoadingContext';
 import { useUserContext } from '@/components/UserContext';
 import { login } from '@/services/auth-service';
 import { useState } from 'react';
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
+import maskCPF from '../../utils/maskCPF';
+import { toaster } from '@/components/ui/toaster';
 
 export default function Login() {
   const router = useRouter();
@@ -12,6 +26,23 @@ export default function Login() {
   const { setUser } = useUserContext();
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  const handleChangeCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '');
+    if (raw.length <= 11) {
+      setCpf(raw);
+    }
+  };
+
+  const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handlePush('/home');
+    }
+  };
 
   const handlePush = (path: string) => {
     setLoading(true);
@@ -22,12 +53,18 @@ export default function Login() {
           nome: res.nome,
           cpf: res.cpf,
           cargo: res.cargo,
-          avatar: '/next.svg',
+          email: res.email,
+          avatar: res.avatar ? res.avatar.url : '/next.svg',
         });
         router.push(path);
       })
-      .catch((error) => {
-        alert('Falha no login. Verifique suas credenciais e tente novamente.');
+      .catch(() => {
+        toaster.create({
+          title: 'Erro ao fazer login',
+          description: 'CPF ou senha incorretos. Tente novamente.',
+          type: 'error',
+          duration: 3000,
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -39,21 +76,15 @@ export default function Login() {
       w="100%"
       align="center"
       justify="center"
-      bgGradient="linear(209deg, #242270 0%, #33338F 54%, #cff9ff 100%)"
-      px={{ base: 2, md: 8 }}
       py={0}
-      gap={{ base: 0, md: 8 }}
       direction={{ base: 'column', md: 'row' }}
     >
       <Box
-        w={{ base: '100%', md: '480px' }}
-        maxW="480px"
+        w={{ base: '100%', md: '50%' }}
         mx="auto"
-        bg="white"
-        borderRadius="2xl"
-        boxShadow="2xl"
-        p={{ base: 4, md: 8 }}
+        bg="whiteAlpha.900"
         display="flex"
+        px={20}
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
@@ -68,43 +99,54 @@ export default function Login() {
             Advocacia & Consultoria
           </Text>
         </Flex>
-        <Text fontSize="2xl" fontWeight="bold" color="#242270" textAlign="center">
-          Sistema de Administração
-        </Text>
-        <Text color="gray.600" textAlign="center" mb={2}>
-          Gerencie processos jurídicos de forma simples e segura.
-        </Text>
         <Field.Root required>
           <Field.Label fontSize="md" color="#242270">
             CPF <Field.RequiredIndicator />
           </Field.Label>
           <Input
             placeholder="000.000.000-00"
-            backgroundColor="#f0f0f0"
             type="text"
+            inputMode="numeric"
+            backgroundColor="#ffffffff"
             padding={3}
-            borderRadius="md"
+            border={'1px solid #717171ff'}
             fontSize="md"
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
+            value={maskCPF(cpf)}
+            onChange={(e) => handleChangeCPF(e)}
+            onKeyDown={(e) => handleEnter(e)}
           />
         </Field.Root>
         <Field.Root required>
           <Field.Label fontSize="md" color="#242270">
             Senha <Field.RequiredIndicator />
           </Field.Label>
-          <Input
-            placeholder="Senha"
-            type="password"
-            backgroundColor="#f0f0f0"
-            padding={3}
-            borderRadius="md"
-            fontSize="md"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
+          <InputGroup
+            endElement={
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                _hover={{ bg: 'transparent' }}
+              >
+                {showPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
+              </IconButton>
+            }
+          >
+            <Input
+              placeholder="Senha"
+              type={showPassword ? 'text' : 'password'}
+              backgroundColor="#ffffffff"
+              padding={3}
+              border={'1px solid #717171ff'}
+              fontSize="md"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              onKeyDown={(e) => handleEnter(e)}
+            />
+          </InputGroup>
         </Field.Root>
-        <Flex w="100%" justify="flex-end">
+        <Flex justify="flex-end" w="100%">
           <Link href="#">
             <Text
               fontSize="sm"
@@ -138,15 +180,14 @@ export default function Login() {
         align="center"
         justify="center"
         h="100vh"
-        w={{ base: '100%', md: '45%' }}
-        bg="white"
-        ml={2}
+        w="50%"
       >
         <Image
-          src="/images/advogado.avif"
+          src="/images/blue-blue.jpg"
           alt="Banner Login/Register page"
-          maxH="90vh"
           objectFit="cover"
+          w="100%"
+          h="100%"
         />
       </Flex>
     </Flex>
