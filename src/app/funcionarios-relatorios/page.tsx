@@ -160,7 +160,7 @@ const FuncionariosRelatoriosPage = () => {
             {funcionariosPage.map((item) => (
               <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
                 <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
-                <Table.Cell>{item.cargo}</Table.Cell>
+                <Table.Cell>{item.cargo === 'socio' ? 'Sócio' : 'Funcionário'}</Table.Cell>
                 <Table.Cell>{maskCPF(item.cpf)}</Table.Cell>
                 <Table.Cell padding="0 20px 0 0" textAlign="end">
                   <IconButton
