@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import {
   Box,
@@ -7,44 +6,30 @@ import {
   Input,
   InputGroup,
   Pagination,
-  Table,
   Flex,
   Text,
-  Select,
-  createListCollection,
-  Portal,
   Field,
+  Skeleton,
 } from '@chakra-ui/react';
 import { IoEyeOutline, IoSearchOutline } from 'react-icons/io5';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLoading } from '@/components/LoadingContext';
 import { useRouter } from 'next/navigation';
-import { processosMock } from '@/mocks/processos';
-
-const responsaveisList = createListCollection({
-  items: processosMock
-    .map((p) => p.responsavel)
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .map((responsavel) => ({ label: responsavel, value: responsavel })),
-});
-
-const tiposProcessosList = createListCollection({
-  items: processosMock
-    .map((p) => p.tipoProcesso)
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .map((tipo) => ({ label: tipo, value: tipo })),
-});
-
-const statusOptions = createListCollection({
-  items: processosMock
-    .map((p) => p.status)
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .map((tipo) => ({ label: tipo, value: tipo })),
-});
+import { getProcessos } from '@/services/processo-service';
+import { Processo } from '../../../types/processos';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import { CustomSelect, SelectOption } from '@/components/CustomSelect';
+import GridTable from '@/components/GridTable';
 
 const ProcessosPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [processos, setProcessos] = useState<Processo[]>([]);
+  const [responsaveisList, setResponsaveisList] = useState<SelectOption[]>([]);
+  const [tiposProcessosList, setTiposProcessosList] = useState<SelectOption[]>([]);
+  const [statusOptions, setStatusOptions] = useState<SelectOption[]>([]);
   const router = useRouter();
   const { setLoading } = useLoading();
 
@@ -57,237 +42,256 @@ const ProcessosPage = () => {
   };
   const [busca, setBusca] = useState('');
   const [formData, setFormData] = useState({ situacao: '', tipoProcesso: '', responsavel: '' });
+  const [selectedResponsavel, setSelectedResponsavel] = useState<string[]>([]);
+  const [selectedTipoProcesso, setSelectedTipoProcesso] = useState<string[]>([]);
+  const [selectedSituacao, setSelectedSituacao] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const { setBreadcrumbs } = useBreadcrumb();
 
-  const handleSituacao = (value: any) => {
-    if (!value.items.length) {
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Processos', path: '/processos' },
+    ]);
+  }, [setBreadcrumbs]);
+
+  const handleSituacao = (value: string[]) => {
+    setSelectedSituacao(value);
+    if (!value.length) {
       setFormData((prev) => ({ ...prev, situacao: '' }));
       return;
     }
-    setFormData((prev) => ({ ...prev, situacao: value.items[0].label }));
+    setFormData((prev) => ({ ...prev, situacao: value[0] }));
   };
 
-  const handleResponsavel = (value: any) => {
-    if (!value.items.length) {
+  const handleResponsavel = (value: string[]) => {
+    setSelectedResponsavel(value);
+    if (!value.length) {
       setFormData((prev) => ({ ...prev, responsavel: '' }));
       return;
     }
-    setFormData((prev) => ({ ...prev, responsavel: value.items[0].label }));
+    setFormData((prev) => ({ ...prev, responsavel: value[0] }));
   };
 
-  const handleTiposProcesso = (value: any) => {
-    if (!value.items.length) {
+  const handleTiposProcesso = (value: string[]) => {
+    setSelectedTipoProcesso(value);
+    if (!value.length) {
       setFormData((prev) => ({ ...prev, tipoProcesso: '' }));
       return;
     }
-    setFormData((prev) => ({ ...prev, tipoProcesso: value.items[0].label }));
+    setFormData((prev) => ({ ...prev, tipoProcesso: value[0] }));
   };
 
-  const processosFiltrados = processosMock.filter((proc) => {
+  const fetchProcessos = async () => {
+    const processosList = await getProcessos();
+    setProcessos(processosList);
+    console.log(processosList);
+
+    const responsaveis = processosList
+      .map((p) => p.colaborador)
+      .filter((value, index, self) => !!value && self.indexOf(value) === index)
+      .map((responsavel) => ({ label: responsavel, value: responsavel }));
+    setResponsaveisList(responsaveis);
+
+    const tiposProcessos = processosList
+      .map((p) => p.beneficio.nome)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .map((tipo) => ({ label: tipo, value: tipo }));
+    setTiposProcessosList(tiposProcessos);
+
+    const status = processosList
+      .map((p) => p.status.nome)
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .map((tipo) => ({ label: tipo, value: tipo }));
+    setStatusOptions(status);
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProcessos();
+  }, []);
+
+  const processosFiltrados = processos.filter((proc) => {
     const matchBusca =
-      proc.cliente.toLowerCase().includes(busca.toLowerCase()) ||
-      proc.tipoProcesso.toLowerCase().includes(busca.toLowerCase());
-    const matchResponsavel = !formData.responsavel || proc.responsavel === formData.responsavel;
-    const matchTipo = !formData.tipoProcesso || proc.tipoProcesso === formData.tipoProcesso;
-    const matchSituacao = !formData.situacao || proc.status === formData.situacao;
+      proc.cliente.nome.toLowerCase().includes(busca.toLowerCase()) ||
+      proc.beneficio.nome.toLowerCase().includes(busca.toLowerCase());
+    const matchResponsavel = !formData.responsavel || proc.colaborador === formData.responsavel;
+    const matchTipo = !formData.tipoProcesso || proc.beneficio.nome === formData.tipoProcesso;
+    const matchSituacao = !formData.situacao || proc.status.nome === formData.situacao;
     return matchBusca && matchResponsavel && matchTipo && matchSituacao;
   });
 
+  // Paginação
+  const totalItems = processosFiltrados.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const processosPaginados = processosFiltrados.slice(startIndex, endIndex);
+
+  // Reset da página quando filtros mudarem
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [busca, formData.responsavel, formData.tipoProcesso, formData.situacao]);
+
   return (
-    <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+    <Box p={6} bg="#fff" minH="100vh" margin="0 auto">
+      <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Processos
       </Text>
-      <Flex gap={3} mb={3} alignItems="center">
-        <Field.Root required>
-          <Field.Label fontWeight={'bold'}>Buscar</Field.Label>
-          <InputGroup
-            endElement={
-              <IconButton variant="ghost" aria-label="Buscar">
-                <IoSearchOutline />
-              </IconButton>
-            }
+      {isLoading ? (
+        <Skeleton />
+      ) : (
+        <>
+          <Flex gap={3} mb={3} alignItems="center">
+            <Field.Root required>
+              <Field.Label fontWeight={'bold'}>Buscar</Field.Label>
+              <InputGroup
+                endElement={
+                  <IconButton variant="ghost" aria-label="Buscar">
+                    <IoSearchOutline />
+                  </IconButton>
+                }
+              >
+                <Input
+                  placeholder="Buscar processo..."
+                  p={5}
+                  borderRadius="4px"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                />
+              </InputGroup>
+            </Field.Root>
+
+            <CustomSelect
+              label="Responsável"
+              placeholder="Selecione o funcionário"
+              options={responsaveisList}
+              value={selectedResponsavel}
+              onValueChange={handleResponsavel}
+              clearable={true}
+              variant="outline"
+            />
+
+            <CustomSelect
+              label="Tipo de Processo"
+              placeholder="Selecione o tipo"
+              options={tiposProcessosList}
+              value={selectedTipoProcesso}
+              onValueChange={handleTiposProcesso}
+              clearable={true}
+              variant="outline"
+            />
+
+            <CustomSelect
+              label="Situação"
+              placeholder="Selecione a situação"
+              options={statusOptions}
+              value={selectedSituacao}
+              onValueChange={handleSituacao}
+              clearable={true}
+              variant="outline"
+            />
+          </Flex>
+
+          <Box mb={4}>
+            <GridTable<Processo>
+              columns={[
+                { key: 'cliente', label: 'Nome do cliente', width: '2fr' },
+                { key: 'beneficio', label: 'Tipo de processo', width: '1.5fr' },
+                { key: 'status', label: 'Tipo de agendamento', width: '1fr' },
+                { key: 'data_atendimento', label: 'Data de cadastro', width: '1fr' },
+                { key: 'colaborador', label: 'Responsável', width: '1fr' },
+                { key: 'actions', label: '', width: '80px', align: 'right' },
+              ]}
+              data={processosPaginados}
+              onRowClick={(processo) =>
+                handlePush('/visualizar-cliente?cliente=' + processo.cliente.id)
+              }
+              renderCell={(processo, column) => {
+                if (column.key === 'cliente') {
+                  return <Text color="gray.700">{processo.cliente.nome}</Text>;
+                }
+                if (column.key === 'beneficio') {
+                  return <Text color="gray.700">{processo.beneficio.nome}</Text>;
+                }
+                if (column.key === 'status') {
+                  return <Text color="gray.700">{processo.status.nome}</Text>;
+                }
+                if (column.key === 'data_atendimento') {
+                  return <Text color="gray.700">{processo.data_atendimento}</Text>;
+                }
+                if (column.key === 'colaborador') {
+                  return <Text color="gray.700">{processo.colaborador}</Text>;
+                }
+                if (column.key === 'actions') {
+                  return (
+                    <Link
+                      href={{
+                        pathname: '/visualizar-cliente',
+                        query: { cliente: processo.cliente.id },
+                      }}
+                      title="Visualizar detalhes do cliente e processos"
+                      style={{ display: 'inline-flex', alignItems: 'center' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <IoEyeOutline size={20} />
+                    </Link>
+                  );
+                }
+                return (
+                  <Text color="gray.700">
+                    {String(processo[column.key as keyof Processo] || '')}
+                  </Text>
+                );
+              }}
+              emptyMessage="Nenhum processo encontrado"
+            />
+          </Box>
+
+          <Flex justifyContent="space-between" alignItems="center" mb={3}>
+            <Text fontSize="sm" color="gray.600">
+              Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems}{' '}
+              processos
+            </Text>
+          </Flex>
+          <Pagination.Root
+            count={totalItems}
+            pageSize={pageSize}
+            page={currentPage}
+            onPageChange={(details) => setCurrentPage(details.page)}
+            display="flex"
+            justifyContent="flex-end"
           >
-            <Input
-              placeholder="Buscar processo..."
-              p={5}
-              borderRadius="4px"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-            />
-          </InputGroup>
-        </Field.Root>
+            <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+              <Pagination.PrevTrigger asChild>
+                <IconButton disabled={currentPage === 1}>
+                  <LuChevronLeft />
+                </IconButton>
+              </Pagination.PrevTrigger>
 
-        <Select.Root
-          collection={responsaveisList}
-          onValueChange={(value) => handleResponsavel(value)}
-        >
-          <Select.HiddenSelect />
-          <Select.Label fontWeight="bold">Responsável</Select.Label>
-          <Select.Control>
-            <Select.Trigger p={2}>
-              <Select.ValueText placeholder="Selecione o funcionário" />
-            </Select.Trigger>
-            <Select.IndicatorGroup p={2}>
-              <Select.ClearTrigger />
-              <Select.Indicator />
-            </Select.IndicatorGroup>
-          </Select.Control>
-          <Portal>
-            <Select.Positioner>
-              <Select.Content>
-                {responsaveisList.items.map((responsavel) => (
-                  <Select.Item p={2} item={responsavel} key={responsavel.value}>
-                    {responsavel.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Portal>
-        </Select.Root>
-        <Select.Root
-          collection={tiposProcessosList}
-          onValueChange={(value) => handleTiposProcesso(value)}
-        >
-          <Select.HiddenSelect />
-          <Select.Label fontWeight="bold">Tipo de Processo</Select.Label>
-          <Select.Control>
-            <Select.Trigger p={2}>
-              <Select.ValueText placeholder="Selecione o tipo" />
-            </Select.Trigger>
-            <Select.IndicatorGroup p={2}>
-              <Select.ClearTrigger />
-              <Select.Indicator />
-            </Select.IndicatorGroup>
-          </Select.Control>
-          <Portal>
-            <Select.Positioner>
-              <Select.Content>
-                {tiposProcessosList.items.map((status) => (
-                  <Select.Item p={2} item={status} key={status.value}>
-                    {status.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Portal>
-        </Select.Root>
-        <Select.Root collection={statusOptions} onValueChange={(value) => handleSituacao(value)}>
-          <Select.HiddenSelect />
-          <Select.Label fontWeight="bold">Situação</Select.Label>
-          <Select.Control>
-            <Select.Trigger p={2}>
-              <Select.ValueText placeholder="Selecione a situação" />
-            </Select.Trigger>
-            <Select.IndicatorGroup p={2}>
-              <Select.ClearTrigger />
-              <Select.Indicator />
-            </Select.IndicatorGroup>
-          </Select.Control>
-          <Portal>
-            <Select.Positioner>
-              <Select.Content>
-                {statusOptions.items.map((status) => (
-                  <Select.Item p={2} item={status} key={status.value}>
-                    {status.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Portal>
-        </Select.Root>
-      </Flex>
+              <Pagination.Items
+                render={(page) => (
+                  <IconButton
+                    variant={page.value === currentPage ? 'outline' : 'ghost'}
+                    onClick={() => setCurrentPage(page.value)}
+                  >
+                    {page.value}
+                  </IconButton>
+                )}
+              />
 
-      <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px">
-        <Table.Header height="50px" bgColor="var(--primary)">
-          <Table.Row>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" paddingLeft={4}>
-              Nome do cliente
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Tipo de processo
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Tipo de agendamento
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Situação
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Data de cadastro
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Responsável
-            </Table.ColumnHeader>
-            <Table.ColumnHeader
-              w="fit-content"
-              color="white"
-              fontSize="md"
-              fontWeight="bold"
-              textAlign="end"
-              paddingRight={4}
-            />
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {processosFiltrados.map((item) => (
-            <Table.Row
-              onClick={() => handlePush('/visualizar-cliente?cliente=' + item.cliente)}
-              height="50px"
-              key={item.id}
-              _hover={{ bgColor: 'var(--hover)', cursor: 'pointer' }}
-            >
-              <Table.Cell paddingLeft={4}>{item.cliente}</Table.Cell>
-              <Table.Cell>{item.tipoProcesso}</Table.Cell>
-              <Table.Cell>{item.tipoAgendamento}</Table.Cell>
-              <Table.Cell>{item.status}</Table.Cell>
-              <Table.Cell>{item.feitoEm}</Table.Cell>
-              <Table.Cell>{item.responsavel}</Table.Cell>
-              <Table.Cell paddingRight={4} textAlign="end">
-                <Link
-                  href={{ pathname: '/visualizar-cliente', query: { cliente: item.cliente } }}
-                  title="Visualizar detalhes do cliente e processos"
-                  style={{ display: 'inline-flex', alignItems: 'center' }}
-                >
-                  <IoEyeOutline size={20} />
-                </Link>
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-
-      <Pagination.Root
-        count={processosMock.length * 5}
-        pageSize={10}
-        page={1}
-        display="flex"
-        justifyContent="flex-end"
-      >
-        <ButtonGroup variant="ghost" size="sm" wrap="wrap">
-          <Pagination.PrevTrigger asChild>
-            <IconButton>
-              <LuChevronLeft />
-            </IconButton>
-          </Pagination.PrevTrigger>
-
-          <Pagination.Items
-            render={(page) => (
-              <IconButton variant={{ base: 'ghost', _selected: 'outline' }}>
-                {page.value}
-              </IconButton>
-            )}
-          />
-
-          <Pagination.NextTrigger asChild>
-            <IconButton>
-              <LuChevronRight />
-            </IconButton>
-          </Pagination.NextTrigger>
-        </ButtonGroup>
-      </Pagination.Root>
+              <Pagination.NextTrigger asChild>
+                <IconButton disabled={currentPage === totalPages}>
+                  <LuChevronRight />
+                </IconButton>
+              </Pagination.NextTrigger>
+            </ButtonGroup>
+          </Pagination.Root>
+        </>
+      )}
     </Box>
   );
 };
