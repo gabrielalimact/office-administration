@@ -5,116 +5,284 @@ import {
   Steps,
   Text,
   Flex,
-  Field,
-  Fieldset,
-  Input,
-  Textarea,
   Box,
-  FileUpload,
-  Icon,
-  List,
-  Portal,
-  Select,
-  createListCollection,
-  Checkbox,
-  CloseButton,
 } from '@chakra-ui/react';
-import { CheckedChangeDetails } from '@zag-js/checkbox';
-import { JSX, useState } from 'react';
-import { LuUpload, LuCheckCheck } from 'react-icons/lu';
+import { useState, useEffect } from 'react';
+import { LuCheckCheck } from 'react-icons/lu';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import { useUserContext } from '@/components/UserContext';
+import { toaster } from '@/components/ui/toaster';
+import { ProcessoData } from '@/types/step-forms';
+import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps';
+import JSZip from 'jszip';
 
-interface IProcessos {
-  name: string;
-  birthdate: string;
-  cpf: string;
-  rg: string;
-  filiation: string;
-  collaborator: string;
-  street: string;
-  number: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  naturalidade: string;
-  beneficio: string;
-  olharMeuInss: boolean;
-  olharPje: boolean;
-  status:
-    | 'ARQUIVADO'
-    | 'EM ANDAMENTO'
-    | 'FINALIZADO'
-    | 'REMARCADO'
-    | 'CANCELADO'
-    | 'CONCEDIDO'
-    | 'FAZER EXAMES'
-    | 'FAZER ATESTADO'
-    | 'PEGAR SENHA'
-    | 'FEITO PJE'
-    | 'FEITO SAG';
-  senhaInss: string;
-  dataAtendimento: string;
-  observations: string;
-  files: unknown[];
-}
-
-interface StepRenderProps {
-  formData: IProcessos;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleSelectChange?: (value: { value: string[] }) => void;
-  handleCheckboxChange?: (name: string, checked: CheckedChangeDetails) => void;
-}
 
 const CadastrarProcessosPage = () => {
+  const { user } = useUserContext();
   const [stepActive, setStepActive] = useState(0);
-  const [formData, setFormData] = useState<IProcessos>({
-    name: '',
-    birthdate: '',
-    cpf: '',
-    rg: '',
-    filiation: '',
-    collaborator: '',
-    street: '',
-    number: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    naturalidade: '',
-    beneficio: '',
-    olharMeuInss: false,
-    olharPje: false,
-    status: 'EM ANDAMENTO',
-    senhaInss: '',
-    dataAtendimento: '',
-    observations: '',
-    files: [],
+  const { setBreadcrumbs } = useBreadcrumb();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Cadastrar Processos', path: '/cadastrar-processos' },
+    ]);
+  }, [setBreadcrumbs]);
+
+  const [formData, setFormData] = useState<ProcessoData>({
+    cliente: {
+      id: 0,
+      nome: '',
+      cpf: '',
+      rg: '',
+      data_nascimento: '',
+      filiacao: '',
+      naturalidade: '',
+      endereco: {
+        cep: '',
+        logradouro: '',
+        numero: '',
+        bairro: '',
+        complemento: '',
+        cidade: '',
+        estado: '',
+      },
+    },
+    colaboradorId: user ? user.id : 0,
+    beneficio: { id: 0 },
+    olhar_inss: false,
+    olhar_pje_creta: false,
+    data_atendimento: '',
+    senha_inss: '',
+    status: { id: 0 },
   });
 
   const handleStepChange = (e: { step: number }) => {
     setStepActive(e.step);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+  const handleDataChange = (newData: Partial<ProcessoData>) => {
+    setFormData(prev => ({
       ...prev,
-      [name]: value,
+      ...newData,
     }));
   };
 
-  const handleSelectChange = (value: { value: string[] }) => {
-    setFormData((prev) => ({ ...prev, beneficio: value.value[0] }));
+  // Funções de validação para cada step
+  const validateStep1 = () => {
+    if (!formData.cliente.nome.trim()) {
+      toaster.create({
+        title: 'Campo obrigatório',
+        description: 'Nome do cliente é obrigatório.',
+        type: 'error',
+        duration: 3000,
+      });
+      return false;
+    }
+    if (!formData.cliente.cpf.trim()) {
+      toaster.create({
+        title: 'Campo obrigatório',
+        description: 'CPF do cliente é obrigatório.',
+        type: 'error',
+        duration: 3000,
+      });
+      return false;
+    }
+    if (formData.cliente.cpf.replace(/\D/g, '').length !== 11) {
+      toaster.create({
+        title: 'CPF inválido',
+        description: 'CPF deve conter 11 dígitos.',
+        type: 'error',
+        duration: 3000,
+      });
+      return false;
+    }
+    return true;
   };
 
-  const handleCheckboxChange = (name: string, checked: CheckedChangeDetails) => {
-    setFormData((prev) => ({ ...prev, [name]: checked.checked }));
+  const validateStep2 = () => {
+    if (!formData.beneficio.id || formData.beneficio.id === 0) {
+      toaster.create({
+        title: 'Campo obrigatório',
+        description: 'Selecione um benefício para continuar.',
+        type: 'error',
+        duration: 3000,
+      });
+      return false;
+    }
+    return true;
   };
 
-  const handleSubmit = () => {
-    console.log('Objeto para backend:', formData);
+  const handleNextStep = () => {
+    let canProceed = true;
+
+    // Validações por step
+    switch (stepActive) {
+      case 0: // Step 1 - Informações do cliente
+        canProceed = validateStep1();
+        break;
+      case 1: // Step 2 - Informações do processo
+        canProceed = validateStep2();
+        break;
+      case 2: // Step 3 - Upload de documentos
+      case 3: // Step 4 - Preview
+        canProceed = true; // Estes steps não têm validação obrigatória
+        break;
+      default:
+        canProceed = true;
+    }
+
+    if (canProceed) {
+      if (stepActive === steps.length - 1) {
+        handleSubmit();
+      } else {
+        setStepActive((prev) => prev + 1);
+      }
+    }
   };
+
+  const createZipFile = async (files: File[]) => {
+    try {
+      const zip = new JSZip();
+      
+      // Adicionar cada arquivo ao ZIP
+      for (const file of files) {
+        zip.file(file.name, file);
+      }
+      
+      // Gerar o arquivo ZIP
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      
+      // Criar um File a partir do Blob
+      const zipFile = new File([zipBlob], 'documentos.zip', {
+        type: 'application/zip'
+      });
+      
+      return zipFile;
+      
+    } catch (error) {
+      console.error('Erro ao criar arquivo ZIP:', error);
+      toaster.create({
+        title: 'Erro na compactação',
+        description: 'Não foi possível compactar os arquivos.',
+        type: 'error',
+        duration: 5000,
+      });
+      return null;
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (!formData.cliente.nome || !formData.cliente.cpf) {
+        toaster.create({
+          title: 'Erro de validação',
+          description: 'Nome e CPF são obrigatórios.',
+          type: 'error',
+          duration: 5000,
+        });
+        return;
+      }
+      
+      let arquivoFinal = null;
+      
+      // Compactar arquivos se houver mais de um
+      if (formData.files && formData.files.length > 1) {
+        toaster.create({
+          title: 'Compactando arquivos...',
+          description: 'Criando arquivo ZIP dos documentos.',
+          type: 'info',
+          duration: 3000,
+        });
+        
+        arquivoFinal = await createZipFile(formData.files);
+        
+        if (arquivoFinal) {
+          toaster.create({
+            title: 'Arquivos compactados',
+            description: `${formData.files.length} arquivos foram compactados em ${arquivoFinal.name}`,
+            type: 'success',
+            duration: 3000,
+          });
+        }
+      } else if (formData.files && formData.files.length === 1) {
+        arquivoFinal = formData.files[0];
+      }
+
+      console.log('Dados do processo consolidados:', {
+        cliente: {
+          nome: formData.cliente.nome,
+          data_nascimento: formData.cliente.data_nascimento,
+          cpf: formData.cliente.cpf,
+          rg: formData.cliente.rg,
+          filiacao: formData.cliente.filiacao,
+          naturalidade: formData.cliente.naturalidade,
+          endereco: {
+            logradouro: formData.cliente.endereco.logradouro,
+            numero: formData.cliente.endereco.numero,
+            complemento: formData.cliente.endereco.complemento,
+            bairro: formData.cliente.endereco.bairro,
+            cidade: formData.cliente.endereco.cidade,
+            estado: formData.cliente.endereco.estado,
+            cep: formData.cliente.endereco.cep,
+          }
+        },
+        colaboradorId: formData.colaboradorId,
+        beneficio: formData.beneficio,
+        olhar_inss: formData.olhar_inss,
+        olhar_pje_creta: formData.olhar_pje_creta,
+        data_atendimento: formData.data_atendimento,
+        data_ultima_atualizacao: new Date().toISOString().split('T')[0],
+        status: formData.status,
+        senha_inss: formData.senha_inss,
+        observacoes: formData.observacoes,
+        arquivos_originais: formData.files,
+        arquivo_final: arquivoFinal
+      });
+      
+      toaster.create({
+        title: 'Sucesso!',
+        description: 'Processo cadastrado com sucesso.',
+        type: 'success',
+        duration: 5000,
+      });
+      
+      setStepActive(steps.length);
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      
+      toaster.create({
+        title: 'Erro de conexão',
+        description: 'Verifique sua conexão e tente novamente.',
+        type: 'error',
+        duration: 5000,
+      });
+    }
+  };
+
+  const steps = [
+    {
+      title: 'Informações do cliente',
+      component: <ClienteStep data={formData} onDataChange={handleDataChange} />
+    },
+    {
+      title: 'Informações do processo',
+      component: <ProcessoStep data={formData} onDataChange={handleDataChange} />
+    },
+    {
+      title: 'Envio de documentos',
+      component: <DocumentosStep data={formData} onDataChange={handleDataChange} />
+    },
+    {
+      title: 'Revisar informações',
+      component: <PreviewStep data={formData} onDataChange={handleDataChange} />
+    }
+  ];
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+      <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Cadastrar Novo Processo
       </Text>
@@ -128,10 +296,10 @@ const CadastrarProcessosPage = () => {
           {steps.map((step, index) => (
             <Steps.Item key={index} index={index} title={step.title}>
               <Steps.Indicator
-                bgColor={
-                  stepActive === index ? 'var(--darkblue)' : stepActive > index ? 'green' : ''
-                }
-                color={stepActive === index ? 'white' : ''}
+              bgColor={
+                stepActive === index ? 'var(--primary)' : stepActive > index ? '#556B2F' : undefined
+              }
+              color={stepActive === index || stepActive > index ? 'white' : undefined}
               />
               <Steps.Title>{step.title}</Steps.Title>
               <Steps.Separator />
@@ -141,12 +309,7 @@ const CadastrarProcessosPage = () => {
 
         {steps.map((step, index) => (
           <Steps.Content key={index} index={index} minHeight="50vh">
-            {step.render({
-              formData,
-              handleInputChange,
-              handleSelectChange,
-              handleCheckboxChange,
-            })}
+            {step.component}
           </Steps.Content>
         ))}
         <Steps.CompletedContent>
@@ -162,15 +325,17 @@ const CadastrarProcessosPage = () => {
             </Button>
           </Steps.PrevTrigger>
           {stepActive !== steps.length && (
-            <Steps.NextTrigger asChild>
-              <Button bgColor="var(--primary)" w="100px" onClick={handleSubmit}>
-                {stepActive < steps.length - 1
-                  ? 'Próximo'
-                  : stepActive === steps.length - 1
-                    ? 'Salvar'
-                    : 'Finalizado'}
-              </Button>
-            </Steps.NextTrigger>
+            <Button 
+              bgColor="var(--primary)" 
+              w="100px" 
+              onClick={handleNextStep}
+            >
+              {stepActive < steps.length - 1
+                ? 'Próximo'
+                : stepActive === steps.length - 1
+                  ? 'Salvar'
+                  : 'Finalizado'}
+            </Button>
           )}
         </ButtonGroup>
       </Steps.Root>
@@ -179,291 +344,3 @@ const CadastrarProcessosPage = () => {
 };
 
 export default CadastrarProcessosPage;
-const beneficios = createListCollection({
-  items: [
-    { label: 'LOAS/87', value: 'loas-87' },
-    { label: 'LOAS/88', value: 'loas-88' },
-    { label: 'Pensão por morte urbana ou rural', value: 'pensao-morte' },
-    { label: 'Aposentadorias', value: 'aposentadorias' },
-    { label: 'Auxílio doença', value: 'auxilio-doenca' },
-  ],
-});
-
-const status = createListCollection({
-  items: [
-    { label: 'ARQUIVADO', value: 'arquivado' },
-    { label: 'EM ANDAMENTO', value: 'em-andamento' },
-    { label: 'FINALIZADO', value: 'finalizado' },
-    { label: 'REMARCADO', value: 'remarcado' },
-    { label: 'CANCELADO', value: 'cancelado' },
-    { label: 'CONCEDIDO', value: 'concedido' },
-    { label: 'FAZER EXAMES', value: 'fazer-exames' },
-    { label: 'FAZER ATESTADO', value: 'fazer-atestado' },
-    { label: 'PEGAR SENHA', value: 'pegar-senha' },
-    { label: 'FEITO PJE', value: 'feito-pje' },
-    { label: 'FEITO SAG', value: 'feito-sag' },
-  ],
-});
-
-const steps: {
-  title: string;
-  render: (props: StepRenderProps) => JSX.Element;
-}[] = [
-  {
-    title: 'Informações do cliente',
-    render: ({ formData, handleInputChange }: StepRenderProps) => (
-      <Fieldset.Root minW="full" flex={1}>
-        <Fieldset.Content display="flex" flexDir="row">
-          <Field.Root mt={2} required minW="70%">
-            <Field.Label fontWeight="bold">Nome completo</Field.Label>
-            <Input p="12px" name="name" value={formData.name} onChange={handleInputChange} />
-          </Field.Root>
-
-          <Field.Root mt={2} required>
-            <Field.Label fontWeight="bold">Data de nascimento</Field.Label>
-            <Input
-              p="12px"
-              name="birthdate"
-              type="date"
-              value={formData.birthdate}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-        </Fieldset.Content>
-        <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr">
-          <Field.Root mt={2} required>
-            <Field.Label fontWeight="bold">CPF</Field.Label>
-            <Input p="12px" name="cpf" value={formData.cpf} onChange={handleInputChange} />
-          </Field.Root>
-
-          <Field.Root mt={2} required>
-            <Field.Label fontWeight="bold">RG</Field.Label>
-            <Input p="12px" name="rg" value={formData.rg} onChange={handleInputChange} />
-          </Field.Root>
-
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Filiação</Field.Label>
-            <Input
-              p="12px"
-              name="filiation"
-              value={formData.filiation}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Colaborador</Field.Label>
-            <Input
-              p="12px"
-              name="collaborator"
-              value={formData.collaborator}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-        </Fieldset.Content>
-        <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr">
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Logradouro</Field.Label>
-            <Input p="12px" name="street" value={formData.street} onChange={handleInputChange} />
-          </Field.Root>
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Número</Field.Label>
-            <Input p="12px" name="number" value={formData.number} onChange={handleInputChange} />
-          </Field.Root>
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Bairro</Field.Label>
-            <Input
-              p="12px"
-              name="neighborhood"
-              value={formData.neighborhood}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Cidade</Field.Label>
-            <Input p="12px" name="city" value={formData.city} onChange={handleInputChange} />
-          </Field.Root>
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Estado</Field.Label>
-            <Input p="12px" name="state" value={formData.state} onChange={handleInputChange} />
-          </Field.Root>
-          <Field.Root mt={2}>
-            <Field.Label fontWeight="bold">Naturalidade</Field.Label>
-            <Input
-              p="12px"
-              name="naturalidade"
-              value={formData.naturalidade}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-        </Fieldset.Content>
-      </Fieldset.Root>
-    ),
-  },
-  {
-    title: 'Informações do processo',
-    render: ({
-      formData,
-      handleInputChange,
-      handleSelectChange,
-      handleCheckboxChange,
-    }: StepRenderProps) => (
-      <Fieldset.Root minW="full" flex={1}>
-        <Fieldset.Content display="flex" gap="20px" flexDir="column">
-          <Select.Root collection={beneficios} size="md" onValueChange={handleSelectChange}>
-            <Select.HiddenSelect />
-            <Select.Label fontWeight="bold">Benefício</Select.Label>
-            <Select.Control>
-              <Select.Trigger p={2}>
-                <Select.ValueText placeholder="Selecione o benefício" />
-              </Select.Trigger>
-              <Select.IndicatorGroup p={2}>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {beneficios.items.map((beneficio) => (
-                    <Select.Item p={2} item={beneficio} key={beneficio.value}>
-                      {beneficio.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
-
-          <Select.Root collection={status} size="md" onValueChange={handleSelectChange}>
-            <Select.HiddenSelect />
-            <Select.Label fontWeight="bold">Situação</Select.Label>
-            <Select.Control>
-              <Select.Trigger p={2}>
-                <Select.ValueText placeholder="Selecione a situação do processo" />
-              </Select.Trigger>
-              <Select.IndicatorGroup p={2}>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {status.items.map((statusItem) => (
-                    <Select.Item p={2} item={statusItem} key={statusItem.value}>
-                      {statusItem.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
-          <Flex gap="2rem">
-            <Checkbox.Root
-              checked={formData.olharMeuInss}
-              onCheckedChange={(checked) => handleCheckboxChange?.('olharMeuInss', checked)}
-            >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label>OLHAR MEU INSS/SAG</Checkbox.Label>
-            </Checkbox.Root>
-            <Checkbox.Root
-              checked={formData.olharPje}
-              onCheckedChange={(checked) => handleCheckboxChange?.('olharPje', checked)}
-            >
-              <Checkbox.HiddenInput />
-              <Checkbox.Control />
-              <Checkbox.Label>OLHAR PJE/CRETA JUSTIÇA FEDERAL</Checkbox.Label>
-            </Checkbox.Root>
-          </Flex>
-          <Flex gap={4}>
-            <Field.Root minW="60%">
-              <Field.Label fontWeight="bold">Senha MEU INSS</Field.Label>
-              <Input
-                p={5}
-                name="senha-inss"
-                value={formData.senhaInss}
-                onChange={handleInputChange}
-              />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label fontWeight="bold">Data do atendimento</Field.Label>
-              <Input
-                p={5}
-                name="data-atendimento"
-                type="date"
-                value={formData.dataAtendimento}
-                onChange={handleInputChange}
-              />
-            </Field.Root>
-          </Flex>
-
-          <Field.Root required minW="70%">
-            <Field.Label fontWeight="bold">Observações</Field.Label>
-            <Textarea
-              p={5}
-              name="observations"
-              height={200}
-              fontSize={18}
-              value={formData.observations}
-              onChange={handleInputChange}
-            />
-          </Field.Root>
-        </Fieldset.Content>
-      </Fieldset.Root>
-    ),
-  },
-  {
-    title: 'Envio de documentos',
-    render: ({ formData, handleInputChange }: StepRenderProps) => (
-      <Box>
-        <Text fontWeight="semibold" mb={2}>
-          Documentos necessários
-        </Text>
-        <List.Root p="0 30px" mb={2} display="grid" gridTemplateColumns="1fr 1fr" gap="8px">
-          <List.Item>Certidão de Nascimento/Casamento</List.Item>
-          <List.Item>RG</List.Item>
-          <List.Item>CPF</List.Item>
-          <List.Item>Comprovante de Residência</List.Item>
-          <List.Item>Cartão SUS</List.Item>
-          <List.Item>Atestado médico/exames/receituários</List.Item>
-          <List.Item>Cadastro Único atualizado</List.Item>
-          <List.Item>Carteira de Trabalho e Previdência Social</List.Item>
-          <List.Item>Ato impugnado/Carta de negado</List.Item>
-          <List.Item>Procuração e Contrato de Honorários</List.Item>
-          <List.Item>Perfil Profissiográfico Previdenciário - PPP</List.Item>
-          <List.Item>
-            Documentos rurais: Certidão Inteiro Teor/Certidão Eleitoral/CAR/Contrato Comodato
-          </List.Item>
-        </List.Root>
-        <Text fontWeight="semibold">* Filho menor</Text>
-        <List.Root p="0 30px" mb={2}>
-          <List.Item>Certidão de Nascimento</List.Item>
-          <List.Item>CPF</List.Item>
-        </List.Root>
-        <FileUpload.Root alignItems="stretch" maxFiles={2}>
-          <FileUpload.HiddenInput />
-          <FileUpload.Dropzone>
-            <Icon size="md" color="fg.muted">
-              <LuUpload />
-            </Icon>
-            <FileUpload.DropzoneContent>
-              <Box>Clique aqui para anexar os arquivos no OneDrive</Box>
-              <Box color="fg.muted">.png, .jpg, .pdf</Box>
-            </FileUpload.DropzoneContent>
-          </FileUpload.Dropzone>
-
-          <FileUpload.ClearTrigger asChild>
-            <Text fontSize="sm" color="fg.muted" display="flex" alignItems="center" gap={2}>
-              Limpar arquivos enviados
-              <CloseButton size="sm" variant="plain" />
-            </Text>
-          </FileUpload.ClearTrigger>
-          <FileUpload.List />
-        </FileUpload.Root>
-      </Box>
-    ),
-  },
-];
