@@ -1,79 +1,245 @@
 'use client';
-import { Box, SimpleGrid, Text, Heading } from '@chakra-ui/react';
-import { useMemo } from 'react';
-import { funcionariosMock } from '../../mocks/funcionarios';
-import { IProcessosTable, processosMock } from '../../mocks/processos';
-
-const tiposProcesso = [
-  'LOAS/88',
-  'LOAS/87',
-  'PENSÃO DE MORTE URBANA OU RURAL',
-  'APOSENTADORIAS',
-  'AUXILIO DOENÇA',
-];
+import { Box, SimpleGrid, Text, Heading, Flex, Grid } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import { getDashboardData } from '@/services/dashboard-service';
+import { useUserContext } from '@/components/UserContext';
+import { getFuncionariosEProcessos } from '@/services/usuario-service';
+import { ProcessosPorFuncionario } from '../../../types/processos';
 
 const Home = () => {
-  const processosPorTipo = useMemo(() => {
-    const counts: Record<string, number> = {};
-    tiposProcesso.forEach((tipo) => {
-      counts[tipo] = processosMock.filter((p: IProcessosTable) => p.tipoProcesso === tipo).length;
+  const { user } = useUserContext();
+  const { setBreadcrumbs } = useBreadcrumb();
+  const [mounted, setMounted] = useState(false);
+  const [funcionarios, setFuncionarios] = useState<ProcessosPorFuncionario[]>([]);
+  const [totalProcessos, setTotalProcessos] = useState(0);
+  const [processosArquivados, setProcessosArquivados] = useState(0);
+  const [processosAtivos, setProcessosAtivos] = useState(0);
+  const [processosPorBeneficio, setProcessosPorBeneficio] = useState<
+    { beneficio: string; quantidade: number }[]
+  >([]);
+  const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0);
+
+  useEffect(() => {
+    setBreadcrumbs([{ label: 'Início', path: '/home' }]);
+    setMounted(true);
+  }, [setBreadcrumbs]);
+
+  const fetchData = () => {
+    getDashboardData().then((data) => {
+      setTotalProcessos(data.totalProcessos);
+      setProcessosArquivados(data.processosArquivados);
+      setProcessosAtivos(data.processosAtivos);
+      setProcessosPorBeneficio(data.processosPorBeneficio);
+      setClientesComProcessosAtivos(data.clientesComProcessosAtivos);
     });
-    return counts;
+
+    getFuncionariosEProcessos().then((data) => {
+      setFuncionarios(data);
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  const totalProcessos = processosMock.length;
-  const totalFuncionarios = funcionariosMock.length;
-  const totalClientes = new Set(processosMock.map((p: IProcessosTable) => p.cliente)).size;
+  const getPastelColor = (index: number) => {
+    const pastelColors = [
+      '#FFE5E5',
+      '#E5F3FF',
+      '#E5FFE5',
+      '#FFF5E5',
+      '#F0E5FF',
+      '#E5FFF5',
+      '#FFE5F5',
+      '#F5E5FF',
+      '#E5FFFF',
+      '#FFFFE5',
+    ];
+    return pastelColors[index % pastelColors.length];
+  };
 
   return (
-    <Box p={8}>
-      <Text fontSize="2xl" fontWeight="bold" mb={6} color="var(--darkblue)">
-        Meu painel
-      </Text>
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap={6} mb={8}>
-        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
-          <Heading size="md" mb={2}>
-            Total de Processos
-          </Heading>
-          <Text fontSize="3xl" color="var(--darkblue)">
-            {totalProcessos}
-          </Text>
-          <Text fontSize="sm">Todos os processos cadastrados</Text>
-        </Box>
-        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
-          <Heading size="md" mb={2}>
-            Total de Funcionários
-          </Heading>
-          <Text fontSize="3xl" color="var(--darkblue)">
-            {totalFuncionarios}
-          </Text>
-          <Text fontSize="sm">Equipe cadastrada</Text>
-        </Box>
-        <Box bg="#e3eafd" borderRadius={12} p={6} boxShadow="sm">
-          <Heading size="md" mb={2}>
-            Total de Clientes
-          </Heading>
-          <Text fontSize="3xl" color="var(--darkblue)">
-            {totalClientes}
-          </Text>
-          <Text fontSize="sm">Clientes únicos atendidos</Text>
-        </Box>
-      </SimpleGrid>
-      <Text fontSize="xl" fontWeight="bold" mb={4} color="var(--darkblue)">
-        Processos por tipo
-      </Text>
-      <SimpleGrid columns={{ base: 1, md: 3, lg: 5 }} gap={4}>
-        {tiposProcesso.map((tipo) => (
-          <Box key={tipo} bg="#f4f8fb" borderRadius={10} p={5} boxShadow="xs">
-            <Heading size="sm" mb={2}>
-              {tipo}
-            </Heading>
-            <Text fontSize="2xl" color="var(--darkblue)">
-              {processosPorTipo[tipo]}
+    <Box p={8} bg="gray.50" minH="100vh">
+      <Breadcrumb />
+
+      <Box mb={8}>
+        <Text mb={2} color="var(--primary)" fontSize={'24px'} fontWeight="bold">
+          {mounted && user?.nome ? `Bem-vindo(a), ${user.nome}` : 'Bem-vindo(a)!'}
+        </Text>
+      </Box>
+
+      <Box mb={8}>
+        <Text fontSize="20px" mb={4} color="var(--primary)">
+          Estatísticas Gerais
+        </Text>
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} gap={6}>
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Flex align="center" justify="space-between" mb={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                TOTAL DE PROCESSOS
+              </Text>
+              <Box w={3} h={3} bg="blue.400" borderRadius="full" />
+            </Flex>
+            <Text fontSize="3xl" fontWeight="bold" color="var(--primary)" mb={1}>
+              {totalProcessos}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Todos os processos cadastrados
             </Text>
           </Box>
-        ))}
-      </SimpleGrid>
+
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Flex align="center" justify="space-between" mb={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                PROCESSOS ATIVOS
+              </Text>
+              <Box w={3} h={3} bg="green.400" borderRadius="full" />
+            </Flex>
+            <Text fontSize="3xl" fontWeight="bold" color="green.600" mb={1}>
+              {processosAtivos}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Processos em andamento
+            </Text>
+          </Box>
+
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Flex align="center" justify="space-between" mb={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                PROCESSOS ARQUIVADOS
+              </Text>
+              <Box w={3} h={3} bg="orange.400" borderRadius="full" />
+            </Flex>
+            <Text fontSize="3xl" fontWeight="bold" color="orange.600" mb={1}>
+              {processosArquivados}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Processos finalizados
+            </Text>
+          </Box>
+
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Flex align="center" justify="space-between" mb={2}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                TOTAL DE CLIENTES
+              </Text>
+              <Box w={3} h={3} bg="purple.400" borderRadius="full" />
+            </Flex>
+            <Text fontSize="3xl" fontWeight="bold" color="purple.600" mb={1}>
+              {clientesComProcessosAtivos}
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              Clientes com processos ativos
+            </Text>
+          </Box>
+        </SimpleGrid>
+      </Box>
+
+      <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap={8}>
+        <Box>
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Flex align="center" justify="space-between" mb={6}>
+              <Heading size="md" color="var(--primary)">
+                Processos por Tipo de Benefício
+              </Heading>
+              <Text fontSize="sm" color="gray.500">
+                {processosPorBeneficio.length} tipos diferentes
+              </Text>
+            </Flex>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
+              {processosPorBeneficio.map((item, index) => (
+                <Box
+                  key={item.beneficio}
+                  bg={getPastelColor(index)}
+                  borderRadius={6}
+                  p={4}
+                  border="1px solid"
+                  borderColor="gray.300"
+                  transition="all 0.2s"
+                  _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+                >
+                  <Text
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color="gray.700"
+                    mb={2}
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                  >
+                    {item.beneficio}
+                  </Text>
+                  <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
+                    {item.quantidade}
+                  </Text>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+        </Box>
+
+        <Box>
+          <Box
+            bg="white"
+            borderRadius={5}
+            p={6}
+            border="1px solid"
+            borderColor="gray.300"
+            h="fit-content"
+          >
+            <Flex align="center" justify="space-between" mb={6}>
+              <Heading size="md" color="var(--primary)">
+                Distribuição por Funcionário
+              </Heading>
+              <Text fontSize="sm" color="gray.500">
+                {funcionarios.length} funcionários
+              </Text>
+            </Flex>
+
+            {funcionarios.length > 0 ? (
+              <Box>
+                {funcionarios.map((funcionario, index) => (
+                  <Flex
+                    key={funcionario.id}
+                    align="center"
+                    justify="space-between"
+                    p={3}
+                    borderRadius={6}
+                    _hover={{ bg: 'gray.50' }}
+                    borderBottom={index < funcionarios.length - 1 ? '1px solid' : 'none'}
+                    borderColor="gray.100"
+                  >
+                    <Box>
+                      <Text fontWeight="medium" color="gray.800">
+                        {funcionario.nome}
+                      </Text>
+                      <Text fontSize="sm" color="gray.500">
+                        {funcionario.cargo}
+                      </Text>
+                    </Box>
+                    <Box textAlign="right">
+                      <Text fontSize="xl" fontWeight="bold" color="var(--primary)">
+                        {funcionario.totalProcessos}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        processos
+                      </Text>
+                    </Box>
+                  </Flex>
+                ))}
+              </Box>
+            ) : (
+              <Box textAlign="center" py={8}>
+                <Text color="gray.500" fontSize="sm">
+                  Nenhum funcionário encontrado
+                </Text>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Grid>
     </Box>
   );
 };
