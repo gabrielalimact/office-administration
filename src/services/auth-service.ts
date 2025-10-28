@@ -8,6 +8,5 @@ export async function login(cpf: string, senha: string) {
   const response = await api.post('/auth/login', params);
   Cookies.set('access_token', response.data.access_token);
   Cookies.set('refresh_token', response.data.refresh_token);
-
   return response.data;
 }
