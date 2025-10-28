@@ -1,13 +1,5 @@
 'use client';
-import {
-  Box,
-  Text,
-  IconButton,
-  Flex,
-  Button,
-  ButtonGroup,
-  Pagination,
-} from '@chakra-ui/react';
+import { Box, Text, IconButton, Flex, Button, ButtonGroup, Pagination } from '@chakra-ui/react';
 import { IoEyeOutline, IoTrash } from 'react-icons/io5';
 import { useEffect, useState, useCallback } from 'react';
 import { useLoading } from '@/components/LoadingContext';

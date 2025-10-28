@@ -1,12 +1,5 @@
 'use client';
-import {
-  Button,
-  ButtonGroup,
-  Steps,
-  Text,
-  Flex,
-  Box,
-} from '@chakra-ui/react';
+import { Button, ButtonGroup, Steps, Text, Flex, Box } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { LuCheckCheck } from 'react-icons/lu';
 import { useBreadcrumb } from '@/components/BreadcrumbContext';
@@ -16,7 +9,6 @@ import { toaster } from '@/components/ui/toaster';
 import { ProcessoData } from '@/types/step-forms';
 import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps';
 import JSZip from 'jszip';
-
 
 const CadastrarProcessosPage = () => {
   const { user } = useUserContext();
@@ -63,7 +55,7 @@ const CadastrarProcessosPage = () => {
   };
 
   const handleDataChange = (newData: Partial<ProcessoData>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       ...newData,
     }));
@@ -145,22 +137,21 @@ const CadastrarProcessosPage = () => {
   const createZipFile = async (files: File[]) => {
     try {
       const zip = new JSZip();
-      
+
       // Adicionar cada arquivo ao ZIP
       for (const file of files) {
         zip.file(file.name, file);
       }
-      
+
       // Gerar o arquivo ZIP
       const zipBlob = await zip.generateAsync({ type: 'blob' });
-      
+
       // Criar um File a partir do Blob
       const zipFile = new File([zipBlob], 'documentos.zip', {
-        type: 'application/zip'
+        type: 'application/zip',
       });
-      
+
       return zipFile;
-      
     } catch (error) {
       console.error('Erro ao criar arquivo ZIP:', error);
       toaster.create({
@@ -184,9 +175,9 @@ const CadastrarProcessosPage = () => {
         });
         return;
       }
-      
+
       let arquivoFinal = null;
-      
+
       // Compactar arquivos se houver mais de um
       if (formData.files && formData.files.length > 1) {
         toaster.create({
@@ -195,9 +186,9 @@ const CadastrarProcessosPage = () => {
           type: 'info',
           duration: 3000,
         });
-        
+
         arquivoFinal = await createZipFile(formData.files);
-        
+
         if (arquivoFinal) {
           toaster.create({
             title: 'Arquivos compactados',
@@ -226,7 +217,7 @@ const CadastrarProcessosPage = () => {
             cidade: formData.cliente.endereco.cidade,
             estado: formData.cliente.endereco.estado,
             cep: formData.cliente.endereco.cep,
-          }
+          },
         },
         colaboradorId: formData.colaboradorId,
         beneficio: formData.beneficio,
@@ -238,20 +229,20 @@ const CadastrarProcessosPage = () => {
         senha_inss: formData.senha_inss,
         observacoes: formData.observacoes,
         arquivos_originais: formData.files,
-        arquivo_final: arquivoFinal
+        arquivo_final: arquivoFinal,
       });
-      
+
       toaster.create({
         title: 'Sucesso!',
         description: 'Processo cadastrado com sucesso.',
         type: 'success',
         duration: 5000,
       });
-      
+
       setStepActive(steps.length);
     } catch (error) {
       console.error('Erro na requisição:', error);
-      
+
       toaster.create({
         title: 'Erro de conexão',
         description: 'Verifique sua conexão e tente novamente.',
@@ -264,20 +255,20 @@ const CadastrarProcessosPage = () => {
   const steps = [
     {
       title: 'Informações do cliente',
-      component: <ClienteStep data={formData} onDataChange={handleDataChange} />
+      component: <ClienteStep data={formData} onDataChange={handleDataChange} />,
     },
     {
       title: 'Informações do processo',
-      component: <ProcessoStep data={formData} onDataChange={handleDataChange} />
+      component: <ProcessoStep data={formData} onDataChange={handleDataChange} />,
     },
     {
       title: 'Envio de documentos',
-      component: <DocumentosStep data={formData} onDataChange={handleDataChange} />
+      component: <DocumentosStep data={formData} onDataChange={handleDataChange} />,
     },
     {
       title: 'Revisar informações',
-      component: <PreviewStep data={formData} onDataChange={handleDataChange} />
-    }
+      component: <PreviewStep data={formData} onDataChange={handleDataChange} />,
+    },
   ];
 
   return (
@@ -296,10 +287,14 @@ const CadastrarProcessosPage = () => {
           {steps.map((step, index) => (
             <Steps.Item key={index} index={index} title={step.title}>
               <Steps.Indicator
-              bgColor={
-                stepActive === index ? 'var(--primary)' : stepActive > index ? '#556B2F' : undefined
-              }
-              color={stepActive === index || stepActive > index ? 'white' : undefined}
+                bgColor={
+                  stepActive === index
+                    ? 'var(--primary)'
+                    : stepActive > index
+                      ? '#556B2F'
+                      : undefined
+                }
+                color={stepActive === index || stepActive > index ? 'white' : undefined}
               />
               <Steps.Title>{step.title}</Steps.Title>
               <Steps.Separator />
@@ -325,11 +320,7 @@ const CadastrarProcessosPage = () => {
             </Button>
           </Steps.PrevTrigger>
           {stepActive !== steps.length && (
-            <Button 
-              bgColor="var(--primary)" 
-              w="100px" 
-              onClick={handleNextStep}
-            >
+            <Button bgColor="var(--primary)" w="100px" onClick={handleNextStep}>
               {stepActive < steps.length - 1
                 ? 'Próximo'
                 : stepActive === steps.length - 1

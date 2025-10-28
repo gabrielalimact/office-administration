@@ -1,8 +1,8 @@
-import { RadioGroup, HStack, UseRadioGroupProps } from "@chakra-ui/react"
+import { RadioGroup, HStack, UseRadioGroupProps } from '@chakra-ui/react';
 type Item = {
   label: string;
   value: string;
-}
+};
 
 type Props = {
   items: Item[];
@@ -29,7 +29,7 @@ const CustomRadioGroup = ({ items, onChange, value, ...rest }: Props) => {
         ))}
       </HStack>
     </RadioGroup.Root>
-  )
-}
+  );
+};
 
-export default CustomRadioGroup
+export default CustomRadioGroup;

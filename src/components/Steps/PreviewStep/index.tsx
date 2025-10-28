@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Text,
-  Flex,
-  Card,
-  Badge,
-  List,
-  Fieldset,
-  Field,
-} from '@chakra-ui/react';
+import { Box, Text, Flex, Card, Badge, List, Fieldset, Field } from '@chakra-ui/react';
 import { StepProps } from '@/types/step-forms';
 import maskCPF from '../../../../utils/maskCPF';
 
@@ -31,12 +22,12 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
   ];
 
   const getBeneficioLabel = (id: number) => {
-    const beneficio = beneficios.find(b => b.value === id);
+    const beneficio = beneficios.find((b) => b.value === id);
     return beneficio ? beneficio.label : 'Não selecionado';
   };
 
   const getStatusLabel = (id: number) => {
-    const statusItem = status.find(s => s.value === id);
+    const statusItem = status.find((s) => s.value === id);
     return statusItem ? statusItem.label : 'Não selecionado';
   };
 
@@ -49,11 +40,11 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
       <Text fontSize="xl" fontWeight="bold" mb={6} textAlign="center">
         Revisar Informações do Processo
       </Text>
-      
+
       <Flex direction="column" gap={6}>
         {/* Informações do Cliente */}
         <Card.Root p={6}>
-          <Card.Header mb={3} borderBottom={"1px solid"} borderColor="gray.200">
+          <Card.Header mb={3} borderBottom={'1px solid'} borderColor="gray.200">
             <Card.Title fontSize="lg" color="blue.600">
               👤 Informações do Cliente
             </Card.Title>
@@ -65,34 +56,42 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                   <Field.Label fontWeight="semibold">Nome Completo</Field.Label>
                   <Text>{data.cliente.nome || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Data de Nascimento</Field.Label>
                   <Text>{data.cliente.data_nascimento || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">CPF</Field.Label>
                   <Text>{data.cliente.cpf ? maskCPF(data.cliente.cpf) : '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">RG</Field.Label>
                   <Text>{data.cliente.rg || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Filiação</Field.Label>
                   <Text>{data.cliente.filiacao || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Naturalidade</Field.Label>
                   <Text>{data.cliente.naturalidade || '-'}</Text>
                 </Field.Root>
               </Fieldset.Content>
-              
-              <Text fontSize="md" fontWeight="semibold" mt={4} mb={3} color="blue.600" borderBottom={"1px solid"} borderColor="gray.200">
+
+              <Text
+                fontSize="md"
+                fontWeight="semibold"
+                mt={4}
+                mb={3}
+                color="blue.600"
+                borderBottom={'1px solid'}
+                borderColor="gray.200"
+              >
                 📍 Endereço
               </Text>
               <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr" gap={2}>
@@ -100,27 +99,27 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                   <Field.Label fontWeight="semibold">CEP</Field.Label>
                   <Text>{data.cliente.endereco.cep || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Logradouro</Field.Label>
                   <Text>{data.cliente.endereco.logradouro || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Número</Field.Label>
                   <Text>{data.cliente.endereco.numero || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Bairro</Field.Label>
                   <Text>{data.cliente.endereco.bairro || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Cidade</Field.Label>
                   <Text>{data.cliente.endereco.cidade || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Estado</Field.Label>
                   <Text>{data.cliente.endereco.estado || '-'}</Text>
@@ -132,7 +131,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
 
         {/* Informações do Processo */}
         <Card.Root p={6}>
-          <Card.Header mb={3} borderBottom={"1px solid"} borderColor="gray.200">
+          <Card.Header mb={3} borderBottom={'1px solid'} borderColor="gray.200">
             <Card.Title fontSize="lg" color="green.600">
               📋 Informações do Processo
             </Card.Title>
@@ -146,25 +145,25 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                     {getBeneficioLabel(data.beneficio.id)}
                   </Badge>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Status</Field.Label>
                   <Badge colorScheme="blue" size="md" px={2}>
                     {getStatusLabel(data.status.id)}
                   </Badge>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Data do Atendimento</Field.Label>
                   <Text>{data.data_atendimento || '-'}</Text>
                 </Field.Root>
-                
+
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Senha MEU INSS</Field.Label>
                   <Text>{data.senha_inss ? '••••••••' : '-'}</Text>
                 </Field.Root>
               </Fieldset.Content>
-              
+
               <Flex gap={4} mt={4}>
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Verificações</Field.Label>
@@ -178,15 +177,15 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                   </Flex>
                 </Field.Root>
               </Flex>
-              
+
               {data.observacoes && (
                 <Field.Root mt={4}>
                   <Field.Label fontWeight="semibold">Observações</Field.Label>
-                  <Box 
-                    p={3} 
-                    bg="gray.50" 
-                    borderRadius="md" 
-                    border="1px solid" 
+                  <Box
+                    p={3}
+                    bg="gray.50"
+                    borderRadius="md"
+                    border="1px solid"
                     borderColor="gray.200"
                     maxHeight="100px"
                     overflowY="auto"
@@ -200,7 +199,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
         </Card.Root>
 
         <Card.Root p={6}>
-          <Card.Header mb={3} borderBottom={"1px solid"} borderColor="gray.200">
+          <Card.Header mb={3} borderBottom={'1px solid'} borderColor="gray.200">
             <Card.Title fontSize="lg" color="purple.600">
               📎 Documentos Anexados
             </Card.Title>
@@ -209,10 +208,18 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
             {data.files && data.files.length > 0 ? (
               <List.Root>
                 {data.files.map((file, index) => (
-                  <List.Item key={index} display="flex" justifyContent="space-between" alignItems="center" py={2}>
+                  <List.Item
+                    key={index}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    py={2}
+                  >
                     <Flex alignItems="center" gap={2}>
                       <Text fontSize="sm">📄</Text>
-                      <Text fontSize="sm" fontWeight="medium">{file.name}</Text>
+                      <Text fontSize="sm" fontWeight="medium">
+                        {file.name}
+                      </Text>
                     </Flex>
                     <Badge size="md" colorScheme="blue" px={2}>
                       {formatFileSize(file.size)}
@@ -225,7 +232,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                 Nenhum documento anexado
               </Text>
             )}
-            
+
             {data.files && data.files.length > 1 && (
               <Box mt={4} p={3} bg="blue.50" borderRadius="md" border="1px solid blue.200">
                 <Text fontSize="sm" fontWeight="semibold" color="blue.800">

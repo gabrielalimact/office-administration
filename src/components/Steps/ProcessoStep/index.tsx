@@ -58,16 +58,16 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const handleSelectChange = (value: { value: string[] }) => {
     const selectedValue = value.value[0];
     if (!selectedValue) return;
-    
+
     const parsedId = Number(selectedValue);
     if (Number.isNaN(parsedId)) return;
-    
+
     const isBeneficio = beneficios.items.some((item) => item.value === parsedId);
     if (isBeneficio) {
       onDataChange({ beneficio: { id: parsedId } });
       return;
     }
-    
+
     const isStatus = status.items.some((item) => item.value === parsedId);
     if (isStatus) {
       onDataChange({ status: { id: parsedId } });
@@ -86,14 +86,18 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           <Select.Root collection={beneficios} size="md" onValueChange={handleSelectChange}>
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">
-              Benefício <Text as="span" color="red.500">*</Text>
+              Benefício{' '}
+              <Text as="span" color="red.500">
+                *
+              </Text>
             </Select.Label>
             <Select.Control>
-              <Select.Trigger 
+              <Select.Trigger
                 p={2}
-                borderColor={!data.beneficio.id || data.beneficio.id === 0 ? "red.300" : undefined}
+                borderColor={!data.beneficio.id || data.beneficio.id === 0 ? 'red.300' : undefined}
                 _focus={{
-                  borderColor: !data.beneficio.id || data.beneficio.id === 0 ? "red.500" : "blue.500"
+                  borderColor:
+                    !data.beneficio.id || data.beneficio.id === 0 ? 'red.500' : 'blue.500',
                 }}
               >
                 <Select.ValueText placeholder="Selecione o benefício" />
@@ -146,7 +150,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             </Select.Positioner>
           </Portal>
         </Select.Root>
-        
+
         <Flex gap="2rem">
           <Checkbox.Root
             checked={data.olhar_inss}
@@ -165,7 +169,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             <Checkbox.Label>OLHAR PJE/CRETA JUSTIÇA FEDERAL</Checkbox.Label>
           </Checkbox.Root>
         </Flex>
-        
+
         <Flex gap={4}>
           <Field.Root minW="60%">
             <Field.Label fontWeight="bold">Senha MEU INSS</Field.Label>

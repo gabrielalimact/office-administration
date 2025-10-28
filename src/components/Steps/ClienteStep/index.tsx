@@ -1,12 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Fieldset,
-  Field,
-  Input,
-  Text,
-} from '@chakra-ui/react';
+import { Fieldset, Field, Input, Text } from '@chakra-ui/react';
 import { StepProps } from '@/types/step-forms';
 import maskCPF from '../../../../utils/maskCPF';
 
@@ -22,32 +17,32 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     switch (name) {
       case 'name':
         onDataChange({
-          cliente: { ...data.cliente, nome: value }
+          cliente: { ...data.cliente, nome: value },
         });
         break;
       case 'birthdate':
         onDataChange({
-          cliente: { ...data.cliente, data_nascimento: value }
+          cliente: { ...data.cliente, data_nascimento: value },
         });
         break;
       case 'cpf':
         onDataChange({
-          cliente: { ...data.cliente, cpf: value.replace(/\D/g, '') }
+          cliente: { ...data.cliente, cpf: value.replace(/\D/g, '') },
         });
         break;
       case 'rg':
         onDataChange({
-          cliente: { ...data.cliente, rg: value }
+          cliente: { ...data.cliente, rg: value },
         });
         break;
       case 'filiation':
         onDataChange({
-          cliente: { ...data.cliente, filiacao: value }
+          cliente: { ...data.cliente, filiacao: value },
         });
         break;
       case 'naturalidade':
         onDataChange({
-          cliente: { ...data.cliente, naturalidade: value }
+          cliente: { ...data.cliente, naturalidade: value },
         });
         break;
       // Campos de endereço
@@ -55,48 +50,48 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, cep: value }
-          }
+            endereco: { ...data.cliente.endereco, cep: value },
+          },
         });
         break;
       case 'street':
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, logradouro: value }
-          }
+            endereco: { ...data.cliente.endereco, logradouro: value },
+          },
         });
         break;
       case 'number':
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, numero: value }
-          }
+            endereco: { ...data.cliente.endereco, numero: value },
+          },
         });
         break;
       case 'neighborhood':
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, bairro: value }
-          }
+            endereco: { ...data.cliente.endereco, bairro: value },
+          },
         });
         break;
       case 'city':
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, cidade: value }
-          }
+            endereco: { ...data.cliente.endereco, cidade: value },
+          },
         });
         break;
       case 'state':
         onDataChange({
           cliente: {
             ...data.cliente,
-            endereco: { ...data.cliente.endereco, estado: value }
-          }
+            endereco: { ...data.cliente.endereco, estado: value },
+          },
         });
         break;
       default:
@@ -109,16 +104,19 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
       <Fieldset.Content display="flex" flexDir="row">
         <Field.Root required minW="70%">
           <Field.Label fontWeight="bold">
-            Nome completo <Text as="span" color="red.500">*</Text>
+            Nome completo{' '}
+            <Text as="span" color="red.500">
+              *
+            </Text>
           </Field.Label>
-          <Input 
-            p="12px" 
-            name="name" 
-            value={data.cliente.nome} 
+          <Input
+            p="12px"
+            name="name"
+            value={data.cliente.nome}
             onChange={handleInputChange}
-            borderColor={!data.cliente.nome.trim() ? "red.300" : undefined}
+            borderColor={!data.cliente.nome.trim() ? 'red.300' : undefined}
             _focus={{
-              borderColor: !data.cliente.nome.trim() ? "red.500" : "blue.500"
+              borderColor: !data.cliente.nome.trim() ? 'red.500' : 'blue.500',
             }}
           />
           {!data.cliente.nome.trim() && (
@@ -139,20 +137,26 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           />
         </Field.Root>
       </Fieldset.Content>
-      
+
       <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr">
         <Field.Root mt={2} required>
           <Field.Label fontWeight="bold">
-            CPF <Text as="span" color="red.500">*</Text>
+            CPF{' '}
+            <Text as="span" color="red.500">
+              *
+            </Text>
           </Field.Label>
-          <Input 
-            p="12px" 
-            name="cpf" 
-            value={maskCPF(data.cliente.cpf)} 
+          <Input
+            p="12px"
+            name="cpf"
+            value={maskCPF(data.cliente.cpf)}
             onChange={handleInputChange}
-            borderColor={!data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? "red.300" : undefined}
+            borderColor={
+              !data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? 'red.300' : undefined
+            }
             _focus={{
-              borderColor: !data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? "red.500" : "blue.500"
+              borderColor:
+                !data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? 'red.500' : 'blue.500',
             }}
           />
           {!data.cliente.cpf.trim() ? (
@@ -168,12 +172,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <Field.Root mt={2} required>
           <Field.Label fontWeight="bold">RG</Field.Label>
-          <Input 
-            p="12px" 
-            name="rg" 
-            value={data.cliente.rg} 
-            onChange={handleInputChange} 
-          />
+          <Input p="12px" name="rg" value={data.cliente.rg} onChange={handleInputChange} />
         </Field.Root>
 
         <Field.Root mt={2}>
@@ -185,7 +184,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             onChange={handleInputChange}
           />
         </Field.Root>
-        
+
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Naturalidade</Field.Label>
           <Input
@@ -196,38 +195,38 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           />
         </Field.Root>
       </Fieldset.Content>
-      
+
       <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr">
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">CEP</Field.Label>
-          <Input 
-            p="12px" 
-            name="cep" 
-            value={data.cliente.endereco.cep} 
-            onChange={handleInputChange} 
+          <Input
+            p="12px"
+            name="cep"
+            value={data.cliente.endereco.cep}
+            onChange={handleInputChange}
           />
         </Field.Root>
-        
+
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Logradouro</Field.Label>
-          <Input 
-            p="12px" 
-            name="street" 
-            value={data.cliente.endereco.logradouro} 
-            onChange={handleInputChange} 
+          <Input
+            p="12px"
+            name="street"
+            value={data.cliente.endereco.logradouro}
+            onChange={handleInputChange}
           />
         </Field.Root>
-        
+
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Número</Field.Label>
-          <Input 
-            p="12px" 
-            name="number" 
-            value={data.cliente.endereco.numero} 
-            onChange={handleInputChange} 
+          <Input
+            p="12px"
+            name="number"
+            value={data.cliente.endereco.numero}
+            onChange={handleInputChange}
           />
         </Field.Root>
-        
+
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Bairro</Field.Label>
           <Input
@@ -240,21 +239,21 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Cidade</Field.Label>
-          <Input 
-            p="12px" 
-            name="city" 
-            value={data.cliente.endereco.cidade} 
-            onChange={handleInputChange} 
+          <Input
+            p="12px"
+            name="city"
+            value={data.cliente.endereco.cidade}
+            onChange={handleInputChange}
           />
         </Field.Root>
-        
+
         <Field.Root mt={2}>
           <Field.Label fontWeight="bold">Estado</Field.Label>
-          <Input 
-            p="12px" 
-            name="state" 
-            value={data.cliente.endereco.estado} 
-            onChange={handleInputChange} 
+          <Input
+            p="12px"
+            name="state"
+            value={data.cliente.endereco.estado}
+            onChange={handleInputChange}
           />
         </Field.Root>
       </Fieldset.Content>

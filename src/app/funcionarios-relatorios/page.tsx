@@ -44,7 +44,6 @@ const FuncionariosRelatoriosPage = () => {
   const endIndex = startIndex + pageSize;
   const funcionariosPage = funcionarios.slice(startIndex, endIndex);
 
-  
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
@@ -98,10 +97,7 @@ const FuncionariosRelatoriosPage = () => {
         Funcionários
       </Text>
       <Flex gap="1rem">
-        <CustomInput 
-          placeholder="Buscar funcionário..."
-          isSearch
-        />
+        <CustomInput placeholder="Buscar funcionário..." isSearch />
         <Flex justifyContent="flex-end">
           <Button
             variant="surface"

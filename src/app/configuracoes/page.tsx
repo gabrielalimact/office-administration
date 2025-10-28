@@ -1,14 +1,5 @@
 'use client';
-import {
-  Box,
-  Button,
-  Fieldset,
-  Flex,
-  Text,
-  IconButton,
-  VStack,
-  Image,
-} from '@chakra-ui/react';
+import { Box, Button, Fieldset, Flex, Text, IconButton, VStack, Image } from '@chakra-ui/react';
 import React, { useState, useEffect, useRef } from 'react';
 import { MdOutlineEdit } from 'react-icons/md';
 import { FaRegSave, FaCamera } from 'react-icons/fa';
@@ -115,7 +106,7 @@ const ConfiguracoesPage = () => {
           email: usuario.email,
           cargo: usuario.cargo,
           avatar: avatarFile || undefined,
-        }); 
+        });
 
         setUser({
           id: result.usuario.id,
@@ -238,7 +229,7 @@ const ConfiguracoesPage = () => {
         <Box w="full">
           <Fieldset.Root>
             <Fieldset.Content display="flex" flexDir="column">
-              <CustomInput 
+              <CustomInput
                 label="Nome completo"
                 name="name"
                 value={usuario.name}
@@ -246,7 +237,7 @@ const ConfiguracoesPage = () => {
                 disabled={!editMode}
                 mt={0}
               />
-              <CustomInput 
+              <CustomInput
                 label="CPF"
                 name="cpf"
                 value={maskCPF(usuario.cpf)}
@@ -254,7 +245,7 @@ const ConfiguracoesPage = () => {
                 disabled={!editMode}
                 mt={0}
               />
-              <CustomInput 
+              <CustomInput
                 label="E-mail"
                 name="email"
                 value={usuario.email}
@@ -262,18 +253,17 @@ const ConfiguracoesPage = () => {
                 disabled={!editMode}
                 mt={0}
               />
-              
 
-              <CustomRadioGroup 
+              <CustomRadioGroup
                 value={usuario.cargo === 'socio' ? 'socio' : 'funcionario'}
                 items={[
                   { label: 'Sócio(a)', value: 'socio' },
                   { label: 'Funcionário(a)', value: 'funcionario' },
                 ]}
-                  onChange={(value) => {
-                    const cargo = value === 'socio' ? 'socio' : 'funcionario';
-                    setUsuario((prev) => ({ ...prev, cargo }));
-                  }}
+                onChange={(value) => {
+                  const cargo = value === 'socio' ? 'socio' : 'funcionario';
+                  setUsuario((prev) => ({ ...prev, cargo }));
+                }}
                 disabled={!editMode}
               />
             </Fieldset.Content>

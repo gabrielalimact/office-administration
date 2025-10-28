@@ -1,20 +1,13 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Text,
-  List,
-  FileUpload,
-  Icon,
-  CloseButton,
-} from '@chakra-ui/react';
+import { Box, Text, List, FileUpload, Icon, CloseButton } from '@chakra-ui/react';
 import { LuUpload } from 'react-icons/lu';
 import { StepProps } from '@/types/step-forms';
 
 const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
   const handleFileChange = (files: File[]) => {
-    onDataChange({ 
+    onDataChange({
       files: files,
     });
   };
@@ -40,24 +33,25 @@ const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
           Documentos rurais: Certidão Inteiro Teor/Certidão Eleitoral/CAR/Contrato Comodato
         </List.Item>
       </List.Root>
-      
+
       <Text fontWeight="semibold">* Filho menor</Text>
       <List.Root p="0 30px" mb={4}>
         <List.Item>Certidão de Nascimento</List.Item>
         <List.Item>CPF</List.Item>
       </List.Root>
-      
+
       <Box p={4} bg="blue.50" borderRadius="md" mb={4}>
         <Text fontSize="sm" color="blue.800" fontWeight="semibold">
           📁 Upload de Documentos
         </Text>
         <Text fontSize="sm" color="blue.700">
-          Selecione todos os documentos necessários. A compactação será feita automaticamente ao salvar o processo.
+          Selecione todos os documentos necessários. A compactação será feita automaticamente ao
+          salvar o processo.
         </Text>
       </Box>
 
-      <FileUpload.Root 
-        alignItems="stretch" 
+      <FileUpload.Root
+        alignItems="stretch"
         onFileChange={(details) => handleFileChange(details.acceptedFiles)}
         maxFiles={10}
       >

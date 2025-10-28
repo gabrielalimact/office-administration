@@ -159,7 +159,9 @@ const SideBar = () => {
                   <Text fontSize="sm" fontWeight="bold">
                     {user?.nome}
                   </Text>
-                  <Text fontSize="xs">{user?.cargo === 'socio' ? 'Sócio(a)' : 'Funcionário(a)'}</Text>
+                  <Text fontSize="xs">
+                    {user?.cargo === 'socio' ? 'Sócio(a)' : 'Funcionário(a)'}
+                  </Text>
                 </Box>
               )}
             </Flex>
