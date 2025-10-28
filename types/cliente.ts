@@ -13,3 +13,14 @@ export interface Cliente {
   endereco: Endereco;
   processos: Processo[];
 }
+
+
+export interface NovoCliente {
+  nome: string;
+  data_nascimento: string;
+  cpf: string;
+  rg: string;
+  filiacao: string;
+  naturalidade: string;
+  endereco: Endereco;
+}

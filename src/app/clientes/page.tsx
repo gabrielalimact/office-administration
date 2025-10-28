@@ -100,9 +100,8 @@ export default function ClientesPage() {
         isSearch
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
-        mb={4}
       />
-      <Box mb={4}>
+      <Box mt={4}>
         <GridTable<Cliente>
           columns={[
             { key: 'nome', label: 'Nome', width: '2fr' },
