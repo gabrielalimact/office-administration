@@ -3,8 +3,9 @@ import { Box, Skeleton, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import { useParams } from 'next/navigation';
-import { getFuncionariosByID } from '@/services/usuario-service';
 import { getRelatoriosByFuncionarioID } from '@/services/relatorios-service';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
 interface IFuncionario {
   id: number;
   nome: string;
@@ -23,8 +24,8 @@ export default function VisualizarRelatorioPage() {
   const id = Number(params.id);
   const [isLoading, setIsLoading] = useState(true);
   const [funcionario, setFuncionario] = useState<IFuncionario | null>(null);
-
   const [relatorio, setRelatorio] = useState<IRelatorio[] | null>(null);
+  const { setBreadcrumbs } = useBreadcrumb();
   useEffect(() => {
     getRelatoriosByFuncionarioID(Number(id)).then((data) => {
       const relatorios = data.map((rel) => ({
@@ -41,27 +42,37 @@ export default function VisualizarRelatorioPage() {
       setFuncionario(funcionario);
       setRelatorio(relatorios);
       setIsLoading(false);
+
+      // Configurar breadcrumb após carregar dados
+      if (funcionario) {
+        setBreadcrumbs([
+          { label: 'Início', path: '/home' },
+          { label: 'Funcionários', path: '/funcionarios-relatorios' },
+          { label: `Relatórios de ${funcionario.nome}`, path: `/visualizar-relatorio/${id}` },
+        ]);
+      }
     });
-  }, [id]);
+  }, [id, setBreadcrumbs]);
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+      <Breadcrumb />
       {isLoading ? (
         <Stack>
           <Skeleton height="20px" mb="4" />
           <Skeleton height="16px" mb="2" />
         </Stack>
-      ): 
-      <>
-      <Text fontSize="2xl" fontWeight="bold" mb={4}>
-        Relatórios de {funcionario?.nome}
-      </Text>
-      <Text fontSize="md" mb={2} color="gray.600">
-        Cargo: {funcionario?.cargo}
-      </Text>
-      </>
-      }
-      
+      ) : (
+        <>
+          <Text fontSize="2xl" fontWeight="bold" mb={4}>
+            Relatórios de {funcionario?.nome}
+          </Text>
+          <Text fontSize="md" mb={2} color="gray.600">
+            Cargo: {funcionario?.cargo}
+          </Text>
+        </>
+      )}
+
       {/* <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm" mt={4}>
         <Table.Header bg="var(--primary)">
           <Table.Row>
@@ -109,40 +120,39 @@ export default function VisualizarRelatorioPage() {
         </Stack>
       ) : (
         <>
-<Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
-        Todos os relatórios enviados:
-      </Text>
-      <Box p={4} bg="white" borderRadius={8} boxShadow="sm">
-        {relatorio ? (
-          relatorio.map((rel, index) => (
-            <Box
-              key={index}
-              mb={4}
-              borderBottom={index < relatorio.length - 1 ? '1px solid #e2e8f0' : 'none'}
-              pb={4}
-            >
-              <Text fontSize="sm" color="gray.500" mb={2}>
-                Data de envio:{' '}
-                {new Date(rel?.created_at).toLocaleString('pt-BR', {
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                })}
-              </Text>
-              <Box
-                className="markdown-body"
-                dangerouslySetInnerHTML={{
-                  __html: marked.parse(rel?.conteudo as string),
-                }}
-              />
-            </Box>
-          ))
-        ) : (
-          <Text color="gray.500">Nenhum relatório enviado ainda.</Text>
-        )}
-      </Box>
+          <Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
+            Todos os relatórios enviados:
+          </Text>
+          <Box p={4} bg="white" borderRadius={8} boxShadow="sm">
+            {relatorio ? (
+              relatorio.map((rel, index) => (
+                <Box
+                  key={index}
+                  mb={4}
+                  borderBottom={index < relatorio.length - 1 ? '1px solid #e2e8f0' : 'none'}
+                  pb={4}
+                >
+                  <Text fontSize="sm" color="gray.500" mb={2}>
+                    Data de envio:{' '}
+                    {new Date(rel?.created_at).toLocaleString('pt-BR', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </Text>
+                  <Box
+                    className="markdown-body"
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(rel?.conteudo as string),
+                    }}
+                  />
+                </Box>
+              ))
+            ) : (
+              <Text color="gray.500">Nenhum relatório enviado ainda.</Text>
+            )}
+          </Box>
         </>
       )}
-      
     </Box>
   );
 }
