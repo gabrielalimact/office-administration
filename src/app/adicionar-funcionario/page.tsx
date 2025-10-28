@@ -4,15 +4,18 @@ import { cadastrarNovoUsuario, IUsuario } from '@/services/usuario-service';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import maskCPF from '../../../utils/maskCPF';
 
 const cargos = [
   {
-    label: 'SÓCIO(A)',
+    label: 'socio',
     nome: 'Sócio',
     descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.',
   },
   {
-    label: 'FUNCIONÁRIO(A)',
+    label: 'funcionario',
     nome: 'Funcionário',
     descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.',
   },
@@ -26,13 +29,28 @@ export default function AdicionarFuncionarioPage() {
   const [senha, setSenha] = useState('');
   const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].label);
   const { user } = useUserContext();
+  const { setBreadcrumbs } = useBreadcrumb();
 
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Funcionários', path: '/funcionarios-relatorios' },
+      { label: 'Adicionar Funcionário', path: '/adicionar-funcionario' },
+    ]);
+  }, [setBreadcrumbs]);
+
+  const handleCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '');
+    if (raw.length <= 11) {
+      setCpf(raw);
+    }
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     cadastrarNovoUsuario({
       nome,
       email,
-      cpf,
+      cpf: cpf.replace(/\D/g, ''),
       senha,
       cargo: cargoSelecionado,
     } as IUsuario)
@@ -52,12 +70,13 @@ export default function AdicionarFuncionarioPage() {
   };
 
   useEffect(() => {
-    if (user && user.cargo !== 'SÓCIO(A)') {
+    if (user && user.cargo !== 'socio') {
       router.push('/home');
     }
   }, [user, router]);
   return (
     <Box mx="auto" p={8} bg="white">
+      <Breadcrumb />
       <Flex align="center" gap={3} mb={6}>
         <Text fontSize="2xl" fontWeight="bold">
           Adicionar Funcionário
@@ -94,8 +113,8 @@ export default function AdicionarFuncionarioPage() {
               <Input
                 p={3}
                 type="text"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                value={maskCPF(cpf)}
+                onChange={(e) => handleCPF(e)}
                 placeholder="CPF"
                 required
               />
@@ -119,7 +138,7 @@ export default function AdicionarFuncionarioPage() {
                 <Box
                   key={cargo.label}
                   onClick={() => setCargoSelecionado(cargo.label)}
-                  bg={cargoSelecionado === cargo.label ? 'var(--darkblue)' : '#f7f7fa'}
+                  bg={cargoSelecionado === cargo.label ? 'var(--primary)' : '#f7f7fa'}
                   color={cargoSelecionado === cargo.label ? 'white' : 'black'}
                   borderRadius={8}
                   p={3}
@@ -128,7 +147,7 @@ export default function AdicionarFuncionarioPage() {
                   fontWeight={cargoSelecionado === cargo.label ? 700 : 500}
                   border={
                     cargoSelecionado === cargo.label
-                      ? '2px solid var(--darkblue)'
+                      ? '2px solid var(--primary)'
                       : '1px solid #e0e0e0'
                   }
                   cursor="pointer"
@@ -150,7 +169,7 @@ export default function AdicionarFuncionarioPage() {
         </Flex>
         <Button
           type="submit"
-          style={{ backgroundColor: 'var(--darkblue)', fontWeight: 700, width: '100%' }}
+          style={{ backgroundColor: 'var(--primary)', fontWeight: 700, width: '100%' }}
           mt={8}
         >
           Cadastrar
