@@ -1,8 +1,10 @@
 'use client';
 import { Box, Button, Text } from '@chakra-ui/react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUserContext } from '@/components/UserContext';
 import dynamic from 'next/dynamic';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
 
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 import 'easymde/dist/easymde.min.css';
@@ -10,8 +12,18 @@ import { enviarNovoRelatorio } from '@/services/relatorios-service';
 
 export default function EnviarRelatorioPage() {
   const { user } = useUserContext();
+  const { setBreadcrumbs } = useBreadcrumb();
   const [conteudo, setConteudo] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // Configurar breadcrumb
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Enviar Relatório', path: '/enviar-relatorio' },
+    ]);
+  }, [setBreadcrumbs]);
+
   const mdeOptions = useMemo(
     () => ({
       placeholder: 'Descreva seu trabalho, atividades, etc...',
@@ -50,6 +62,7 @@ export default function EnviarRelatorioPage() {
 
   return (
     <Box maxW={700} mx="auto" p={8} bg="white" borderRadius={12} boxShadow="md" mt={8}>
+      <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Enviar Relatório de Trabalho
       </Text>
