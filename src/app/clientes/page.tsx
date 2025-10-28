@@ -1,88 +1,245 @@
 'use client';
-import { Box, Text, Table, Input, InputGroup, IconButton, Flex } from '@chakra-ui/react';
-import { IoSearchOutline } from 'react-icons/io5';
-import { useState } from 'react';
+import {
+  Box,
+  Text,
+  IconButton,
+  Flex,
+  Button,
+  ButtonGroup,
+  Pagination,
+} from '@chakra-ui/react';
+import { IoEyeOutline, IoTrash } from 'react-icons/io5';
+import { useEffect, useState, useCallback } from 'react';
 import { useLoading } from '@/components/LoadingContext';
-
-const clientesMock = [
-  { id: 1, nome: 'Lucas Andrade', email: 'lucas@email.com', telefone: '(11) 99999-1111' },
-  { id: 2, nome: 'Gabriela Torres', email: 'gabriela@email.com', telefone: '(11) 99999-2222' },
-  { id: 3, nome: 'Eduardo Silva', email: 'eduardo@email.com', telefone: '(11) 99999-3333' },
-  { id: 4, nome: 'Renata Souza', email: 'renata@email.com', telefone: '(11) 99999-4444' },
-  { id: 5, nome: 'Thiago Costa', email: 'thiago@email.com', telefone: '(11) 99999-5555' },
-  { id: 6, nome: 'Amanda Martins', email: 'amanda@email.com', telefone: '(11) 99999-6666' },
-  { id: 7, nome: 'Felipe Rocha', email: 'felipe@email.com', telefone: '(11) 99999-7777' },
-  { id: 8, nome: 'Patrícia Fernandes', email: 'patricia@email.com', telefone: '(11) 99999-8888' },
-  { id: 9, nome: 'Marcos Oliveira', email: 'marcos@email.com', telefone: '(11) 99999-9999' },
-  { id: 10, nome: 'Beatriz Lima', email: 'beatriz@email.com', telefone: '(11) 99999-0000' },
-];
+import { getClientes, deletarCliente } from '@/services/cliente-service';
+import { Cliente } from '../../../types/cliente';
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import GridTable from '@/components/GridTable';
+import { maskCPF } from '../../../utils/maskCPF';
+import CustomInput from '@/components/CustomInput';
 
 export default function ClientesPage() {
   const [busca, setBusca] = useState('');
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
   const { setLoading } = useLoading();
-  const clientesFiltrados = clientesMock.filter((c) =>
+  const { setBreadcrumbs } = useBreadcrumb();
+
+  useEffect(() => {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Clientes', path: '/clientes' },
+    ]);
+  }, [setBreadcrumbs]);
+
+  const clientesFiltrados = clientes.filter((c) =>
     c.nome.toLowerCase().includes(busca.toLowerCase()),
   );
+  const totalItems = clientesFiltrados.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const clientesPaginados = clientesFiltrados.slice(startIndex, endIndex);
 
-  const handleClienteClick = (clienteNome: string) => {
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [busca]);
+
+  const handleClienteClick = (clienteID: number) => {
     setLoading(true);
     setTimeout(() => {
-      window.location.href = `/visualizar-cliente?cliente=${encodeURIComponent(clienteNome)}`;
+      window.location.href = `/visualizar-cliente?cliente=${encodeURIComponent(clienteID)}`;
       setLoading(false);
     }, 600);
   };
 
+  const handleExcluirClick = (e: React.MouseEvent, cliente: Cliente) => {
+    e.stopPropagation();
+    setClienteParaExcluir(cliente);
+    setModalAberto(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!clienteParaExcluir) return;
+
+    setLoading(true);
+    try {
+      await deletarCliente(clienteParaExcluir.id);
+      setClientes(clientes.filter((c) => c.id !== clienteParaExcluir.id));
+      setModalAberto(false);
+      setClienteParaExcluir(null);
+    } catch (error) {
+      console.error('Erro ao excluir cliente:', error);
+      alert('Erro ao excluir cliente. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelarExclusao = () => {
+    setModalAberto(false);
+    setClienteParaExcluir(null);
+  };
+
+  const fetchClientes = useCallback(async () => {
+    setLoading(true);
+    const data = await getClientes();
+    setClientes(data);
+    setLoading(false);
+  }, [setLoading]);
+
+  useEffect(() => {
+    fetchClientes();
+  }, [fetchClientes]);
+
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+      <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Clientes
       </Text>
-      <Flex mb={4} gap={2}>
-        <InputGroup
-          endElement={
-            <IconButton variant="ghost" aria-label="Buscar">
-              <IoSearchOutline />
+      <CustomInput
+        placeholder="Buscar cliente..."
+        isSearch
+        value={busca}
+        onChange={(e) => setBusca(e.target.value)}
+        mb={4}
+      />
+      <Box mb={4}>
+        <GridTable<Cliente>
+          columns={[
+            { key: 'nome', label: 'Nome', width: '2fr' },
+            { key: 'cpf', label: 'CPF', width: '1fr' },
+            { key: 'email', label: 'Email', width: '1fr' },
+            { key: 'processosCount', label: 'Processos', width: '1fr' },
+            { key: 'actions', label: '', width: '120px', align: 'right' },
+          ]}
+          data={clientesPaginados}
+          onRowClick={(cliente) => handleClienteClick(cliente.id)}
+          renderCell={(cliente, column) => {
+            if (column.key === 'cpf') {
+              return <Text color="gray.700">{maskCPF(cliente.cpf)}</Text>;
+            }
+            if (column.key === 'email') {
+              return <Text color="gray.700">{cliente.email ?? 'Não informado'}</Text>;
+            }
+            if (column.key === 'processosCount') {
+              return <Text color="gray.700">{cliente.processos.length ?? 0}</Text>;
+            }
+            if (column.key === 'actions') {
+              return (
+                <Flex gap={1}>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Visualizar cliente"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClienteClick(cliente.id);
+                    }}
+                  >
+                    <IoEyeOutline />
+                  </IconButton>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Excluir cliente"
+                    size="sm"
+                    onClick={(e) => handleExcluirClick(e, cliente)}
+                    _hover={{ color: 'red.500' }}
+                  >
+                    <IoTrash />
+                  </IconButton>
+                </Flex>
+              );
+            }
+            return (
+              <Text color="gray.700">{String(cliente[column.key as keyof Cliente] || '')}</Text>
+            );
+          }}
+          emptyMessage="Nenhum cliente encontrado"
+        />
+      </Box>
+
+      <Pagination.Root
+        count={totalItems}
+        pageSize={pageSize}
+        page={currentPage}
+        onPageChange={(details) => setCurrentPage(details.page)}
+        display="flex"
+        justifyContent="flex-end"
+      >
+        <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+          <Pagination.PrevTrigger asChild>
+            <IconButton disabled={currentPage === 1}>
+              <LuChevronLeft />
             </IconButton>
-          }
-        >
-          <Input
-            placeholder="Buscar cliente..."
-            p={5}
-            borderRadius="50px"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+          </Pagination.PrevTrigger>
+
+          <Pagination.Items
+            render={(page) => (
+              <IconButton
+                variant={page.value === currentPage ? 'outline' : 'ghost'}
+                onClick={() => setCurrentPage(page.value)}
+              >
+                {page.value}
+              </IconButton>
+            )}
           />
-        </InputGroup>
-      </Flex>
-      <Table.Root size="sm" variant="outline" borderRadius="8px">
-        <Table.Header height="50px" bgColor="var(--primary)">
-          <Table.Row>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold" paddingLeft={4}>
-              Nome
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Email
-            </Table.ColumnHeader>
-            <Table.ColumnHeader color="white" fontSize="md" fontWeight="bold">
-              Telefone
-            </Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {clientesFiltrados.map((cliente) => (
-            <Table.Row
-              height="50px"
-              key={cliente.id}
-              _hover={{ bgColor: 'var(--hover)', cursor: 'pointer' }}
-              onClick={() => handleClienteClick(cliente.nome)}
-            >
-              <Table.Cell paddingLeft={4}>{cliente.nome}</Table.Cell>
-              <Table.Cell>{cliente.email}</Table.Cell>
-              <Table.Cell>{cliente.telefone}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
+
+          <Pagination.NextTrigger asChild>
+            <IconButton disabled={currentPage === totalPages}>
+              <LuChevronRight />
+            </IconButton>
+          </Pagination.NextTrigger>
+        </ButtonGroup>
+      </Pagination.Root>
+
+      {modalAberto && (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(0, 0, 0, 0.6)"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          zIndex="modal"
+        >
+          <Box bg="white" p={6} borderRadius="md" boxShadow="xl" minW="400px">
+            <Text fontSize="lg" fontWeight="bold" mb={4}>
+              Confirmar Exclusão
+            </Text>
+            <Text mb={6} color="gray.600">
+              Tem certeza que deseja excluir o cliente{' '}
+              <Text as="span" fontWeight="bold">
+                {clienteParaExcluir?.nome}
+              </Text>
+              ? Esta ação não pode ser desfeita.
+            </Text>
+            <Flex gap={3} justifyContent="flex-end">
+              <Button variant="ghost" onClick={cancelarExclusao} p={4}>
+                Cancelar
+              </Button>
+              <Button
+                bg="red.500"
+                color="white"
+                _hover={{ bg: 'red.600' }}
+                onClick={confirmarExclusao}
+                p={4}
+              >
+                Excluir
+              </Button>
+            </Flex>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
