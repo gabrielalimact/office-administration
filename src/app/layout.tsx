@@ -5,9 +5,9 @@ import SideBar from '@/components/SideBar';
 import { Flex, Box } from '@chakra-ui/react';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import NavBar from '@/components/NavBar';
 import { usePathname } from 'next/navigation';
 import { UserProvider } from '@/components/UserContext';
+import { BreadcrumbProvider } from '@/components/BreadcrumbContext';
 
 const montserratSans = Montserrat({
   variable: '--font-montserrat-sans',
@@ -30,21 +30,28 @@ export default function RootLayout({
       </head>
       <body className={`${montserratSans.variable}`}>
         <UserProvider>
-          <Provider>
-            <LoadingProvider>
-              {showLayout ? (
-                <Flex direction="row" minHeight="100vh">
-                  <SideBar />
-                  <Box flex={1} minHeight="100vh" display="flex" flexDirection="column">
-                    <NavBar />
-                    <Box flex={1}>{children}</Box>
-                  </Box>
-                </Flex>
-              ) : (
-                children
-              )}
-            </LoadingProvider>
-          </Provider>
+          <BreadcrumbProvider>
+            <Provider>
+              <LoadingProvider>
+                {showLayout ? (
+                  <Flex direction="row" minHeight="100vh">
+                    <SideBar />
+                    <Box
+                      flex={1}
+                      minHeight="100vh"
+                      display="flex"
+                      flexDirection="column"
+                      paddingLeft={'4rem'}
+                    >
+                      <Box flex={1}>{children}</Box>
+                    </Box>
+                  </Flex>
+                ) : (
+                  children
+                )}
+              </LoadingProvider>
+            </Provider>
+          </BreadcrumbProvider>
         </UserProvider>
       </body>
     </html>
