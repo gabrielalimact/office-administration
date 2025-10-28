@@ -9,6 +9,7 @@ import { toaster } from '@/components/ui/toaster';
 import { ProcessoData } from '@/types/step-forms';
 import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps';
 import JSZip from 'jszip';
+import { criarProcessoComNovoCliente } from '@/services/processo-service';
 
 const CadastrarProcessosPage = () => {
   const { user } = useUserContext();
@@ -232,14 +233,45 @@ const CadastrarProcessosPage = () => {
         arquivo_final: arquivoFinal,
       });
 
-      toaster.create({
-        title: 'Sucesso!',
-        description: 'Processo cadastrado com sucesso.',
-        type: 'success',
-        duration: 5000,
-      });
-
+      
       setStepActive(steps.length);
+
+      await criarProcessoComNovoCliente({
+        cliente: {
+          nome: formData.cliente.nome,
+          data_nascimento: formData.cliente.data_nascimento,
+          cpf: formData.cliente.cpf,
+          rg: formData.cliente.rg,
+          filiacao: formData.cliente.filiacao,
+          naturalidade: formData.cliente.naturalidade,
+          endereco: {
+            logradouro: formData.cliente.endereco.logradouro,
+            numero: formData.cliente.endereco.numero,
+            complemento: formData.cliente.endereco.complemento,
+            bairro: formData.cliente.endereco.bairro,
+            cidade: formData.cliente.endereco.cidade,
+            estado: formData.cliente.endereco.estado,
+            cep: formData.cliente.endereco.cep,
+          },
+        },
+        colaboradorId: formData.colaboradorId,
+        beneficio: formData.beneficio,
+        olhar_inss: formData.olhar_inss,
+        olhar_pje_creta: formData.olhar_pje_creta,
+        data_atendimento: formData.data_atendimento,
+        data_ultima_atualizacao: new Date().toISOString().split('T')[0],
+        status: formData.status,
+        senha_inss: formData.senha_inss,
+        observacoes: formData.observacoes,
+        arquivo: arquivoFinal || undefined,
+      }).then(() => {
+        toaster.create({
+          title: 'Sucesso',
+          description: 'O processo do cliente' + formData.cliente.nome + 'criado com sucesso.',
+          type: 'success',
+          duration: 5000,
+        });
+      });
     } catch (error) {
       console.error('Erro na requisição:', error);
 
