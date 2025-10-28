@@ -14,7 +14,6 @@ export interface Cliente {
   processos: Processo[];
 }
 
-
 export interface NovoCliente {
   nome: string;
   data_nascimento: string;

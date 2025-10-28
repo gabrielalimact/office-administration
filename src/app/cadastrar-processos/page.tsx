@@ -233,7 +233,6 @@ const CadastrarProcessosPage = () => {
         arquivo_final: arquivoFinal,
       });
 
-      
       setStepActive(steps.length);
 
       await criarProcessoComNovoCliente({

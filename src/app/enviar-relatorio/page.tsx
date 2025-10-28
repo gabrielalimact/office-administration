@@ -35,7 +35,7 @@ export default function EnviarRelatorioPage() {
 
     console.log('Título:', titulo);
     console.log('Conteúdo:', conteudo);
-    
+
     const relatorioData = {
       idFuncionario: Number(user?.id),
       titulo,
@@ -90,14 +90,16 @@ export default function EnviarRelatorioPage() {
               <Button
                 size="sm"
                 onClick={() => {
-                  const textarea = document.querySelector('.CodeMirror textarea') as HTMLTextAreaElement;
+                  const textarea = document.querySelector(
+                    '.CodeMirror textarea',
+                  ) as HTMLTextAreaElement;
                   if (textarea) {
                     const start = textarea.selectionStart;
                     const end = textarea.selectionEnd;
                     const selectedText = conteudo.substring(start, end);
                     const beforeText = conteudo.substring(0, start);
                     const afterText = conteudo.substring(end);
-                    
+
                     if (selectedText) {
                       const newText = `${beforeText}**${selectedText}**${afterText}`;
                       setConteudo(newText);
@@ -123,9 +125,9 @@ export default function EnviarRelatorioPage() {
             <SimpleMDE value={conteudo} onChange={setConteudo} options={mdeOptions} />
           </Box>
 
-          <Button 
-            type="submit" 
-            fontWeight={700} 
+          <Button
+            type="submit"
+            fontWeight={700}
             disabled={!conteudo.trim() || !titulo.trim()}
             colorScheme="blue"
           >

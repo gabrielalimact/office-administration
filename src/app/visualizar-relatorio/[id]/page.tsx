@@ -20,17 +20,12 @@ interface IRelatorio {
   titulo: string;
 }
 interface Props {
-  conteudo: string
+  conteudo: string;
 }
 function RelatorioPreview({ conteudo }: Props) {
-  const html = marked(conteudo, { breaks: true })
+  const html = marked(conteudo, { breaks: true });
 
-  return (
-    <Box
-      className="preview-content"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  )
+  return <Box className="preview-content" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 function VisualizarRelatorioPage() {
   const params = useParams();
@@ -41,7 +36,7 @@ function VisualizarRelatorioPage() {
   const { setBreadcrumbs } = useBreadcrumb();
   useEffect(() => {
     getRelatoriosByFuncionarioID(Number(id)).then((data) => {
-      console.log(data)
+      console.log(data);
       const relatorios = data.map((rel) => ({
         created_at: rel.created_at,
         conteudo: rel.conteudo,
@@ -147,17 +142,16 @@ function VisualizarRelatorioPage() {
                   pb={4}
                 >
                   <Flex align="center" gap={2} mb={2}>
-                    <Text fontSize='18px' fontWeight={550}>
+                    <Text fontSize="18px" fontWeight={550}>
                       {rel?.titulo} |
                     </Text>
                     <Text fontSize="sm" color="gray.500">
                       Data de envio:{' '}
                       {new Date(rel?.created_at).toLocaleString('pt-BR', {
-                      dateStyle: 'short',
-                      timeStyle: 'short',
-                    })}
-                  </Text>
-                  
+                        dateStyle: 'short',
+                        timeStyle: 'short',
+                      })}
+                    </Text>
                   </Flex>
                   <RelatorioPreview conteudo={rel?.conteudo as string} />
                 </Box>
