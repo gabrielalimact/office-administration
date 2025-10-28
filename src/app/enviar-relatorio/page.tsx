@@ -1,10 +1,10 @@
 'use client';
-import { Box, Button, Text } from '@chakra-ui/react';
-import { useState, useMemo, useEffect } from 'react';
+import { Box, Button, Text, Input, VStack, HStack } from '@chakra-ui/react';
+import { useState, useMemo, useRef } from 'react';
 import { useUserContext } from '@/components/UserContext';
 import dynamic from 'next/dynamic';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
 import Breadcrumb from '@/components/Breadcrumb';
+import { FaBold } from 'react-icons/fa';
 
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 import 'easymde/dist/easymde.min.css';
@@ -12,21 +12,16 @@ import { enviarNovoRelatorio } from '@/services/relatorios-service';
 
 export default function EnviarRelatorioPage() {
   const { user } = useUserContext();
-  const { setBreadcrumbs } = useBreadcrumb();
   const [conteudo, setConteudo] = useState('');
+  const [titulo, setTitulo] = useState('');
   const [success, setSuccess] = useState(false);
-
-  // Configurar breadcrumb
-  useEffect(() => {
-    setBreadcrumbs([
-      { label: 'Início', path: '/home' },
-      { label: 'Enviar Relatório', path: '/enviar-relatorio' },
-    ]);
-  }, [setBreadcrumbs]);
 
   const mdeOptions = useMemo(
     () => ({
       placeholder: 'Descreva seu trabalho, atividades, etc...',
+      toolbar: false,
+      spellChecker: false,
+      status: false,
     }),
     [],
   );
@@ -37,20 +32,22 @@ export default function EnviarRelatorioPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    localStorage.setItem(
-      `relatorio`,
-      JSON.stringify({
-        idFuncionario: user?.id,
-        conteudo,
-      }),
-    );
 
-    enviarNovoRelatorio({
+    console.log('Título:', titulo);
+    console.log('Conteúdo:', conteudo);
+    
+    const relatorioData = {
       idFuncionario: Number(user?.id),
+      titulo,
       conteudo,
-    })
+    };
+
+    localStorage.setItem(`relatorio`, JSON.stringify(relatorioData));
+
+    enviarNovoRelatorio(relatorioData)
       .then(() => {
         setSuccess(true);
+        setTitulo('');
         setConteudo('');
         setTimeout(() => setSuccess(false), 3000);
       })
@@ -70,14 +67,74 @@ export default function EnviarRelatorioPage() {
         Usuário: <b>{user.nome}</b> ({user.cargo})
       </Text>
       <form onSubmit={handleSubmit}>
-        <Box mb={4}>
-          <SimpleMDE value={conteudo} onChange={setConteudo} options={mdeOptions} />
-        </Box>
-        <Button type="submit" fontWeight={700} disabled={!conteudo.trim()}>
-          Enviar Relatório
-        </Button>
+        <VStack gap={4} align="stretch">
+          {/* Campo de Título */}
+          <Box>
+            <Text mb={2} fontWeight="semibold" color="gray.700">
+              Título do Relatório *
+            </Text>
+            <Input
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              placeholder="Digite o título do relatório..."
+              required
+            />
+          </Box>
+
+          {/* Toolbar customizada apenas com negrito */}
+          <Box>
+            <Text mb={2} fontWeight="semibold" color="gray.700">
+              Conteúdo do Relatório *
+            </Text>
+            <HStack mb={2} gap={2}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  const textarea = document.querySelector('.CodeMirror textarea') as HTMLTextAreaElement;
+                  if (textarea) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const selectedText = conteudo.substring(start, end);
+                    const beforeText = conteudo.substring(0, start);
+                    const afterText = conteudo.substring(end);
+                    
+                    if (selectedText) {
+                      const newText = `${beforeText}**${selectedText}**${afterText}`;
+                      setConteudo(newText);
+                    } else {
+                      const newText = `${beforeText}****${afterText}`;
+                      setConteudo(newText);
+                    }
+                  }
+                }}
+                variant="outline"
+                colorScheme="blue"
+              >
+                <FaBold style={{ marginRight: '8px' }} />
+                Negrito
+              </Button>
+              <Text fontSize="sm" color="gray.500">
+                Cmd+B para negrito | **texto** para formatação manual
+              </Text>
+            </HStack>
+          </Box>
+
+          <Box className="mde-container">
+            <SimpleMDE value={conteudo} onChange={setConteudo} options={mdeOptions} />
+          </Box>
+
+          <Button 
+            type="submit" 
+            fontWeight={700} 
+            disabled={!conteudo.trim() || !titulo.trim()}
+            colorScheme="blue"
+          >
+            Enviar Relatório
+          </Button>
+        </VStack>
+
         {success && (
-          <Text mt={4} color="green.500">
+          <Text mt={4} color="green.500" textAlign="center">
             Relatório enviado com sucesso!
           </Text>
         )}

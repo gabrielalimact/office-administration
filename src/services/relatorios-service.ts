@@ -2,6 +2,7 @@ import { api } from './api-service';
 
 export interface IRelatorioPost {
   idFuncionario: number;
+  titulo: string;
   conteudo: string;
 }
 
@@ -12,6 +13,7 @@ export interface IRelatorioResponse {
     nome: string;
     cargo: string;
   };
+  titulo: string;
   conteudo: string;
   created_at: string;
 }

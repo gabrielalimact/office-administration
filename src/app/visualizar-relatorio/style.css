@@ -1,0 +1,29 @@
+.preview-content {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #2D3748;
+}
+
+.preview-content strong {
+  font-weight: 600;
+}
+
+.preview-content em {
+  font-style: italic;
+}
+
+.preview-content blockquote {
+  border-left: 4px solid #CBD5E0;
+  background: #F7FAFC;
+  padding: 0.8em 1em;
+  border-radius: 6px;
+}
+
+.preview-content h1, .preview-content h2 {
+  margin: 1em 0 0.6em;
+}
+
+.preview-content ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}

@@ -1,5 +1,5 @@
 'use client';
-import { Box, Skeleton, Stack, Text } from '@chakra-ui/react';
+import { Box, Flex, Skeleton, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import { useParams } from 'next/navigation';
@@ -17,9 +17,22 @@ interface IFuncionario {
 interface IRelatorio {
   created_at: string;
   conteudo: string | string[];
+  titulo: string;
 }
+interface Props {
+  conteudo: string
+}
+function RelatorioPreview({ conteudo }: Props) {
+  const html = marked(conteudo, { breaks: true })
 
-export default function VisualizarRelatorioPage() {
+  return (
+    <Box
+      className="preview-content"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
+}
+function VisualizarRelatorioPage() {
   const params = useParams();
   const id = Number(params.id);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,9 +41,11 @@ export default function VisualizarRelatorioPage() {
   const { setBreadcrumbs } = useBreadcrumb();
   useEffect(() => {
     getRelatoriosByFuncionarioID(Number(id)).then((data) => {
+      console.log(data)
       const relatorios = data.map((rel) => ({
         created_at: rel.created_at,
         conteudo: rel.conteudo,
+        titulo: rel.titulo,
       }));
       const funcionario = data.map((rel) => ({
         id: rel.funcionario.id,
@@ -43,7 +58,6 @@ export default function VisualizarRelatorioPage() {
       setRelatorio(relatorios);
       setIsLoading(false);
 
-      // Configurar breadcrumb após carregar dados
       if (funcionario) {
         setBreadcrumbs([
           { label: 'Início', path: '/home' },
@@ -132,19 +146,20 @@ export default function VisualizarRelatorioPage() {
                   borderBottom={index < relatorio.length - 1 ? '1px solid #e2e8f0' : 'none'}
                   pb={4}
                 >
-                  <Text fontSize="sm" color="gray.500" mb={2}>
-                    Data de envio:{' '}
-                    {new Date(rel?.created_at).toLocaleString('pt-BR', {
+                  <Flex align="center" gap={2} mb={2}>
+                    <Text fontSize='18px' fontWeight={550}>
+                      {rel?.titulo} |
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Data de envio:{' '}
+                      {new Date(rel?.created_at).toLocaleString('pt-BR', {
                       dateStyle: 'short',
                       timeStyle: 'short',
                     })}
                   </Text>
-                  <Box
-                    className="markdown-body"
-                    dangerouslySetInnerHTML={{
-                      __html: marked.parse(rel?.conteudo as string),
-                    }}
-                  />
+                  
+                  </Flex>
+                  <RelatorioPreview conteudo={rel?.conteudo as string} />
                 </Box>
               ))
             ) : (
@@ -156,3 +171,5 @@ export default function VisualizarRelatorioPage() {
     </Box>
   );
 }
+
+export default VisualizarRelatorioPage;
