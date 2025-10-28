@@ -6,6 +6,7 @@ export interface User {
   nome: string;
   cpf: string;
   cargo: string;
+  email: string;
   avatar?: string;
 }
 
