@@ -5,8 +5,6 @@ import {
   ButtonGroup,
   Flex,
   IconButton,
-  Input,
-  InputGroup,
   Pagination,
   Skeleton,
   Stack,
@@ -18,9 +16,13 @@ import { MdPersonAdd } from 'react-icons/md';
 import { useState, useEffect } from 'react';
 import { useUserContext } from '@/components/UserContext';
 import { useLoading } from '@/components/LoadingContext';
-import { IoEyeOutline, IoSearchOutline } from 'react-icons/io5';
+import { useBreadcrumb } from '@/components/BreadcrumbContext';
+import Breadcrumb from '@/components/Breadcrumb';
+import { IoEyeOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
-import { getFuncionarios, IUsuario, IUsuarioResponse } from '@/services/usuario-service';
+import { getFuncionarios, IUsuarioResponse } from '@/services/usuario-service';
+import CustomInput from '@/components/CustomInput';
+import maskCPF from '../../../utils/maskCPF';
 
 export interface IFuncionarios {
   id: number;
@@ -35,14 +37,23 @@ const FuncionariosRelatoriosPage = () => {
   const [funcionarios, setFuncionarios] = useState<IFuncionarios[]>([]);
   const { setLoading } = useLoading();
   const { user } = useUserContext();
+  const { setBreadcrumbs } = useBreadcrumb();
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const funcionariosPage = funcionarios.slice(startIndex, endIndex);
 
+  
   useEffect(() => {
-    if (user && user.cargo !== 'SÓCIO(A)') {
+    setBreadcrumbs([
+      { label: 'Início', path: '/home' },
+      { label: 'Funcionários', path: '/funcionarios-relatorios' },
+    ]);
+  }, [setBreadcrumbs]);
+
+  useEffect(() => {
+    if (user && user.cargo !== 'socio') {
       router.push('/home');
     }
   }, [user, router]);
@@ -68,8 +79,8 @@ const FuncionariosRelatoriosPage = () => {
           email: item.email,
         }))
         .sort((a, b) => {
-          if (a.cargo === 'SÓCIO(A)' && b.cargo !== 'SÓCIO(A)') return -1;
-          if (a.cargo !== 'SÓCIO(A)' && b.cargo === 'SÓCIO(A)') return 1;
+          if (a.cargo === 'socio' && b.cargo !== 'socio') return -1;
+          if (a.cargo !== 'socio' && b.cargo === 'socio') return 1;
           return a.cargo.localeCompare(b.cargo);
         });
       setFuncionarios(funcionarios);
@@ -82,26 +93,22 @@ const FuncionariosRelatoriosPage = () => {
   }, []);
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+      <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Funcionários
       </Text>
       <Flex gap="1rem">
-        <InputGroup
-          endElement={
-            <IconButton variant="ghost" aria-label="Buscar">
-              <IoSearchOutline />
-            </IconButton>
-          }
-        >
-          <Input placeholder="Buscar funcionário..." p={5} borderRadius="50px" />
-        </InputGroup>
+        <CustomInput 
+          placeholder="Buscar funcionário..."
+          isSearch
+        />
         <Flex justifyContent="flex-end">
           <Button
             variant="surface"
             size="sm"
             p="20px 10px"
-            borderRadius="50px"
-            backgroundColor="var(--darkblue)"
+            borderRadius="4px"
+            backgroundColor="var(--primary)"
             color="white"
             fontWeight="bold"
             style={{ display: 'flex', alignItems: 'center', gap: 8 }}
@@ -123,7 +130,7 @@ const FuncionariosRelatoriosPage = () => {
           <Skeleton height="40px" />
         </Stack>
       ) : (
-        <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="8px" width="100%">
+        <Table.Root size="sm" variant="outline" mb={2} mt={4} borderRadius="4px" width="100%">
           <Table.Header height="50px" bgColor="var(--primary)">
             <Table.Row>
               <Table.ColumnHeader
@@ -158,7 +165,7 @@ const FuncionariosRelatoriosPage = () => {
               <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
                 <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
                 <Table.Cell>{item.cargo}</Table.Cell>
-                <Table.Cell>{item.cpf}</Table.Cell>
+                <Table.Cell>{maskCPF(item.cpf)}</Table.Cell>
                 <Table.Cell padding="0 20px 0 0" textAlign="end">
                   <IconButton
                     variant="ghost"
