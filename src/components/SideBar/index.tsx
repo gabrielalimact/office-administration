@@ -9,7 +9,7 @@ import { MdOutlineSpaceDashboard } from 'react-icons/md';
 import { HiUserPlus } from 'react-icons/hi2';
 import { FaFilePen } from 'react-icons/fa6';
 import { useRouter } from 'next/navigation';
-import { IoIosLogOut } from 'react-icons/io';
+import { IoIosArrowBack, IoIosArrowForward, IoIosLogOut } from 'react-icons/io';
 import { Avatar } from '../Avatar';
 
 const optionsMenu = [
@@ -56,13 +56,15 @@ const SideBar = () => {
     setHasMounted(true);
   }, []);
 
+  const handleExpand = () => {
+    setExpanded(!expanded);
+  };
+
   if (!hasMounted) {
     return null;
   }
   return (
     <Flex
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
       style={{
         position: 'fixed',
         top: 0,
@@ -136,6 +138,19 @@ const SideBar = () => {
                 </Flex>
               </Link>
             ))}
+          </Flex>
+
+          <Flex gap={2} onClick={() => handleExpand()} position={'fixed'} bottom={'200px'} left={expanded ? '280px' : '48px'}>
+            <IoIosArrowForward size={40} style={{
+              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.3s',
+              borderColor: 'rgba(0, 0, 0, 0.18)',
+              border: '1px solid rgba(0, 0, 0, 0.18)',
+              backgroundColor: 'rgba(247, 247, 250, 1)',
+              borderRadius: '50%',
+              padding: '4px',
+              cursor: 'pointer',
+            }}/>
           </Flex>
           <Flex
             gap={8}
