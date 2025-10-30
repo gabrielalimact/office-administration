@@ -121,7 +121,7 @@ const CadastrarProcessosPage = () => {
     let canProceed = true;
 
     switch (stepActive) {
-      case 0: 
+      case 0:
         canProceed = validateStep1();
         break;
       case 1:
@@ -271,7 +271,8 @@ const CadastrarProcessosPage = () => {
       }).then(() => {
         toaster.create({
           title: 'Sucesso',
-          description: 'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
+          description:
+            'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
           type: 'success',
           duration: 5000,
         });
@@ -352,11 +353,7 @@ const CadastrarProcessosPage = () => {
         {stepActive === steps.length ? (
           // Botões para step completed
           <ButtonGroup size="lg" variant="solid" justifyContent="center">
-            <Button 
-              bgColor="var(--primary)" 
-              w="200px"
-              onClick={() => router.push('/processos')}
-            >
+            <Button bgColor="var(--primary)" w="200px" onClick={() => router.push('/processos')}>
               Ver Processos
             </Button>
           </ButtonGroup>

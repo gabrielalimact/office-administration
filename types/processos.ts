@@ -56,4 +56,3 @@ export interface ProcessosPorFuncionario {
   processos: Processo[];
   totalProcessos: number;
 }
-

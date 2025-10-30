@@ -63,7 +63,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         onDataChange({ senha_inss: value });
         break;
       case 'data-atendimento':
-        console.log(value)
+        console.log(value);
         onDataChange({ data_atendimento: value });
         break;
       case 'observations':
@@ -149,11 +149,11 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">Situação</Select.Label>
             <Select.Control>
-              <Select.Trigger p={2}
-              borderColor={!data.status.id || data.status.id === 0 ? 'red.300' : undefined}
+              <Select.Trigger
+                p={2}
+                borderColor={!data.status.id || data.status.id === 0 ? 'red.300' : undefined}
                 _focus={{
-                  borderColor:
-                    !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500',
+                  borderColor: !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500',
                 }}
               >
                 <Select.ValueText placeholder="Selecione a situação do processo" />
