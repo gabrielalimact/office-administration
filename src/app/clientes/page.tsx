@@ -1,93 +1,93 @@
-'use client';
-import { Box, Text, IconButton, Flex, Button, ButtonGroup, Pagination } from '@chakra-ui/react';
-import { IoEyeOutline, IoTrash } from 'react-icons/io5';
-import { useEffect, useState, useCallback } from 'react';
-import { useLoading } from '@/components/LoadingContext';
-import { getClientes, deletarCliente } from '@/services/cliente-service';
-import { Cliente } from '../../../types/cliente';
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import GridTable from '@/components/GridTable';
-import { maskCPF } from '../../../utils/maskCPF';
-import CustomInput from '@/components/CustomInput';
+'use client'
+import { Box, Text, IconButton, Flex, Button, ButtonGroup, Pagination } from '@chakra-ui/react'
+import { IoEyeOutline, IoTrash } from 'react-icons/io5'
+import { useEffect, useState, useCallback } from 'react'
+import { useLoading } from '@/components/LoadingContext'
+import { getClientes, deletarCliente } from '@/services/cliente-service'
+import { Cliente } from '../../../types/cliente'
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import GridTable from '@/components/GridTable'
+import { maskCPF } from '../../../utils/maskCPF'
+import CustomInput from '@/components/CustomInput'
 
 export default function ClientesPage() {
-  const [busca, setBusca] = useState('');
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(null);
-  const [modalAberto, setModalAberto] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
-  const { setLoading } = useLoading();
-  const { setBreadcrumbs } = useBreadcrumb();
+  const [busca, setBusca] = useState('')
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(null)
+  const [modalAberto, setModalAberto] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize] = useState(10)
+  const { setLoading } = useLoading()
+  const { setBreadcrumbs } = useBreadcrumb()
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Clientes', path: '/clientes' },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  }, [setBreadcrumbs])
 
   const clientesFiltrados = clientes.filter((c) =>
     c.nome.toLowerCase().includes(busca.toLowerCase()),
-  );
-  const totalItems = clientesFiltrados.length;
-  const totalPages = Math.ceil(totalItems / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const clientesPaginados = clientesFiltrados.slice(startIndex, endIndex);
+  )
+  const totalItems = clientesFiltrados.length
+  const totalPages = Math.ceil(totalItems / pageSize)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const clientesPaginados = clientesFiltrados.slice(startIndex, endIndex)
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [busca]);
+    setCurrentPage(1)
+  }, [busca])
 
   const handleClienteClick = (clienteID: number) => {
-    setLoading(true);
+    setLoading(true)
     setTimeout(() => {
-      window.location.href = `/visualizar-cliente?cliente=${encodeURIComponent(clienteID)}`;
-      setLoading(false);
-    }, 600);
-  };
+      window.location.href = `/visualizar-cliente?cliente=${encodeURIComponent(clienteID)}`
+      setLoading(false)
+    }, 600)
+  }
 
   const handleExcluirClick = (e: React.MouseEvent, cliente: Cliente) => {
-    e.stopPropagation();
-    setClienteParaExcluir(cliente);
-    setModalAberto(true);
-  };
+    e.stopPropagation()
+    setClienteParaExcluir(cliente)
+    setModalAberto(true)
+  }
 
   const confirmarExclusao = async () => {
-    if (!clienteParaExcluir) return;
+    if (!clienteParaExcluir) return
 
-    setLoading(true);
+    setLoading(true)
     try {
-      await deletarCliente(clienteParaExcluir.id);
-      setClientes(clientes.filter((c) => c.id !== clienteParaExcluir.id));
-      setModalAberto(false);
-      setClienteParaExcluir(null);
+      await deletarCliente(clienteParaExcluir.id)
+      setClientes(clientes.filter((c) => c.id !== clienteParaExcluir.id))
+      setModalAberto(false)
+      setClienteParaExcluir(null)
     } catch (error) {
-      console.error('Erro ao excluir cliente:', error);
-      alert('Erro ao excluir cliente. Tente novamente.');
+      console.error('Erro ao excluir cliente:', error)
+      alert('Erro ao excluir cliente. Tente novamente.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const cancelarExclusao = () => {
-    setModalAberto(false);
-    setClienteParaExcluir(null);
-  };
+    setModalAberto(false)
+    setClienteParaExcluir(null)
+  }
 
   const fetchClientes = useCallback(async () => {
-    setLoading(true);
-    const data = await getClientes();
-    setClientes(data);
-    setLoading(false);
-  }, [setLoading]);
+    setLoading(true)
+    const data = await getClientes()
+    setClientes(data)
+    setLoading(false)
+  }, [setLoading])
 
   useEffect(() => {
-    fetchClientes();
-  }, [fetchClientes]);
+    fetchClientes()
+  }, [fetchClientes])
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
@@ -114,13 +114,13 @@ export default function ClientesPage() {
           onRowClick={(cliente) => handleClienteClick(cliente.id)}
           renderCell={(cliente, column) => {
             if (column.key === 'cpf') {
-              return <Text color="gray.700">{maskCPF(cliente.cpf)}</Text>;
+              return <Text color="gray.700">{maskCPF(cliente.cpf)}</Text>
             }
             if (column.key === 'email') {
-              return <Text color="gray.700">{cliente.email ?? 'Não informado'}</Text>;
+              return <Text color="gray.700">{cliente.email ?? 'Não informado'}</Text>
             }
             if (column.key === 'processosCount') {
-              return <Text color="gray.700">{cliente.processos.length ?? 0}</Text>;
+              return <Text color="gray.700">{cliente.processos.length ?? 0}</Text>
             }
             if (column.key === 'actions') {
               return (
@@ -130,8 +130,8 @@ export default function ClientesPage() {
                     aria-label="Visualizar cliente"
                     size="sm"
                     onClick={(e) => {
-                      e.stopPropagation();
-                      handleClienteClick(cliente.id);
+                      e.stopPropagation()
+                      handleClienteClick(cliente.id)
                     }}
                   >
                     <IoEyeOutline />
@@ -146,11 +146,11 @@ export default function ClientesPage() {
                     <IoTrash />
                   </IconButton>
                 </Flex>
-              );
+              )
             }
             return (
               <Text color="gray.700">{String(cliente[column.key as keyof Cliente] || '')}</Text>
-            );
+            )
           }}
           emptyMessage="Nenhum cliente encontrado"
         />
@@ -232,5 +232,5 @@ export default function ClientesPage() {
         </Box>
       )}
     </Box>
-  );
+  )
 }

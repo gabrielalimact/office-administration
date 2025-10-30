@@ -1,48 +1,48 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Box, Text, Flex, Card, Badge, List, Fieldset, Field } from '@chakra-ui/react';
-import { StepProps } from '@/types/step-forms';
-import maskCPF from '../../../../utils/maskCPF';
-import { getBeneficios, getStatus } from '@/services/processo-service';
-import { Beneficio, Status } from '../../../../types/processos';
+import React, { useEffect, useState } from 'react'
+import { Box, Text, Flex, Card, Badge, List, Fieldset, Field } from '@chakra-ui/react'
+import { StepProps } from '@/types/step-forms'
+import maskCPF from '../../../../utils/maskCPF'
+import { getBeneficios, getStatus } from '@/services/processo-service'
+import { Beneficio, Status } from '../../../../types/processos'
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
-  const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([]);
-  const [listaStatus, setListaStatus] = useState<{ label: string; value: number }[]>([]);
+  const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([])
+  const [listaStatus, setListaStatus] = useState<{ label: string; value: number }[]>([])
 
   const fetchData = async () => {
-    const beneficiosData = await getBeneficios();
+    const beneficiosData = await getBeneficios()
     const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
       value: beneficio.id,
-    }));
-    setListaBeneficios(formattedBeneficios);
+    }))
+    setListaBeneficios(formattedBeneficios)
 
-    const statusData = await getStatus();
+    const statusData = await getStatus()
     const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
       value: statusItem.id,
-    }));
-    setListaStatus(formattedStatus);
-  };
+    }))
+    setListaStatus(formattedStatus)
+  }
   const getBeneficioLabel = (id: number) => {
-    const beneficio = listaBeneficios.find((b) => b.value === id);
-    return beneficio ? beneficio.label : 'Não selecionado';
-  };
+    const beneficio = listaBeneficios.find((b) => b.value === id)
+    return beneficio ? beneficio.label : 'Não selecionado'
+  }
 
   const getStatusLabel = (id: number) => {
-    const statusItem = listaStatus.find((s) => s.value === id);
-    return statusItem ? statusItem.label : 'Não selecionado';
-  };
+    const statusItem = listaStatus.find((s) => s.value === id)
+    return statusItem ? statusItem.label : 'Não selecionado'
+  }
 
   const formatFileSize = (size: number) => {
-    return (size / 1024 / 1024).toFixed(2) + ' MB';
-  };
+    return (size / 1024 / 1024).toFixed(2) + ' MB'
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   return (
     <Box>
@@ -256,7 +256,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
         </Card.Root>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default PreviewStep;
+export default PreviewStep

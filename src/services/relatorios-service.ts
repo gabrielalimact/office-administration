@@ -1,4 +1,4 @@
-import { api } from './api-service';
+import { api } from './api-service'
 
 export interface IRelatorioPost {
   idFuncionario: number;
@@ -18,11 +18,11 @@ export interface IRelatorioResponse {
   created_at: string;
 }
 export async function enviarNovoRelatorio(data: IRelatorioPost) {
-  const response = await api.post('/relatorios', data);
-  return response.data;
+  const response = await api.post('/relatorios', data)
+  return response.data
 }
 
 export async function getRelatoriosByFuncionarioID(id: number) {
-  const response = await api.get<IRelatorioResponse[]>(`/relatorios/funcionario/${id}`);
-  return response.data;
+  const response = await api.get<IRelatorioResponse[]>(`/relatorios/funcionario/${id}`)
+  return response.data
 }

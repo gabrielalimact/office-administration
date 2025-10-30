@@ -1,16 +1,16 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { Box, Text, List, FileUpload, Icon, CloseButton } from '@chakra-ui/react';
-import { LuUpload } from 'react-icons/lu';
-import { StepProps } from '@/types/step-forms';
+import React from 'react'
+import { Box, Text, List, FileUpload, Icon, CloseButton } from '@chakra-ui/react'
+import { LuUpload } from 'react-icons/lu'
+import { StepProps } from '@/types/step-forms'
 
 const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
   const handleFileChange = (files: File[]) => {
     onDataChange({
       files: files,
-    });
-  };
+    })
+  }
 
   return (
     <Box>
@@ -75,7 +75,7 @@ const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
         <FileUpload.List />
       </FileUpload.Root>
     </Box>
-  );
-};
+  )
+}
 
-export default DocumentosStep;
+export default DocumentosStep

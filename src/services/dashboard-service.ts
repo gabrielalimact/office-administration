@@ -1,4 +1,4 @@
-import { api } from './api-service';
+import { api } from './api-service'
 
 export interface DashboardData {
   totalProcessos: number;
@@ -11,6 +11,6 @@ export interface DashboardData {
   clientesComProcessosAtivos: number;
 }
 export async function getDashboardData() {
-  const response = await api.get<DashboardData>('/dashboard');
-  return response.data;
+  const response = await api.get<DashboardData>('/dashboard')
+  return response.data
 }

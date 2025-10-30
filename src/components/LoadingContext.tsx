@@ -1,22 +1,22 @@
-'use client';
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { Flex, Spinner, Box } from '@chakra-ui/react';
+'use client'
+import { createContext, useContext, useState, ReactNode } from 'react'
+import { Flex, Spinner, Box } from '@chakra-ui/react'
 
 interface LoadingContextProps {
   isLoading: boolean;
   setLoading: (value: boolean) => void;
 }
 
-const LoadingContext = createContext<LoadingContextProps | undefined>(undefined);
+const LoadingContext = createContext<LoadingContextProps | undefined>(undefined)
 
 export function useLoading() {
-  const ctx = useContext(LoadingContext);
-  if (!ctx) throw new Error('useLoading must be used within LoadingProvider');
-  return ctx;
+  const ctx = useContext(LoadingContext)
+  if (!ctx) throw new Error('useLoading must be used within LoadingProvider')
+  return ctx
 }
 
 export function LoadingProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
 
   return (
     <LoadingContext.Provider value={{ isLoading, setLoading }}>
@@ -39,5 +39,5 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
       )}
       {children}
     </LoadingContext.Provider>
-  );
+  )
 }

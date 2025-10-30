@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   Fieldset,
   Field,
@@ -14,11 +14,11 @@ import {
   Text,
   Box,
   ListCollection,
-} from '@chakra-ui/react';
-import { CheckedChangeDetails } from '@zag-js/checkbox';
-import { StepProps } from '@/types/step-forms';
-import { getBeneficios, getStatus } from '@/services/processo-service';
-import { Beneficio, Status } from '../../../../types/processos';
+} from '@chakra-ui/react'
+import { CheckedChangeDetails } from '@zag-js/checkbox'
+import { StepProps } from '@/types/step-forms'
+import { getBeneficios, getStatus } from '@/services/processo-service'
+import { Beneficio, Status } from '../../../../types/processos'
 
 type SelectItem = {
   label: string;
@@ -28,74 +28,74 @@ type SelectItem = {
 const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [listaBeneficios, setListaBeneficios] = useState<ListCollection<SelectItem>>(
     createListCollection<SelectItem>({ items: [] }),
-  );
+  )
   const [listaStatus, setListaStatus] = useState<ListCollection<SelectItem>>(
     createListCollection<SelectItem>({ items: [] }),
-  );
+  )
 
   const fetchData = async () => {
-    const beneficiosData = await getBeneficios();
+    const beneficiosData = await getBeneficios()
     const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
       value: beneficio.id,
-    }));
-    const beneficios = createListCollection<SelectItem>({ items: formattedBeneficios });
-    setListaBeneficios(beneficios);
+    }))
+    const beneficios = createListCollection<SelectItem>({ items: formattedBeneficios })
+    setListaBeneficios(beneficios)
 
-    const statusData = await getStatus();
+    const statusData = await getStatus()
     const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
       value: statusItem.id,
-    }));
-    const status = createListCollection<SelectItem>({ items: formattedStatus });
-    setListaStatus(status);
-  };
+    }))
+    const status = createListCollection<SelectItem>({ items: formattedStatus })
+    setListaStatus(status)
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
     switch (name) {
       case 'senha-inss':
-        onDataChange({ senha_inss: value });
-        break;
+        onDataChange({ senha_inss: value })
+        break
       case 'data-atendimento':
-        onDataChange({ data_atendimento: value });
-        break;
+        onDataChange({ data_atendimento: value })
+        break
       case 'observations':
-        onDataChange({ observacoes: value });
-        break;
+        onDataChange({ observacoes: value })
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   const handleBeneficioChange = (value: { value: string[] }) => {
-    const selectedValue = value.value[0];
-    if (!selectedValue) return;
+    const selectedValue = value.value[0]
+    if (!selectedValue) return
 
-    const parsedId = Number(selectedValue);
-    if (Number.isNaN(parsedId)) return;
+    const parsedId = Number(selectedValue)
+    if (Number.isNaN(parsedId)) return
 
-    onDataChange({ beneficio: { id: parsedId } });
-  };
+    onDataChange({ beneficio: { id: parsedId } })
+  }
 
   const handleStatusChange = (value: { value: string[] }) => {
-    const selectedValue = value.value[0];
-    if (!selectedValue) return;
+    const selectedValue = value.value[0]
+    if (!selectedValue) return
 
-    const parsedId = Number(selectedValue);
-    if (Number.isNaN(parsedId)) return;
+    const parsedId = Number(selectedValue)
+    if (Number.isNaN(parsedId)) return
 
-    onDataChange({ status: { id: parsedId } });
-  };
+    onDataChange({ status: { id: parsedId } })
+  }
 
   const handleCheckboxChange = (name: string, checked: CheckedChangeDetails) => {
-    onDataChange({ [name]: checked.checked });
-  };
+    onDataChange({ [name]: checked.checked })
+  }
 
   return (
     <Fieldset.Root minW="full" flex={1}>
@@ -220,11 +220,11 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
                 data.data_atendimento && data.data_atendimento !== ''
                   ? data.data_atendimento
                   : (() => {
-                      const d = new Date();
-                      const yyyy = d.getFullYear();
-                      const mm = String(d.getMonth() + 1).padStart(2, '0');
-                      const dd = String(d.getDate()).padStart(2, '0');
-                      return `${yyyy}-${mm}-${dd}`;
+                      const d = new Date()
+                      const yyyy = d.getFullYear()
+                      const mm = String(d.getMonth() + 1).padStart(2, '0')
+                      const dd = String(d.getDate()).padStart(2, '0')
+                      return `${yyyy}-${mm}-${dd}`
                     })()
               }
               onChange={handleInputChange}
@@ -245,7 +245,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         </Field.Root>
       </Fieldset.Content>
     </Fieldset.Root>
-  );
-};
+  )
+}
 
-export default ProcessoStep;
+export default ProcessoStep

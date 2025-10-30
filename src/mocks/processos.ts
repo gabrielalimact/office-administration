@@ -35,7 +35,7 @@ export const tiposAgendamento: TipoAgendamento[] = [
   'AVALIAÇÃO SOCIAL',
   'AUDIENCIA',
   'PERICIA MEDICA INICIAL',
-];
+]
 
 export const processosMock: IProcessosTable[] = [
   {
@@ -128,4 +128,4 @@ export const processosMock: IProcessosTable[] = [
     status: 'EM ANDAMENTO',
     tipoAgendamento: 'AVALIAÇÃO SOCIAL',
   },
-];
+]

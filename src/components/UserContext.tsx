@@ -1,5 +1,5 @@
-'use client';
-import { createContext, useContext, useState, ReactNode } from 'react';
+'use client'
+import { createContext, useContext, useState, ReactNode } from 'react'
 
 export interface User {
   id: number;
@@ -16,37 +16,37 @@ interface UserContextProps {
   logout: () => void;
 }
 
-const UserContext = createContext<UserContextProps | undefined>(undefined);
+const UserContext = createContext<UserContextProps | undefined>(undefined)
 
 export function useUserContext() {
-  const ctx = useContext(UserContext);
-  if (!ctx) throw new Error('useUserContext must be used within UserProvider');
-  return ctx;
+  const ctx = useContext(UserContext)
+  if (!ctx) throw new Error('useUserContext must be used within UserProvider')
+  return ctx
 }
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('user');
-      if (stored) return JSON.parse(stored);
+      const stored = localStorage.getItem('user')
+      if (stored) return JSON.parse(stored)
     }
-    return null;
-  });
+    return null
+  })
 
   function setUser(newUser: User | null) {
-    setUserState(newUser);
+    setUserState(newUser)
     if (typeof window !== 'undefined') {
       if (newUser) {
-        localStorage.setItem('user', JSON.stringify(newUser));
+        localStorage.setItem('user', JSON.stringify(newUser))
       } else {
-        localStorage.removeItem('user');
+        localStorage.removeItem('user')
       }
     }
   }
 
   function logout() {
-    setUser(null);
+    setUser(null)
   }
 
-  return <UserContext.Provider value={{ user, setUser, logout }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, setUser, logout }}>{children}</UserContext.Provider>
 }

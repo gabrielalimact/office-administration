@@ -1,44 +1,44 @@
-'use client';
-import { getClientePorId } from '@/services/cliente-service';
-import { Box, Flex, Text, Table, Button, Spinner } from '@chakra-ui/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
-import { Cliente } from '../../../types/cliente';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
+'use client'
+import { getClientePorId } from '@/services/cliente-service'
+import { Box, Flex, Text, Table, Button, Spinner } from '@chakra-ui/react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { Cliente } from '../../../types/cliente'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
 
 function VisualizarClienteContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const clienteID = searchParams.get('cliente') || '';
-  const [cliente, setCliente] = useState<Cliente | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { setBreadcrumbs } = useBreadcrumb();
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const clienteID = searchParams.get('cliente') || ''
+  const [cliente, setCliente] = useState<Cliente | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { setBreadcrumbs } = useBreadcrumb()
 
   const fetchCliente = async () => {
     if (!clienteID) {
-      setError('ID do cliente não fornecido');
-      setLoading(false);
-      return;
+      setError('ID do cliente não fornecido')
+      setLoading(false)
+      return
     }
 
     try {
-      setLoading(true);
-      setError(null);
-      const clienteData = await getClientePorId(Number(clienteID));
-      setCliente(clienteData);
+      setLoading(true)
+      setError(null)
+      const clienteData = await getClientePorId(Number(clienteID))
+      setCliente(clienteData)
     } catch (err) {
-      console.error('Erro ao buscar cliente:', err);
-      setError('Erro ao carregar dados do cliente. Tente novamente.');
+      console.error('Erro ao buscar cliente:', err)
+      setError('Erro ao carregar dados do cliente. Tente novamente.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchCliente();
-  }, [clienteID]);
+    fetchCliente()
+  }, [clienteID])
 
   // Configurar breadcrumb quando o cliente for carregado
   useEffect(() => {
@@ -47,9 +47,9 @@ function VisualizarClienteContent() {
         { label: 'Início', path: '/home' },
         { label: 'Clientes', path: '/clientes' },
         { label: cliente.nome, path: `/visualizar-cliente?cliente=${cliente.id}` },
-      ]);
+      ])
     }
-  }, [cliente, setBreadcrumbs]);
+  }, [cliente, setBreadcrumbs])
 
   if (!clienteID) {
     return (
@@ -70,7 +70,7 @@ function VisualizarClienteContent() {
           </Button>
         </Box>
       </Box>
-    );
+    )
   }
 
   if (loading) {
@@ -90,7 +90,7 @@ function VisualizarClienteContent() {
           </Text>
         </Box>
       </Box>
-    );
+    )
   }
 
   if (error) {
@@ -117,7 +117,7 @@ function VisualizarClienteContent() {
           </Flex>
         </Box>
       </Box>
-    );
+    )
   }
 
   if (!cliente) {
@@ -139,7 +139,7 @@ function VisualizarClienteContent() {
           </Button>
         </Box>
       </Box>
-    );
+    )
   }
 
   return (
@@ -344,7 +344,7 @@ function VisualizarClienteContent() {
         </Box>
       )}
     </Box>
-  );
+  )
 }
 
 export default function VisualizarClientePage() {
@@ -370,5 +370,5 @@ export default function VisualizarClientePage() {
     >
       <VisualizarClienteContent />
     </Suspense>
-  );
+  )
 }

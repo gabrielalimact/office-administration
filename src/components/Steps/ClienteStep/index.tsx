@@ -1,51 +1,51 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { Fieldset, Field, Input, Text } from '@chakra-ui/react';
-import { StepProps } from '@/types/step-forms';
-import maskCPF from '../../../../utils/maskCPF';
+import React from 'react'
+import { Fieldset, Field, Input, Text } from '@chakra-ui/react'
+import { StepProps } from '@/types/step-forms'
+import maskCPF from '../../../../utils/maskCPF'
 
 const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const isValidCPF = (cpf: string) => {
-    const cleanCPF = cpf.replace(/\D/g, '');
-    return cleanCPF.length === 11;
-  };
+    const cleanCPF = cpf.replace(/\D/g, '')
+    return cleanCPF.length === 11
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
 
     switch (name) {
       case 'name':
         onDataChange({
           cliente: { ...data.cliente, nome: value },
-        });
-        break;
+        })
+        break
       case 'birthdate':
         onDataChange({
           cliente: { ...data.cliente, data_nascimento: value },
-        });
-        break;
+        })
+        break
       case 'cpf':
-        const digits = value.replace(/\D/g, '').slice(0, 11);
+        const digits = value.replace(/\D/g, '').slice(0, 11)
         onDataChange({
           cliente: { ...data.cliente, cpf: digits },
-        });
-        break;
+        })
+        break
       case 'rg':
         onDataChange({
           cliente: { ...data.cliente, rg: value },
-        });
-        break;
+        })
+        break
       case 'filiation':
         onDataChange({
           cliente: { ...data.cliente, filiacao: value },
-        });
-        break;
+        })
+        break
       case 'naturalidade':
         onDataChange({
           cliente: { ...data.cliente, naturalidade: value },
-        });
-        break;
+        })
+        break
       // Campos de endereço
       case 'cep':
         onDataChange({
@@ -53,52 +53,52 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, cep: value },
           },
-        });
-        break;
+        })
+        break
       case 'street':
         onDataChange({
           cliente: {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, logradouro: value },
           },
-        });
-        break;
+        })
+        break
       case 'number':
         onDataChange({
           cliente: {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, numero: value },
           },
-        });
-        break;
+        })
+        break
       case 'neighborhood':
         onDataChange({
           cliente: {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, bairro: value },
           },
-        });
-        break;
+        })
+        break
       case 'city':
         onDataChange({
           cliente: {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, cidade: value },
           },
-        });
-        break;
+        })
+        break
       case 'state':
         onDataChange({
           cliente: {
             ...data.cliente,
             endereco: { ...data.cliente.endereco, estado: value },
           },
-        });
-        break;
+        })
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   return (
     <Fieldset.Root minW="full" flex={1} gap={2}>
@@ -259,7 +259,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         </Field.Root>
       </Fieldset.Content>
     </Fieldset.Root>
-  );
-};
+  )
+}
 
-export default ClienteStep;
+export default ClienteStep

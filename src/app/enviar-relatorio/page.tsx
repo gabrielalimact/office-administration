@@ -1,22 +1,22 @@
-'use client';
-import { Box, Button, Text, Input, VStack, HStack } from '@chakra-ui/react';
-import { useState, useMemo, useRef } from 'react';
-import { useUserContext } from '@/components/UserContext';
-import dynamic from 'next/dynamic';
-import Breadcrumb from '@/components/Breadcrumb';
-import { FaBold } from 'react-icons/fa';
+'use client'
+import { Box, Button, Text, Input, VStack, HStack } from '@chakra-ui/react'
+import { useState, useMemo, useRef } from 'react'
+import { useUserContext } from '@/components/UserContext'
+import dynamic from 'next/dynamic'
+import Breadcrumb from '@/components/Breadcrumb'
+import { FaBold } from 'react-icons/fa'
 
-const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
-import 'easymde/dist/easymde.min.css';
-import { enviarNovoRelatorio } from '@/services/relatorios-service';
-import CustomInput from '@/components/CustomInput';
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false })
+import 'easymde/dist/easymde.min.css'
+import { enviarNovoRelatorio } from '@/services/relatorios-service'
+import CustomInput from '@/components/CustomInput'
 
 export default function EnviarRelatorioPage() {
-  const { user } = useUserContext();
-  const [conteudo, setConteudo] = useState('');
-  const [titulo, setTitulo] = useState('');
-  const [negritoActive, setNegritoActive] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const { user } = useUserContext()
+  const [conteudo, setConteudo] = useState('')
+  const [titulo, setTitulo] = useState('')
+  const [negritoActive, setNegritoActive] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const mdeOptions = useMemo(
     () => ({
@@ -26,54 +26,54 @@ export default function EnviarRelatorioPage() {
       status: false,
     }),
     [],
-  );
+  )
 
   if (!user) {
-    return <Text>Faça login para enviar um relatório.</Text>;
+    return <Text>Faça login para enviar um relatório.</Text>
   }
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
 
     const relatorioData = {
       idFuncionario: Number(user?.id),
       titulo,
       conteudo,
-    };
+    }
 
-    localStorage.setItem(`relatorio`, JSON.stringify(relatorioData));
+    localStorage.setItem(`relatorio`, JSON.stringify(relatorioData))
 
     enviarNovoRelatorio(relatorioData)
       .then(() => {
-        setSuccess(true);
-        setTitulo('');
-        setConteudo('');
-        setTimeout(() => setSuccess(false), 3000);
+        setSuccess(true)
+        setTitulo('')
+        setConteudo('')
+        setTimeout(() => setSuccess(false), 3000)
       })
       .catch((error) => {
-        console.error('Erro ao enviar relatório:', error);
-        alert('Erro ao enviar relatório. Tente novamente.');
-      });
+        console.error('Erro ao enviar relatório:', error)
+        alert('Erro ao enviar relatório. Tente novamente.')
+      })
   }
   const handleNegritoClick = () => {
-    const novoEstado = !negritoActive;
-    setNegritoActive(novoEstado);
+    const novoEstado = !negritoActive
+    setNegritoActive(novoEstado)
 
     if (novoEstado) {
-      const textarea = document.querySelector('.CodeMirror textarea') as HTMLTextAreaElement;
+      const textarea = document.querySelector('.CodeMirror textarea') as HTMLTextAreaElement
       if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const selectedText = conteudo.substring(start, end);
-        const beforeText = conteudo.substring(0, start);
-        const afterText = conteudo.substring(end);
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        const selectedText = conteudo.substring(start, end)
+        const beforeText = conteudo.substring(0, start)
+        const afterText = conteudo.substring(end)
 
         if (selectedText) {
-          const newText = `${beforeText}**${selectedText}**${afterText}`;
-          setConteudo(newText);
+          const newText = `${beforeText}**${selectedText}**${afterText}`
+          setConteudo(newText)
         } else {
-          const newText = `${beforeText}****${afterText}`;
-          setConteudo(newText);
+          const newText = `${beforeText}****${afterText}`
+          setConteudo(newText)
         }
       }
     }
@@ -112,7 +112,7 @@ export default function EnviarRelatorioPage() {
                 size="sm"
                 px={2}
                 onClick={() => {
-                  handleNegritoClick();
+                  handleNegritoClick()
                 }}
                 variant="outline"
                 style={{
@@ -150,5 +150,5 @@ export default function EnviarRelatorioPage() {
         )}
       </form>
     </Box>
-  );
+  )
 }

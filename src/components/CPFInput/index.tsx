@@ -1,6 +1,6 @@
-import { Input, Field } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
-import { maskCPF, validateCPF, unmaskCPF } from '../../../utils/maskCPF';
+import { Input, Field } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
+import { maskCPF, validateCPF, unmaskCPF } from '../../../utils/maskCPF'
 
 interface CPFInputProps {
   label?: string;
@@ -25,52 +25,52 @@ export function CPFInput({
   required = false,
   disabled = false,
 }: CPFInputProps) {
-  const [inputValue, setInputValue] = useState(maskCPF(value));
-  const [error, setError] = useState<string | undefined>();
+  const [inputValue, setInputValue] = useState(maskCPF(value))
+  const [error, setError] = useState<string | undefined>()
 
   // Atualiza o valor quando a prop value muda
   useEffect(() => {
-    setInputValue(maskCPF(value));
-  }, [value]);
+    setInputValue(maskCPF(value))
+  }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    const maskedValue = maskCPF(rawValue);
-    const unmaskedValue = unmaskCPF(maskedValue);
+    const rawValue = e.target.value
+    const maskedValue = maskCPF(rawValue)
+    const unmaskedValue = unmaskCPF(maskedValue)
 
-    setInputValue(maskedValue);
+    setInputValue(maskedValue)
 
     // Validação
-    let valid = false;
-    let errorMessage: string | undefined;
+    let valid = false
+    let errorMessage: string | undefined
 
     if (maskedValue.length === 0) {
       if (required) {
-        errorMessage = 'CPF é obrigatório';
+        errorMessage = 'CPF é obrigatório'
       }
     } else if (maskedValue.length < 14) {
-      errorMessage = 'CPF incompleto';
+      errorMessage = 'CPF incompleto'
     } else {
-      valid = validateCPF(maskedValue);
+      valid = validateCPF(maskedValue)
       if (!valid) {
-        errorMessage = 'CPF inválido';
+        errorMessage = 'CPF inválido'
       }
     }
 
-    setError(errorMessage);
+    setError(errorMessage)
 
     // Chama os callbacks
-    onChange?.(unmaskedValue, valid);
-    onValidation?.(valid, errorMessage);
-  };
+    onChange?.(unmaskedValue, valid)
+    onValidation?.(valid, errorMessage)
+  }
 
   const handleBlur = () => {
     // Validação final no blur
     if (inputValue.length > 0 && inputValue.length < 14) {
-      setError('CPF incompleto');
-      onValidation?.(false, 'CPF incompleto');
+      setError('CPF incompleto')
+      onValidation?.(false, 'CPF incompleto')
     }
-  };
+  }
 
   return (
     <Field.Root invalid={!!error} required={required}>
@@ -88,7 +88,7 @@ export function CPFInput({
       />
       {error && <Field.ErrorText>{error}</Field.ErrorText>}
     </Field.Root>
-  );
+  )
 }
 
-export default CPFInput;
+export default CPFInput

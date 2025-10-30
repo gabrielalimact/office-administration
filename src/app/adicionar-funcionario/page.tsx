@@ -1,12 +1,12 @@
-'use client';
-import { useUserContext } from '@/components/UserContext';
-import { cadastrarNovoUsuario, IUsuario } from '@/services/usuario-service';
-import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import maskCPF from '../../../utils/maskCPF';
+'use client'
+import { useUserContext } from '@/components/UserContext'
+import { cadastrarNovoUsuario, IUsuario } from '@/services/usuario-service'
+import { Box, Button, Flex, Input, Text } from '@chakra-ui/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import maskCPF from '../../../utils/maskCPF'
 
 const cargos = [
   {
@@ -19,34 +19,34 @@ const cargos = [
     nome: 'Funcionário',
     descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.',
   },
-];
+]
 
 export default function AdicionarFuncionarioPage() {
-  const router = useRouter();
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [senha, setSenha] = useState('');
-  const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].label);
-  const { user } = useUserContext();
-  const { setBreadcrumbs } = useBreadcrumb();
+  const router = useRouter()
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [cpf, setCpf] = useState('')
+  const [senha, setSenha] = useState('')
+  const [cargoSelecionado, setCargoSelecionado] = useState(cargos[0].label)
+  const { user } = useUserContext()
+  const { setBreadcrumbs } = useBreadcrumb()
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Funcionários', path: '/funcionarios-relatorios' },
       { label: 'Adicionar Funcionário', path: '/adicionar-funcionario' },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  }, [setBreadcrumbs])
 
   const handleCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '');
+    const raw = e.target.value.replace(/\D/g, '')
     if (raw.length <= 11) {
-      setCpf(raw);
+      setCpf(raw)
     }
-  };
+  }
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     cadastrarNovoUsuario({
       nome,
       email,
@@ -55,25 +55,25 @@ export default function AdicionarFuncionarioPage() {
       cargo: cargoSelecionado,
     } as IUsuario)
       .then(() => {
-        alert('Funcionário cadastrado com sucesso!');
-        router.push('/funcionarios-relatorios');
+        alert('Funcionário cadastrado com sucesso!')
+        router.push('/funcionarios-relatorios')
       })
       .catch((error) => {
-        console.error('Erro ao cadastrar funcionário:', error);
-        alert('Erro ao cadastrar funcionário. Tente novamente.');
-      });
-    setNome('');
-    setEmail('');
-    setCpf('');
-    setSenha('');
-    setCargoSelecionado(cargos[0].label);
-  };
+        console.error('Erro ao cadastrar funcionário:', error)
+        alert('Erro ao cadastrar funcionário. Tente novamente.')
+      })
+    setNome('')
+    setEmail('')
+    setCpf('')
+    setSenha('')
+    setCargoSelecionado(cargos[0].label)
+  }
 
   useEffect(() => {
     if (user && user.cargo !== 'socio') {
-      router.push('/home');
+      router.push('/home')
     }
-  }, [user, router]);
+  }, [user, router])
   return (
     <Box mx="auto" p={8} bg="white">
       <Breadcrumb />
@@ -176,5 +176,5 @@ export default function AdicionarFuncionarioPage() {
         </Button>
       </form>
     </Box>
-  );
+  )
 }

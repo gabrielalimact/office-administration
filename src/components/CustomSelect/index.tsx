@@ -1,5 +1,5 @@
-'use client';
-import { Select, Portal, createListCollection } from '@chakra-ui/react';
+'use client'
+import { Select, Portal, createListCollection } from '@chakra-ui/react'
 
 export interface SelectOption {
   label: string;
@@ -38,20 +38,20 @@ export const CustomSelect = ({
   // Criar collection usando createListCollection
   const collection = createListCollection({
     items: options,
-  });
+  })
 
   // Handler para onChange que converte o formato
   const handleValueChange = (details: { value: string[] }) => {
-    onValueChange(details.value);
-  };
+    onValueChange(details.value)
+  }
 
   // Determinar o valor atual para exibir
-  const currentValue = value.length > 0 ? value : defaultValue;
+  const currentValue = value.length > 0 ? value : defaultValue
 
   const getSelectStyles = () => {
     const baseStyles = {
       padding: size === 'sm' ? 1 : size === 'lg' ? 3 : 2,
-    };
+    }
 
     const variantStyles = {
       outline: {
@@ -81,10 +81,10 @@ export const CustomSelect = ({
           borderBottomColor: '#3182ce',
         },
       },
-    };
+    }
 
-    return { ...baseStyles, ...variantStyles[variant] };
-  };
+    return { ...baseStyles, ...variantStyles[variant] }
+  }
 
   return (
     <Select.Root
@@ -135,5 +135,5 @@ export const CustomSelect = ({
         </Select.Positioner>
       </Portal>
     </Select.Root>
-  );
-};
+  )
+}

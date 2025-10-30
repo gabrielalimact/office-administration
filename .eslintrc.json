@@ -28,7 +28,8 @@
     ],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "no-unused-vars": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "semi": ["error", "never"]
   },
   "settings": {
     "react": {

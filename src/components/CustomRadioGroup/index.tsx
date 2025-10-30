@@ -1,4 +1,4 @@
-import { RadioGroup, HStack, UseRadioGroupProps } from '@chakra-ui/react';
+import { RadioGroup, HStack, UseRadioGroupProps } from '@chakra-ui/react'
 type Item = {
   label: string;
   value: string;
@@ -13,9 +13,9 @@ type Props = {
 const CustomRadioGroup = ({ items, onChange, value, ...rest }: Props) => {
   const handleValueChange = (details: { value: string | null }) => {
     if (details.value) {
-      onChange(details.value);
+      onChange(details.value)
     }
-  };
+  }
 
   return (
     <RadioGroup.Root mt={4} onValueChange={handleValueChange} value={value} {...rest}>
@@ -29,7 +29,7 @@ const CustomRadioGroup = ({ items, onChange, value, ...rest }: Props) => {
         ))}
       </HStack>
     </RadioGroup.Root>
-  );
-};
+  )
+}
 
-export default CustomRadioGroup;
+export default CustomRadioGroup

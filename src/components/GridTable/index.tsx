@@ -1,5 +1,5 @@
-import { Box, Text } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import { Box, Text } from '@chakra-ui/react'
+import { ReactNode } from 'react'
 
 interface GridTableColumn {
   key: string;
@@ -23,7 +23,7 @@ export function GridTable<T = Record<string, unknown>>({
   renderCell,
   emptyMessage = 'Nenhum item encontrado',
 }: GridTableProps<T>) {
-  const gridTemplateColumns = columns.map((col) => col.width || '1fr').join(' ');
+  const gridTemplateColumns = columns.map((col) => col.width || '1fr').join(' ')
 
   return (
     <Box borderRadius="4px" bg="white" overflow="hidden" border="1px solid" borderColor="gray.200">
@@ -106,7 +106,7 @@ export function GridTable<T = Record<string, unknown>>({
         ))
       )}
     </Box>
-  );
+  )
 }
 
-export default GridTable;
+export default GridTable

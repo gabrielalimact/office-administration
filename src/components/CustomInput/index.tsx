@@ -1,5 +1,5 @@
-import { Field, Fieldset, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/react';
-import { IoSearchOutline } from 'react-icons/io5';
+import { Field, Fieldset, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/react'
+import { IoSearchOutline } from 'react-icons/io5'
 
 type Props = {
   label?: string;
@@ -56,7 +56,7 @@ const CustomInput = ({
         />
       )}
     </Field.Root>
-  );
-};
+  )
+}
 
-export default CustomInput;
+export default CustomInput

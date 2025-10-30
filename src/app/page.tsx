@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import {
   Box,
   Button,
@@ -10,42 +10,42 @@ import {
   Link,
   IconButton,
   InputGroup,
-} from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
-import { useLoading } from '@/components/LoadingContext';
-import { useUserContext } from '@/components/UserContext';
-import { login } from '@/services/auth-service';
-import { useState } from 'react';
-import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
-import maskCPF from '../../utils/maskCPF';
-import { toaster } from '@/components/ui/toaster';
+} from '@chakra-ui/react'
+import { useRouter } from 'next/navigation'
+import { useLoading } from '@/components/LoadingContext'
+import { useUserContext } from '@/components/UserContext'
+import { login } from '@/services/auth-service'
+import { useState } from 'react'
+import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5'
+import maskCPF from '../../utils/maskCPF'
+import { toaster } from '@/components/ui/toaster'
 
 export default function Login() {
-  const router = useRouter();
-  const { setLoading } = useLoading();
-  const { setUser } = useUserContext();
-  const [cpf, setCpf] = useState('');
-  const [senha, setSenha] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter()
+  const { setLoading } = useLoading()
+  const { setUser } = useUserContext()
+  const [cpf, setCpf] = useState('')
+  const [senha, setSenha] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
   const handleChangeCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '');
+    const raw = e.target.value.replace(/\D/g, '')
     if (raw.length <= 11) {
-      setCpf(raw);
+      setCpf(raw)
     }
-  };
+  }
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handlePush('/home');
+      handlePush('/home')
     }
-  };
+  }
 
   const handlePush = (path: string) => {
-    setLoading(true);
+    setLoading(true)
     login(cpf, senha)
       .then((res) => {
         setUser({
@@ -55,8 +55,8 @@ export default function Login() {
           cargo: res.cargo,
           email: res.email,
           avatar: res.avatar ? res.avatar.url : '/next.svg',
-        });
-        router.push(path);
+        })
+        router.push(path)
       })
       .catch(() => {
         toaster.create({
@@ -64,12 +64,12 @@ export default function Login() {
           description: 'CPF ou senha incorretos. Tente novamente.',
           type: 'error',
           duration: 3000,
-        });
+        })
       })
       .finally(() => {
-        setLoading(false);
-      });
-  };
+        setLoading(false)
+      })
+  }
   return (
     <Flex
       minH="100vh"
@@ -191,5 +191,5 @@ export default function Login() {
         />
       </Flex>
     </Flex>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import {
   Box,
   Button,
@@ -10,19 +10,19 @@ import {
   Stack,
   Table,
   Text,
-} from '@chakra-ui/react';
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
-import { MdPersonAdd } from 'react-icons/md';
-import { useState, useEffect } from 'react';
-import { useUserContext } from '@/components/UserContext';
-import { useLoading } from '@/components/LoadingContext';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import { IoEyeOutline } from 'react-icons/io5';
-import { useRouter } from 'next/navigation';
-import { getFuncionarios, IUsuarioResponse } from '@/services/usuario-service';
-import CustomInput from '@/components/CustomInput';
-import maskCPF from '../../../utils/maskCPF';
+} from '@chakra-ui/react'
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import { MdPersonAdd } from 'react-icons/md'
+import { useState, useEffect } from 'react'
+import { useUserContext } from '@/components/UserContext'
+import { useLoading } from '@/components/LoadingContext'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import { IoEyeOutline } from 'react-icons/io5'
+import { useRouter } from 'next/navigation'
+import { getFuncionarios, IUsuarioResponse } from '@/services/usuario-service'
+import CustomInput from '@/components/CustomInput'
+import maskCPF from '../../../utils/maskCPF'
 
 export interface IFuncionarios {
   id: number;
@@ -32,41 +32,41 @@ export interface IFuncionarios {
   email: string;
 }
 const FuncionariosRelatoriosPage = () => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-  const [funcionarios, setFuncionarios] = useState<IFuncionarios[]>([]);
-  const { setLoading } = useLoading();
-  const { user } = useUserContext();
-  const { setBreadcrumbs } = useBreadcrumb();
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const funcionariosPage = funcionarios.slice(startIndex, endIndex);
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const [funcionarios, setFuncionarios] = useState<IFuncionarios[]>([])
+  const { setLoading } = useLoading()
+  const { user } = useUserContext()
+  const { setBreadcrumbs } = useBreadcrumb()
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const funcionariosPage = funcionarios.slice(startIndex, endIndex)
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Funcionários', path: '/funcionarios-relatorios' },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  }, [setBreadcrumbs])
 
   useEffect(() => {
     if (user && user.cargo !== 'socio') {
-      router.push('/home');
+      router.push('/home')
     }
-  }, [user, router]);
+  }, [user, router])
 
   const handlePush = (path: string) => {
-    setLoading(true);
+    setLoading(true)
     setTimeout(() => {
-      router.push(path);
-      setLoading(false);
-    }, 400);
-  };
+      router.push(path)
+      setLoading(false)
+    }, 400)
+  }
 
   const fetchFuncionarios = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     getFuncionarios().then((data) => {
       const funcionarios = data
@@ -78,18 +78,18 @@ const FuncionariosRelatoriosPage = () => {
           email: item.email,
         }))
         .sort((a, b) => {
-          if (a.cargo === 'socio' && b.cargo !== 'socio') return -1;
-          if (a.cargo !== 'socio' && b.cargo === 'socio') return 1;
-          return a.cargo.localeCompare(b.cargo);
-        });
-      setFuncionarios(funcionarios);
-      setIsLoading(false);
-    });
-  };
+          if (a.cargo === 'socio' && b.cargo !== 'socio') return -1
+          if (a.cargo !== 'socio' && b.cargo === 'socio') return 1
+          return a.cargo.localeCompare(b.cargo)
+        })
+      setFuncionarios(funcionarios)
+      setIsLoading(false)
+    })
+  }
 
   useEffect(() => {
-    fetchFuncionarios();
-  }, []);
+    fetchFuncionarios()
+  }, [])
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Breadcrumb />
@@ -208,7 +208,7 @@ const FuncionariosRelatoriosPage = () => {
         </ButtonGroup>
       </Pagination.Root>
     </Box>
-  );
-};
+  )
+}
 
-export default FuncionariosRelatoriosPage;
+export default FuncionariosRelatoriosPage

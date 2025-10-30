@@ -1,17 +1,17 @@
-'use client';
-import { Box, Button, Fieldset, Flex, Text, IconButton, VStack, Image } from '@chakra-ui/react';
-import React, { useState, useEffect, useRef } from 'react';
-import { MdOutlineEdit } from 'react-icons/md';
-import { FaRegSave, FaCamera } from 'react-icons/fa';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import { useUserContext } from '@/components/UserContext';
-import { updateUsuario } from '@/services/usuario-service';
-import { toaster } from '@/components/ui/toaster';
-import { useAvatar } from '@/hooks/useAvatar';
-import maskCPF from '../../../utils/maskCPF';
-import CustomInput from '@/components/CustomInput';
-import CustomRadioGroup from '@/components/CustomRadioGroup';
+'use client'
+import { Box, Button, Fieldset, Flex, Text, IconButton, VStack, Image } from '@chakra-ui/react'
+import React, { useState, useEffect, useRef } from 'react'
+import { MdOutlineEdit } from 'react-icons/md'
+import { FaRegSave, FaCamera } from 'react-icons/fa'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import { useUserContext } from '@/components/UserContext'
+import { updateUsuario } from '@/services/usuario-service'
+import { toaster } from '@/components/ui/toaster'
+import { useAvatar } from '@/hooks/useAvatar'
+import maskCPF from '../../../utils/maskCPF'
+import CustomInput from '@/components/CustomInput'
+import CustomRadioGroup from '@/components/CustomRadioGroup'
 
 type UsuarioData = {
   id: number;
@@ -22,24 +22,24 @@ type UsuarioData = {
   avatar?: string;
 };
 const ConfiguracoesPage = () => {
-  const { user, setUser } = useUserContext();
-  const [editMode, setEditMode] = useState(false);
-  const { setBreadcrumbs } = useBreadcrumb();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, setUser } = useUserContext()
+  const [editMode, setEditMode] = useState(false)
+  const { setBreadcrumbs } = useBreadcrumb()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [avisoImagem, setAvisoImagem] = useState<string>(
     'Clique na foto ou no ícone para alterar (JPG, PNG, máximo 5MB)',
-  );
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { avatarUrl: currentAvatarUrl } = useAvatar(user?.avatar);
-  const [newAvatarPreview, setNewAvatarPreview] = useState<string>('');
+  )
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const { avatarUrl: currentAvatarUrl } = useAvatar(user?.avatar)
+  const [newAvatarPreview, setNewAvatarPreview] = useState<string>('')
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Configurações', path: '/configuracoes' },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  }, [setBreadcrumbs])
 
   const [usuario, setUsuario] = useState<UsuarioData>({
     id: user?.id || 0,
@@ -48,57 +48,57 @@ const ConfiguracoesPage = () => {
     email: user?.email || '',
     cargo: user?.cargo || '',
     avatar: user?.avatar || '',
-  });
+  })
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     if (name === 'cpf') {
-      const raw = value.replace(/\D/g, '');
+      const raw = value.replace(/\D/g, '')
       if (raw.length <= 11) {
-        setUsuario((prev) => ({ ...prev, [name]: raw }));
+        setUsuario((prev) => ({ ...prev, [name]: raw }))
       }
-      return;
+      return
     }
-    setUsuario((prev) => ({ ...prev, [name]: value }));
-  };
+    setUsuario((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleAvatarClick = () => {
     if (editMode && fileInputRef.current) {
-      fileInputRef.current.click();
+      fileInputRef.current.click()
     }
-  };
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
     if (file) {
       if (!file.type.startsWith('image/')) {
-        setAvisoImagem('Por favor, selecione apenas arquivos de imagem (JPG, PNG, GIF, etc.).');
-        return;
+        setAvisoImagem('Por favor, selecione apenas arquivos de imagem (JPG, PNG, GIF, etc.).')
+        return
       }
       if (file.size > 5 * 1024 * 1024) {
-        setAvisoImagem('O arquivo deve ter no máximo 5MB.');
-        return;
+        setAvisoImagem('O arquivo deve ter no máximo 5MB.')
+        return
       }
 
       // Armazena o arquivo para envio ao backend
-      setAvatarFile(file);
+      setAvatarFile(file)
 
       // Cria URL para preview da imagem
-      const previewUrl = URL.createObjectURL(file);
-      setNewAvatarPreview(previewUrl);
+      const previewUrl = URL.createObjectURL(file)
+      setNewAvatarPreview(previewUrl)
 
       // Limpa o input para permitir seleção do mesmo arquivo novamente
       if (event.target) {
-        event.target.value = '';
+        event.target.value = ''
       }
 
-      setAvisoImagem('');
+      setAvisoImagem('')
     }
-  };
+  }
 
   const handleSubmit = async () => {
     if (editMode) {
-      setIsLoading(true);
+      setIsLoading(true)
       try {
         const result = await updateUsuario({
           id: usuario.id,
@@ -106,7 +106,7 @@ const ConfiguracoesPage = () => {
           email: usuario.email,
           cargo: usuario.cargo,
           avatar: avatarFile || undefined,
-        });
+        })
 
         setUser({
           id: result.usuario.id,
@@ -115,40 +115,40 @@ const ConfiguracoesPage = () => {
           email: result.usuario.email || '',
           cargo: result.usuario.cargo || '',
           avatar: '/imagens/' + result.usuario.imagem.nome_arquivo || '',
-        });
+        })
 
         toaster.create({
           title: 'Sucesso!',
           description: 'Dados atualizados com sucesso.',
           type: 'success',
           duration: 3000,
-        });
+        })
 
-        setAvatarFile(null);
+        setAvatarFile(null)
 
         if (newAvatarPreview && newAvatarPreview.startsWith('blob:')) {
-          URL.revokeObjectURL(newAvatarPreview);
-          setNewAvatarPreview('');
+          URL.revokeObjectURL(newAvatarPreview)
+          setNewAvatarPreview('')
         }
       } catch (error) {
-        console.error('Erro ao atualizar usuário:', error);
+        console.error('Erro ao atualizar usuário:', error)
 
         toaster.create({
           title: 'Erro!',
           description: 'Não foi possível atualizar os dados. Tente novamente.',
           type: 'error',
           duration: 5000,
-        });
+        })
 
-        setIsLoading(false);
-        return;
+        setIsLoading(false)
+        return
       }
-      setIsLoading(false);
+      setIsLoading(false)
     }
 
-    setEditMode(!editMode);
-    setAvisoImagem('');
-  };
+    setEditMode(!editMode)
+    setAvisoImagem('')
+  }
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
@@ -261,8 +261,8 @@ const ConfiguracoesPage = () => {
                   { label: 'Funcionário(a)', value: 'funcionario' },
                 ]}
                 onChange={(value) => {
-                  const cargo = value === 'socio' ? 'socio' : 'funcionario';
-                  setUsuario((prev) => ({ ...prev, cargo }));
+                  const cargo = value === 'socio' ? 'socio' : 'funcionario'
+                  setUsuario((prev) => ({ ...prev, cargo }))
                 }}
                 disabled={!editMode}
               />
@@ -286,7 +286,7 @@ const ConfiguracoesPage = () => {
         </Box>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-export default ConfiguracoesPage;
+export default ConfiguracoesPage

@@ -1,4 +1,4 @@
-import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react';
+import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react'
 
 type ModalProps = {
   hasButton?: boolean;
@@ -42,5 +42,5 @@ export const Modal = ({
         </Dialog.Positioner>
       </Portal>
     </Dialog.Root>
-  );
-};
+  )
+}

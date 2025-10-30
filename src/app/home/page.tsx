@@ -1,48 +1,48 @@
-'use client';
-import { Box, SimpleGrid, Text, Heading, Flex, Grid } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import { getDashboardData } from '@/services/dashboard-service';
-import { useUserContext } from '@/components/UserContext';
-import { getFuncionariosEProcessos } from '@/services/usuario-service';
-import { ProcessosPorFuncionario } from '../../../types/processos';
+'use client'
+import { Box, SimpleGrid, Text, Heading, Flex, Grid } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import { getDashboardData } from '@/services/dashboard-service'
+import { useUserContext } from '@/components/UserContext'
+import { getFuncionariosEProcessos } from '@/services/usuario-service'
+import { ProcessosPorFuncionario } from '../../../types/processos'
 
 const Home = () => {
-  const { user } = useUserContext();
-  const { setBreadcrumbs } = useBreadcrumb();
-  const [mounted, setMounted] = useState(false);
-  const [funcionarios, setFuncionarios] = useState<ProcessosPorFuncionario[]>([]);
-  const [totalProcessos, setTotalProcessos] = useState(0);
-  const [processosArquivados, setProcessosArquivados] = useState(0);
-  const [processosAtivos, setProcessosAtivos] = useState(0);
+  const { user } = useUserContext()
+  const { setBreadcrumbs } = useBreadcrumb()
+  const [mounted, setMounted] = useState(false)
+  const [funcionarios, setFuncionarios] = useState<ProcessosPorFuncionario[]>([])
+  const [totalProcessos, setTotalProcessos] = useState(0)
+  const [processosArquivados, setProcessosArquivados] = useState(0)
+  const [processosAtivos, setProcessosAtivos] = useState(0)
   const [processosPorBeneficio, setProcessosPorBeneficio] = useState<
     { beneficio: string; quantidade: number }[]
-  >([]);
-  const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0);
+  >([])
+  const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0)
 
   useEffect(() => {
-    setBreadcrumbs([{ label: 'Início', path: '/home' }]);
-    setMounted(true);
-  }, [setBreadcrumbs]);
+    setBreadcrumbs([{ label: 'Início', path: '/home' }])
+    setMounted(true)
+  }, [setBreadcrumbs])
 
   const fetchData = () => {
     getDashboardData().then((data) => {
-      setTotalProcessos(data.totalProcessos);
-      setProcessosArquivados(data.processosArquivados);
-      setProcessosAtivos(data.processosAtivos);
-      setProcessosPorBeneficio(data.processosPorBeneficio);
-      setClientesComProcessosAtivos(data.clientesComProcessosAtivos);
-    });
+      setTotalProcessos(data.totalProcessos)
+      setProcessosArquivados(data.processosArquivados)
+      setProcessosAtivos(data.processosAtivos)
+      setProcessosPorBeneficio(data.processosPorBeneficio)
+      setClientesComProcessosAtivos(data.clientesComProcessosAtivos)
+    })
 
     getFuncionariosEProcessos().then((data) => {
-      setFuncionarios(data);
-    });
-  };
+      setFuncionarios(data)
+    })
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const getPastelColor = (index: number) => {
     const pastelColors = [
@@ -56,9 +56,9 @@ const Home = () => {
       '#F5E5FF',
       '#E5FFFF',
       '#FFFFE5',
-    ];
-    return pastelColors[index % pastelColors.length];
-  };
+    ]
+    return pastelColors[index % pastelColors.length]
+  }
 
   return (
     <Box p={8} bg="gray.50" minH="100vh">
@@ -241,7 +241,7 @@ const Home = () => {
         </Box>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

@@ -1,5 +1,5 @@
-import { Box, Image, Text } from '@chakra-ui/react';
-import { useAvatar } from '@/hooks/useAvatar';
+import { Box, Image, Text } from '@chakra-ui/react'
+import { useAvatar } from '@/hooks/useAvatar'
 
 interface AvatarProps {
   avatarPath?: string;
@@ -22,7 +22,7 @@ export const Avatar = ({
   borderRadius = '50%',
   showLoading = true,
 }: AvatarProps) => {
-  const { avatarUrl, isLoading, error } = useAvatar(avatarPath);
+  const { avatarUrl, isLoading, error } = useAvatar(avatarPath)
 
   return (
     <Box
@@ -47,5 +47,5 @@ export const Avatar = ({
         </Text>
       )}
     </Box>
-  );
-};
+  )
+}

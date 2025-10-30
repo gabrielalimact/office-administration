@@ -1,57 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 export const useAvatar = (avatarPath?: string) => {
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchAvatar = async () => {
       if (!avatarPath) {
-        setAvatarUrl('');
-        setError(null);
-        return;
+        setAvatarUrl('')
+        setError(null)
+        return
       }
 
-      setIsLoading(true);
-      setError(null);
+      setIsLoading(true)
+      setError(null)
 
       setAvatarUrl((prevAvatarUrl) => {
         if (prevAvatarUrl && prevAvatarUrl.startsWith('blob:')) {
-          URL.revokeObjectURL(prevAvatarUrl);
+          URL.revokeObjectURL(prevAvatarUrl)
         }
-        return '';
-      });
+        return ''
+      })
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${avatarPath}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${avatarPath}`)
 
         if (response.ok) {
-          const blob = await response.blob();
-          const newAvatarUrl = URL.createObjectURL(blob);
-          setAvatarUrl(newAvatarUrl);
+          const blob = await response.blob()
+          const newAvatarUrl = URL.createObjectURL(blob)
+          setAvatarUrl(newAvatarUrl)
         } else {
-          setError(`Erro ao carregar avatar: ${response.status}`);
+          setError(`Erro ao carregar avatar: ${response.status}`)
         }
       } catch (err) {
-        console.error('Erro ao carregar avatar:', err);
-        setError('Erro de conexão ao carregar avatar');
+        console.error('Erro ao carregar avatar:', err)
+        setError('Erro de conexão ao carregar avatar')
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchAvatar();
-  }, [avatarPath]);
+    fetchAvatar()
+  }, [avatarPath])
 
-  // Cleanup quando o componente for desmontado ou avatarUrl mudar
   useEffect(() => {
     return () => {
       if (avatarUrl && avatarUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(avatarUrl);
+        URL.revokeObjectURL(avatarUrl)
       }
-    };
-  }, [avatarUrl]);
+    }
+  }, [avatarUrl])
 
   return {
     avatarUrl,
@@ -59,9 +58,9 @@ export const useAvatar = (avatarPath?: string) => {
     error,
     clearAvatar: () => {
       if (avatarUrl && avatarUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(avatarUrl);
+        URL.revokeObjectURL(avatarUrl)
       }
-      setAvatarUrl('');
+      setAvatarUrl('')
     },
-  };
-};
+  }
+}

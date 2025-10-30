@@ -1,29 +1,29 @@
-'use client';
-import { Button, ButtonGroup, Steps, Text, Flex, Box } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
-import { LuCheckCheck } from 'react-icons/lu';
-import { useBreadcrumb } from '@/components/BreadcrumbContext';
-import Breadcrumb from '@/components/Breadcrumb';
-import { useUserContext } from '@/components/UserContext';
-import { useRouter } from 'next/navigation';
-import { toaster } from '@/components/ui/toaster';
-import { ProcessoData } from '@/types/step-forms';
-import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps';
-import JSZip from 'jszip';
-import { criarProcessoComNovoCliente } from '@/services/processo-service';
+'use client'
+import { Button, ButtonGroup, Steps, Text, Flex, Box } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
+import { LuCheckCheck } from 'react-icons/lu'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import Breadcrumb from '@/components/Breadcrumb'
+import { useUserContext } from '@/components/UserContext'
+import { useRouter } from 'next/navigation'
+import { toaster } from '@/components/ui/toaster'
+import { ProcessoData } from '@/types/step-forms'
+import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps'
+import JSZip from 'jszip'
+import { criarProcessoComNovoCliente } from '@/services/processo-service'
 
 const CadastrarProcessosPage = () => {
-  const { user } = useUserContext();
-  const router = useRouter();
-  const [stepActive, setStepActive] = useState(0);
-  const { setBreadcrumbs } = useBreadcrumb();
+  const { user } = useUserContext()
+  const router = useRouter()
+  const [stepActive, setStepActive] = useState(0)
+  const { setBreadcrumbs } = useBreadcrumb()
 
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Cadastrar Processos', path: '/cadastrar-processos' },
-    ]);
-  }, [setBreadcrumbs]);
+    ])
+  }, [setBreadcrumbs])
 
   const [formData, setFormData] = useState<ProcessoData>({
     cliente: {
@@ -51,18 +51,18 @@ const CadastrarProcessosPage = () => {
     data_atendimento: new Date().toISOString().split('T')[0],
     senha_inss: '',
     status: { id: 0 },
-  });
+  })
 
   const handleStepChange = (e: { step: number }) => {
-    setStepActive(e.step);
-  };
+    setStepActive(e.step)
+  }
 
   const handleDataChange = (newData: Partial<ProcessoData>) => {
     setFormData((prev) => ({
       ...prev,
       ...newData,
-    }));
-  };
+    }))
+  }
 
   const validateStep1 = () => {
     if (!formData.cliente.nome.trim()) {
@@ -71,8 +71,8 @@ const CadastrarProcessosPage = () => {
         description: 'Nome do cliente é obrigatório.',
         type: 'error',
         duration: 3000,
-      });
-      return false;
+      })
+      return false
     }
     if (!formData.cliente.cpf.trim()) {
       toaster.create({
@@ -80,8 +80,8 @@ const CadastrarProcessosPage = () => {
         description: 'CPF do cliente é obrigatório.',
         type: 'error',
         duration: 3000,
-      });
-      return false;
+      })
+      return false
     }
     if (formData.cliente.cpf.replace(/\D/g, '').length !== 11) {
       toaster.create({
@@ -89,11 +89,11 @@ const CadastrarProcessosPage = () => {
         description: 'CPF deve conter 11 dígitos.',
         type: 'error',
         duration: 3000,
-      });
-      return false;
+      })
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const validateStep2 = () => {
     if (!formData.beneficio.id || formData.beneficio.id === 0) {
@@ -102,8 +102,8 @@ const CadastrarProcessosPage = () => {
         description: 'Selecione um benefício para continuar.',
         type: 'error',
         duration: 3000,
-      });
-      return false;
+      })
+      return false
     }
     if (!formData.status.id || formData.status.id === 0) {
       toaster.create({
@@ -111,65 +111,65 @@ const CadastrarProcessosPage = () => {
         description: 'Selecione uma situação para continuar.',
         type: 'error',
         duration: 3000,
-      });
-      return false;
+      })
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const handleNextStep = () => {
-    let canProceed = true;
+    let canProceed = true
 
     switch (stepActive) {
       case 0:
-        canProceed = validateStep1();
-        break;
+        canProceed = validateStep1()
+        break
       case 1:
-        canProceed = validateStep2();
-        break;
+        canProceed = validateStep2()
+        break
       case 2:
       case 3:
-        canProceed = true;
-        break;
+        canProceed = true
+        break
       default:
-        canProceed = true;
+        canProceed = true
     }
 
     if (canProceed) {
       if (stepActive === steps.length - 1) {
-        handleSubmit();
+        handleSubmit()
       } else {
-        setStepActive((prev) => prev + 1);
+        setStepActive((prev) => prev + 1)
       }
     }
-  };
+  }
 
   const createZipFile = async (files: File[]) => {
     try {
-      const zip = new JSZip();
+      const zip = new JSZip()
 
       for (const file of files) {
-        zip.file(file.name, file);
+        zip.file(file.name, file)
       }
 
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
 
       const zipFile = new File([zipBlob], 'documentos.zip', {
         type: 'application/zip',
-      });
+      })
 
-      return zipFile;
+      return zipFile
     } catch (error) {
-      console.error('Erro ao criar arquivo ZIP:', error);
+      console.error('Erro ao criar arquivo ZIP:', error)
       toaster.create({
         title: 'Erro na compactação',
         description: 'Não foi possível compactar os arquivos.',
         type: 'error',
         duration: 5000,
-      });
-      return null;
+      })
+      return null
     }
-  };
+  }
 
   const handleSubmit = async () => {
     try {
@@ -179,11 +179,11 @@ const CadastrarProcessosPage = () => {
           description: 'Nome e CPF são obrigatórios.',
           type: 'error',
           duration: 5000,
-        });
-        return;
+        })
+        return
       }
 
-      let arquivoFinal = null;
+      let arquivoFinal = null
 
       if (formData.files && formData.files.length > 1) {
         toaster.create({
@@ -191,9 +191,9 @@ const CadastrarProcessosPage = () => {
           description: 'Criando arquivo ZIP dos documentos.',
           type: 'info',
           duration: 3000,
-        });
+        })
 
-        arquivoFinal = await createZipFile(formData.files);
+        arquivoFinal = await createZipFile(formData.files)
 
         if (arquivoFinal) {
           toaster.create({
@@ -201,12 +201,12 @@ const CadastrarProcessosPage = () => {
             description: `${formData.files.length} arquivos foram compactados em ${arquivoFinal.name}`,
             type: 'success',
             duration: 3000,
-          });
+          })
         }
       } else if (formData.files && formData.files.length === 1) {
-        arquivoFinal = formData.files[0];
+        arquivoFinal = formData.files[0]
       }
-      setStepActive(steps.length);
+      setStepActive(steps.length)
 
       await criarProcessoComNovoCliente({
         cliente: {
@@ -243,19 +243,19 @@ const CadastrarProcessosPage = () => {
             'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
           type: 'success',
           duration: 5000,
-        });
-      });
+        })
+      })
     } catch (error) {
-      console.error('Erro na requisição:', error);
+      console.error('Erro na requisição:', error)
 
       toaster.create({
         title: 'Erro de conexão',
         description: 'Verifique sua conexão e tente novamente.',
         type: 'error',
         duration: 5000,
-      });
+      })
     }
-  };
+  }
 
   const steps = [
     {
@@ -274,7 +274,7 @@ const CadastrarProcessosPage = () => {
       title: 'Revisar informações',
       component: <PreviewStep data={formData} onDataChange={handleDataChange} />,
     },
-  ];
+  ]
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
@@ -346,7 +346,7 @@ const CadastrarProcessosPage = () => {
         )}
       </Steps.Root>
     </Box>
-  );
-};
+  )
+}
 
-export default CadastrarProcessosPage;
+export default CadastrarProcessosPage

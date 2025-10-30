@@ -1,13 +1,13 @@
-'use client';
-import { Box, Flex, Text } from '@chakra-ui/react';
-import Link from 'next/link';
-import { useBreadcrumb } from './BreadcrumbContext';
-import { IoChevronForward } from 'react-icons/io5';
+'use client'
+import { Box, Flex, Text } from '@chakra-ui/react'
+import Link from 'next/link'
+import { useBreadcrumb } from './BreadcrumbContext'
+import { IoChevronForward } from 'react-icons/io5'
 
 export default function Breadcrumb() {
-  const { breadcrumbs } = useBreadcrumb();
+  const { breadcrumbs } = useBreadcrumb()
 
-  if (breadcrumbs.length <= 1) return null;
+  if (breadcrumbs.length <= 1) return null
 
   return (
     <Box mb={4} p={3} borderBottom={'1px solid #c2c2c2ff'}>
@@ -39,5 +39,5 @@ export default function Breadcrumb() {
         ))}
       </Flex>
     </Box>
-  );
+  )
 }
