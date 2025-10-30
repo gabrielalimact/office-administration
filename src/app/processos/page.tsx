@@ -123,7 +123,7 @@ const ProcessosPage = () => {
     const nomeCliente = proc.cliente?.nome || '';
     const nomeBeneficio = proc.beneficio?.nome || '';
     const nomeStatus = proc.status?.nome || '';
-    
+
     // Tratar colaborador que pode ser string ou objeto
     let colaborador = '';
     if (typeof proc.colaborador === 'object' && proc.colaborador !== null) {
@@ -132,7 +132,7 @@ const ProcessosPage = () => {
     } else if (typeof proc.colaborador === 'string') {
       colaborador = proc.colaborador;
     }
-    
+
     const matchBusca =
       nomeCliente.toLowerCase().includes(busca.toLowerCase()) ||
       nomeBeneficio.toLowerCase().includes(busca.toLowerCase());
@@ -270,16 +270,19 @@ const ProcessosPage = () => {
                 }
                 const value = processo[column.key as keyof Processo];
                 let displayValue = '';
-                
+
                 if (value !== null && value !== undefined) {
                   if (typeof value === 'object') {
                     const objValue = value as Record<string, unknown>;
-                    displayValue = (objValue.nome as string) || (objValue.label as string) || JSON.stringify(value);
+                    displayValue =
+                      (objValue.nome as string) ||
+                      (objValue.label as string) ||
+                      JSON.stringify(value);
                   } else {
                     displayValue = String(value);
                   }
                 }
-                
+
                 return <Text color="gray.700">{displayValue}</Text>;
               }}
               emptyMessage="Nenhum processo encontrado"

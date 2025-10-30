@@ -140,17 +140,26 @@ const SideBar = () => {
             ))}
           </Flex>
 
-          <Flex gap={2} onClick={() => handleExpand()} position={'fixed'} bottom={'200px'} left={expanded ? '280px' : '48px'}>
-            <IoIosArrowForward size={40} style={{
-              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.3s',
-              borderColor: 'rgba(0, 0, 0, 0.18)',
-              border: '1px solid rgba(0, 0, 0, 0.18)',
-              backgroundColor: 'rgba(247, 247, 250, 1)',
-              borderRadius: '50%',
-              padding: '4px',
-              cursor: 'pointer',
-            }}/>
+          <Flex
+            gap={2}
+            onClick={() => handleExpand()}
+            position={'fixed'}
+            bottom={'200px'}
+            left={expanded ? '280px' : '48px'}
+          >
+            <IoIosArrowForward
+              size={40}
+              style={{
+                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s',
+                borderColor: 'rgba(0, 0, 0, 0.18)',
+                border: '1px solid rgba(0, 0, 0, 0.18)',
+                backgroundColor: 'rgba(247, 247, 250, 1)',
+                borderRadius: '50%',
+                padding: '4px',
+                cursor: 'pointer',
+              }}
+            />
           </Flex>
           <Flex
             gap={8}

@@ -10,25 +10,24 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
   const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([]);
   const [listaStatus, setListaStatus] = useState<{ label: string; value: number }[]>([]);
 
+  const fetchData = async () => {
+    const beneficiosData = await getBeneficios();
+    const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
+      label: beneficio.nome,
+      value: beneficio.id,
+    }));
+    setListaBeneficios(formattedBeneficios);
 
-    const fetchData = async () => {
-      const beneficiosData = await getBeneficios();
-      const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
-        label: beneficio.nome,
-        value: beneficio.id,
-      }));
-      setListaBeneficios(formattedBeneficios);
-  
-      const statusData = await getStatus();
-      const formattedStatus = statusData.map((statusItem: any) => ({
-        label: statusItem.nome,
-        value: statusItem.id,
-      }));
-      setListaStatus(formattedStatus);
-    };
+    const statusData = await getStatus();
+    const formattedStatus = statusData.map((statusItem: any) => ({
+      label: statusItem.nome,
+      value: statusItem.id,
+    }));
+    setListaStatus(formattedStatus);
+  };
   const getBeneficioLabel = (id: number) => {
     const beneficio = listaBeneficios.find((b) => b.value === id);
-    console.log(listaBeneficios, id, beneficio)
+    console.log(listaBeneficios, id, beneficio);
     return beneficio ? beneficio.label : 'Não selecionado';
   };
 

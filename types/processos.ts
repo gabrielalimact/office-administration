@@ -16,7 +16,17 @@ export interface CriarProcessoRequest {
 
 export interface Processo {
   id: number;
-  colaborador: string | { id: number; nome: string; cpf: string; email: string; senha: string; cargo: string; id_imagem: string };
+  colaborador:
+    | string
+    | {
+        id: number;
+        nome: string;
+        cpf: string;
+        email: string;
+        senha: string;
+        cargo: string;
+        id_imagem: string;
+      };
   olhar_inss: boolean;
   olhar_pje_creta: boolean;
   senha_inss: string;

@@ -32,7 +32,6 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     createListCollection<SelectItem>({ items: [] }),
   );
 
-
   const fetchData = async () => {
     const beneficiosData = await getBeneficios();
     const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
@@ -50,11 +49,11 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const status = createListCollection<SelectItem>({ items: formattedStatus });
     setListaStatus(status);
   };
-  
+
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -143,37 +142,37 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             </Text>
           )}
         </Box>
-<Box>
-        <Select.Root collection={listaStatus} size="md" onValueChange={handleSelectChange}>
-          <Select.HiddenSelect />
-          <Select.Label fontWeight="bold">Situação</Select.Label>
-          <Select.Control>
-            <Select.Trigger p={2}>
-              <Select.ValueText placeholder="Selecione a situação do processo" />
-            </Select.Trigger>
-            <Select.IndicatorGroup p={2}>
-              <Select.Indicator />
-            </Select.IndicatorGroup>
-          </Select.Control>
-          <Portal>
-            <Select.Positioner>
-              <Select.Content>
-                {listaStatus.items.map((statusItem) => (
-                  <Select.Item p={2} item={statusItem} key={statusItem.value}>
-                    {statusItem.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Portal>
-        </Select.Root>
-        {(!data.status.id || data.status.id === 0) && (
+        <Box>
+          <Select.Root collection={listaStatus} size="md" onValueChange={handleSelectChange}>
+            <Select.HiddenSelect />
+            <Select.Label fontWeight="bold">Situação</Select.Label>
+            <Select.Control>
+              <Select.Trigger p={2}>
+                <Select.ValueText placeholder="Selecione a situação do processo" />
+              </Select.Trigger>
+              <Select.IndicatorGroup p={2}>
+                <Select.Indicator />
+              </Select.IndicatorGroup>
+            </Select.Control>
+            <Portal>
+              <Select.Positioner>
+                <Select.Content>
+                  {listaStatus.items.map((statusItem) => (
+                    <Select.Item p={2} item={statusItem} key={statusItem.value}>
+                      {statusItem.label}
+                      <Select.ItemIndicator />
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Portal>
+          </Select.Root>
+          {(!data.status.id || data.status.id === 0) && (
             <Text fontSize="xs" color="red.500" mt={1}>
               Campo obrigatório
             </Text>
           )}
-          </Box>
+        </Box>
 
         <Flex gap="2rem">
           <Checkbox.Root
