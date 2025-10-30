@@ -14,6 +14,7 @@ export default function EnviarRelatorioPage() {
   const { user } = useUserContext();
   const [conteudo, setConteudo] = useState('');
   const [titulo, setTitulo] = useState('');
+  const [negritoActive, setNegritoActive] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const mdeOptions = useMemo(
@@ -56,6 +57,29 @@ export default function EnviarRelatorioPage() {
         alert('Erro ao enviar relatório. Tente novamente.');
       });
   }
+  const handleNegritoClick = () => {
+    const novoEstado = !negritoActive;
+    setNegritoActive(novoEstado);
+
+    if (novoEstado) {
+      const textarea = document.querySelector('.CodeMirror textarea') as HTMLTextAreaElement;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = conteudo.substring(start, end);
+        const beforeText = conteudo.substring(0, start);
+        const afterText = conteudo.substring(end);
+
+        if (selectedText) {
+          const newText = `${beforeText}**${selectedText}**${afterText}`;
+          setConteudo(newText);
+        } else {
+          const newText = `${beforeText}****${afterText}`;
+          setConteudo(newText);
+        }
+      }
+    }
+  }
 
   return (
     <Box maxW={700} mx="auto" p={8} bg="white" borderRadius={12} boxShadow="md" mt={8}>
@@ -81,7 +105,6 @@ export default function EnviarRelatorioPage() {
             />
           </Box>
 
-          {/* Toolbar customizada apenas com negrito */}
           <Box>
             <Text mb={2} fontWeight="semibold" color="gray.700">
               Conteúdo do Relatório *
@@ -89,28 +112,15 @@ export default function EnviarRelatorioPage() {
             <HStack mb={2} gap={2}>
               <Button
                 size="sm"
+                px={2}
                 onClick={() => {
-                  const textarea = document.querySelector(
-                    '.CodeMirror textarea',
-                  ) as HTMLTextAreaElement;
-                  if (textarea) {
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-                    const selectedText = conteudo.substring(start, end);
-                    const beforeText = conteudo.substring(0, start);
-                    const afterText = conteudo.substring(end);
-
-                    if (selectedText) {
-                      const newText = `${beforeText}**${selectedText}**${afterText}`;
-                      setConteudo(newText);
-                    } else {
-                      const newText = `${beforeText}****${afterText}`;
-                      setConteudo(newText);
-                    }
-                  }
+                  handleNegritoClick();
                 }}
                 variant="outline"
-                colorScheme="blue"
+                style={{
+                  backgroundColor: negritoActive ? 'black' : 'transparent',
+                  color: negritoActive ? 'white' : 'black',
+                }}
               >
                 <FaBold style={{ marginRight: '8px' }} />
                 Negrito
