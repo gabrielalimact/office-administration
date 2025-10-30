@@ -9,6 +9,7 @@ import { FaBold } from 'react-icons/fa';
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
 import 'easymde/dist/easymde.min.css';
 import { enviarNovoRelatorio } from '@/services/relatorios-service';
+import CustomInput from '@/components/CustomInput';
 
 export default function EnviarRelatorioPage() {
   const { user } = useUserContext();
@@ -33,9 +34,6 @@ export default function EnviarRelatorioPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    console.log('Título:', titulo);
-    console.log('Conteúdo:', conteudo);
 
     const relatorioData = {
       idFuncionario: Number(user?.id),
@@ -97,7 +95,7 @@ export default function EnviarRelatorioPage() {
             <Text mb={2} fontWeight="semibold" color="gray.700">
               Título do Relatório *
             </Text>
-            <Input
+            <CustomInput
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Digite o título do relatório..."

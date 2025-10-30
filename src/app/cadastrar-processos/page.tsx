@@ -206,38 +206,6 @@ const CadastrarProcessosPage = () => {
       } else if (formData.files && formData.files.length === 1) {
         arquivoFinal = formData.files[0];
       }
-
-      console.log('Dados do processo consolidados:', {
-        cliente: {
-          nome: formData.cliente.nome,
-          data_nascimento: formData.cliente.data_nascimento,
-          cpf: formData.cliente.cpf,
-          rg: formData.cliente.rg,
-          filiacao: formData.cliente.filiacao,
-          naturalidade: formData.cliente.naturalidade,
-          endereco: {
-            logradouro: formData.cliente.endereco.logradouro,
-            numero: formData.cliente.endereco.numero,
-            complemento: formData.cliente.endereco.complemento,
-            bairro: formData.cliente.endereco.bairro,
-            cidade: formData.cliente.endereco.cidade,
-            estado: formData.cliente.endereco.estado,
-            cep: formData.cliente.endereco.cep,
-          },
-        },
-        colaboradorId: formData.colaboradorId,
-        beneficio: formData.beneficio,
-        olhar_inss: formData.olhar_inss,
-        olhar_pje_creta: formData.olhar_pje_creta,
-        data_atendimento: formData.data_atendimento,
-        data_ultima_atualizacao: new Date().toISOString().split('T')[0],
-        status: formData.status,
-        senha_inss: formData.senha_inss,
-        observacoes: formData.observacoes,
-        arquivos_originais: formData.files,
-        arquivo_final: arquivoFinal,
-      });
-
       setStepActive(steps.length);
 
       await criarProcessoComNovoCliente({

@@ -36,7 +36,6 @@ function VisualizarRelatorioPage() {
   const { setBreadcrumbs } = useBreadcrumb();
   useEffect(() => {
     getRelatoriosByFuncionarioID(Number(id)).then((data) => {
-      console.log(data);
       const relatorios = data.map((rel) => ({
         created_at: rel.created_at,
         conteudo: rel.conteudo,

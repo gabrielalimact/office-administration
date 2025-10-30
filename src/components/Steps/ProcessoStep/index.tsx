@@ -63,7 +63,6 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         onDataChange({ senha_inss: value });
         break;
       case 'data-atendimento':
-        console.log(value);
         onDataChange({ data_atendimento: value });
         break;
       case 'observations':

@@ -86,7 +86,6 @@ const ProcessosPage = () => {
   const fetchProcessos = async () => {
     const processosList = await getProcessos();
     setProcessos(processosList);
-    console.log(processosList);
 
     const responsaveis = processosList
       .map((p) => {
