@@ -36,7 +36,12 @@ export interface CriarProcessoClienteExistenteRequest {
 }
 
 export async function getStatus() {
-  const response = await api.get('/processos/status');
+  const response = await api.get('/status-processo');
+  return response.data;
+}
+
+export async function getBeneficios() {
+  const response = await api.get('/beneficios');
   return response.data;
 }
 
@@ -96,7 +101,6 @@ export async function criarProcessoComNovoCliente(
   return response.data;
 }
 
-// 2. POST /processos/cliente/:clienteId - Criar processo para cliente existente
 export async function criarProcessoParaClienteExistente(
   clienteId: number,
   dados: CriarProcessoClienteExistenteRequest,
@@ -134,7 +138,6 @@ export async function criarProcessoParaClienteExistente(
   return response.data;
 }
 
-// 3. POST /processos/:id/documentos - Upload de documentos para processo existente
 export async function uploadDocumentosProcesso(
   processoId: number,
   arquivo: File,

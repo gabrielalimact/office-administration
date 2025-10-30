@@ -89,21 +89,27 @@ const ProcessosPage = () => {
     console.log(processosList);
 
     const responsaveis = processosList
-      .map((p) => p.colaborador)
+      .map((p) => {
+        if (typeof p.colaborador === 'object' && p.colaborador !== null) {
+          const colaboradorObj = p.colaborador as { nome?: string; id?: number };
+          return colaboradorObj.nome || '';
+        }
+        return typeof p.colaborador === 'string' ? p.colaborador : '';
+      })
       .filter((value, index, self) => !!value && self.indexOf(value) === index)
       .map((responsavel) => ({ label: responsavel, value: responsavel }));
     setResponsaveisList(responsaveis);
 
     const tiposProcessos = processosList
-      .map((p) => p.beneficio.nome)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .map((tipo) => ({ label: tipo, value: tipo }));
+      .map((p) => p.beneficio?.nome)
+      .filter((value, index, self) => !!value && self.indexOf(value) === index)
+      .map((tipo) => ({ label: tipo!, value: tipo! }));
     setTiposProcessosList(tiposProcessos);
 
     const status = processosList
-      .map((p) => p.status.nome)
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .map((tipo) => ({ label: tipo, value: tipo }));
+      .map((p) => p.status?.nome)
+      .filter((value, index, self) => !!value && self.indexOf(value) === index)
+      .map((tipo) => ({ label: tipo!, value: tipo! }));
     setStatusOptions(status);
 
     setIsLoading(false);
@@ -114,12 +120,25 @@ const ProcessosPage = () => {
   }, []);
 
   const processosFiltrados = processos.filter((proc) => {
+    const nomeCliente = proc.cliente?.nome || '';
+    const nomeBeneficio = proc.beneficio?.nome || '';
+    const nomeStatus = proc.status?.nome || '';
+    
+    // Tratar colaborador que pode ser string ou objeto
+    let colaborador = '';
+    if (typeof proc.colaborador === 'object' && proc.colaborador !== null) {
+      const colaboradorObj = proc.colaborador as { nome?: string };
+      colaborador = colaboradorObj.nome || '';
+    } else if (typeof proc.colaborador === 'string') {
+      colaborador = proc.colaborador;
+    }
+    
     const matchBusca =
-      proc.cliente.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      proc.beneficio.nome.toLowerCase().includes(busca.toLowerCase());
-    const matchResponsavel = !formData.responsavel || proc.colaborador === formData.responsavel;
-    const matchTipo = !formData.tipoProcesso || proc.beneficio.nome === formData.tipoProcesso;
-    const matchSituacao = !formData.situacao || proc.status.nome === formData.situacao;
+      nomeCliente.toLowerCase().includes(busca.toLowerCase()) ||
+      nomeBeneficio.toLowerCase().includes(busca.toLowerCase());
+    const matchResponsavel = !formData.responsavel || colaborador === formData.responsavel;
+    const matchTipo = !formData.tipoProcesso || nomeBeneficio === formData.tipoProcesso;
+    const matchSituacao = !formData.situacao || nomeStatus === formData.situacao;
     return matchBusca && matchResponsavel && matchTipo && matchSituacao;
   });
 
@@ -208,30 +227,38 @@ const ProcessosPage = () => {
               ]}
               data={processosPaginados}
               onRowClick={(processo) =>
-                handlePush('/visualizar-cliente?cliente=' + processo.cliente.id)
+                handlePush('/visualizar-cliente?cliente=' + (processo.cliente?.id || ''))
               }
               renderCell={(processo, column) => {
                 if (column.key === 'cliente') {
-                  return <Text color="gray.700">{processo.cliente.nome}</Text>;
+                  return <Text color="gray.700">{processo.cliente?.nome || ''}</Text>;
                 }
                 if (column.key === 'beneficio') {
-                  return <Text color="gray.700">{processo.beneficio.nome}</Text>;
+                  return <Text color="gray.700">{processo.beneficio?.nome || ''}</Text>;
                 }
                 if (column.key === 'status') {
-                  return <Text color="gray.700">{processo.status.nome}</Text>;
+                  return <Text color="gray.700">{processo.status?.nome || ''}</Text>;
                 }
                 if (column.key === 'data_atendimento') {
-                  return <Text color="gray.700">{processo.data_atendimento}</Text>;
+                  return <Text color="gray.700">{processo.data_atendimento || ''}</Text>;
                 }
                 if (column.key === 'colaborador') {
-                  return <Text color="gray.700">{processo.colaborador}</Text>;
+                  // Tratar colaborador que pode ser string ou objeto
+                  let colaboradorNome = '';
+                  if (typeof processo.colaborador === 'object' && processo.colaborador !== null) {
+                    const colaboradorObj = processo.colaborador as { nome?: string };
+                    colaboradorNome = colaboradorObj.nome || '';
+                  } else if (typeof processo.colaborador === 'string') {
+                    colaboradorNome = processo.colaborador;
+                  }
+                  return <Text color="gray.700">{colaboradorNome}</Text>;
                 }
                 if (column.key === 'actions') {
                   return (
                     <Link
                       href={{
                         pathname: '/visualizar-cliente',
-                        query: { cliente: processo.cliente.id },
+                        query: { cliente: processo.cliente?.id || '' },
                       }}
                       title="Visualizar detalhes do cliente e processos"
                       style={{ display: 'inline-flex', alignItems: 'center' }}
@@ -241,11 +268,19 @@ const ProcessosPage = () => {
                     </Link>
                   );
                 }
-                return (
-                  <Text color="gray.700">
-                    {String(processo[column.key as keyof Processo] || '')}
-                  </Text>
-                );
+                const value = processo[column.key as keyof Processo];
+                let displayValue = '';
+                
+                if (value !== null && value !== undefined) {
+                  if (typeof value === 'object') {
+                    const objValue = value as Record<string, unknown>;
+                    displayValue = (objValue.nome as string) || (objValue.label as string) || JSON.stringify(value);
+                  } else {
+                    displayValue = String(value);
+                  }
+                }
+                
+                return <Text color="gray.700">{displayValue}</Text>;
               }}
               emptyMessage="Nenhum processo encontrado"
             />

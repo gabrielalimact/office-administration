@@ -26,8 +26,9 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         });
         break;
       case 'cpf':
+        const digits = value.replace(/\D/g, '').slice(0, 11);
         onDataChange({
-          cliente: { ...data.cliente, cpf: value.replace(/\D/g, '') },
+          cliente: { ...data.cliente, cpf: digits },
         });
         break;
       case 'rg':

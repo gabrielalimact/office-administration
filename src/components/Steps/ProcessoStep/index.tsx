@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Fieldset,
   Field,
@@ -13,30 +13,48 @@ import {
   Portal,
   Text,
   Box,
+  ListCollection,
 } from '@chakra-ui/react';
 import { CheckedChangeDetails } from '@zag-js/checkbox';
 import { StepProps } from '@/types/step-forms';
+import { getBeneficios, getStatus } from '@/services/processo-service';
 
-const beneficios = createListCollection({
-  items: [
-    { label: 'LOAS/87', value: 6 },
-    { label: 'LOAS/88', value: 7 },
-    { label: 'Pensão por morte urbana ou rural', value: 8 },
-    { label: 'Aposentadorias', value: 9 },
-    { label: 'Auxílio doença', value: 10 },
-  ],
-});
-
-const status = createListCollection({
-  items: [
-    { label: 'PERÍCIA', value: 5 },
-    { label: 'AVALIAÇÃO', value: 6 },
-    { label: 'AUDIENCIA', value: 7 },
-    { label: 'PERICIA MEDICA INICIAL', value: 8 },
-  ],
-});
+type SelectItem = {
+  label: string;
+  value: number;
+};
 
 const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
+  const [listaBeneficios, setListaBeneficios] = useState<ListCollection<SelectItem>>(
+    createListCollection<SelectItem>({ items: [] }),
+  );
+  const [listaStatus, setListaStatus] = useState<ListCollection<SelectItem>>(
+    createListCollection<SelectItem>({ items: [] }),
+  );
+
+
+  const fetchData = async () => {
+    const beneficiosData = await getBeneficios();
+    const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
+      label: beneficio.nome,
+      value: beneficio.id,
+    }));
+    const beneficios = createListCollection<SelectItem>({ items: formattedBeneficios });
+    setListaBeneficios(beneficios);
+
+    const statusData = await getStatus();
+    const formattedStatus = statusData.map((statusItem: any) => ({
+      label: statusItem.nome,
+      value: statusItem.id,
+    }));
+    const status = createListCollection<SelectItem>({ items: formattedStatus });
+    setListaStatus(status);
+  };
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -62,13 +80,13 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const parsedId = Number(selectedValue);
     if (Number.isNaN(parsedId)) return;
 
-    const isBeneficio = beneficios.items.some((item) => item.value === parsedId);
+    const isBeneficio = listaBeneficios.items.some((item) => item.value === parsedId);
     if (isBeneficio) {
       onDataChange({ beneficio: { id: parsedId } });
       return;
     }
 
-    const isStatus = status.items.some((item) => item.value === parsedId);
+    const isStatus = listaStatus.items.some((item) => item.value === parsedId);
     if (isStatus) {
       onDataChange({ status: { id: parsedId } });
       return;
@@ -83,7 +101,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     <Fieldset.Root minW="full" flex={1}>
       <Fieldset.Content display="flex" gap="20px" flexDir="column">
         <Box>
-          <Select.Root collection={beneficios} size="md" onValueChange={handleSelectChange}>
+          <Select.Root collection={listaBeneficios} size="md" onValueChange={handleSelectChange}>
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">
               Benefício{' '}
@@ -109,7 +127,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             <Portal>
               <Select.Positioner>
                 <Select.Content>
-                  {beneficios.items.map((beneficio) => (
+                  {listaBeneficios.items.map((beneficio) => (
                     <Select.Item p={2} item={beneficio} key={beneficio.value}>
                       {beneficio.label}
                       <Select.ItemIndicator />
@@ -125,8 +143,8 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             </Text>
           )}
         </Box>
-
-        <Select.Root collection={status} size="md" onValueChange={handleSelectChange}>
+<Box>
+        <Select.Root collection={listaStatus} size="md" onValueChange={handleSelectChange}>
           <Select.HiddenSelect />
           <Select.Label fontWeight="bold">Situação</Select.Label>
           <Select.Control>
@@ -140,7 +158,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           <Portal>
             <Select.Positioner>
               <Select.Content>
-                {status.items.map((statusItem) => (
+                {listaStatus.items.map((statusItem) => (
                   <Select.Item p={2} item={statusItem} key={statusItem.value}>
                     {statusItem.label}
                     <Select.ItemIndicator />
@@ -150,6 +168,12 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             </Select.Positioner>
           </Portal>
         </Select.Root>
+        {(!data.status.id || data.status.id === 0) && (
+            <Text fontSize="xs" color="red.500" mt={1}>
+              Campo obrigatório
+            </Text>
+          )}
+          </Box>
 
         <Flex gap="2rem">
           <Checkbox.Root

@@ -1,39 +1,49 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Text, Flex, Card, Badge, List, Fieldset, Field } from '@chakra-ui/react';
 import { StepProps } from '@/types/step-forms';
 import maskCPF from '../../../../utils/maskCPF';
+import { getBeneficios, getStatus } from '@/services/processo-service';
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
-  const beneficios = [
-    { label: 'LOAS/87', value: 6 },
-    { label: 'LOAS/88', value: 7 },
-    { label: 'Pensão por morte urbana ou rural', value: 8 },
-    { label: 'Aposentadorias', value: 9 },
-    { label: 'Auxílio doença', value: 10 },
-  ];
+  const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([]);
+  const [listaStatus, setListaStatus] = useState<{ label: string; value: number }[]>([]);
 
-  const status = [
-    { label: 'PERÍCIA', value: 5 },
-    { label: 'AVALIAÇÃO', value: 6 },
-    { label: 'AUDIENCIA', value: 7 },
-    { label: 'PERICIA MEDICA INICIAL', value: 8 },
-  ];
 
+    const fetchData = async () => {
+      const beneficiosData = await getBeneficios();
+      const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
+        label: beneficio.nome,
+        value: beneficio.id,
+      }));
+      setListaBeneficios(formattedBeneficios);
+  
+      const statusData = await getStatus();
+      const formattedStatus = statusData.map((statusItem: any) => ({
+        label: statusItem.nome,
+        value: statusItem.id,
+      }));
+      setListaStatus(formattedStatus);
+    };
   const getBeneficioLabel = (id: number) => {
-    const beneficio = beneficios.find((b) => b.value === id);
+    const beneficio = listaBeneficios.find((b) => b.value === id);
+    console.log(listaBeneficios, id, beneficio)
     return beneficio ? beneficio.label : 'Não selecionado';
   };
 
   const getStatusLabel = (id: number) => {
-    const statusItem = status.find((s) => s.value === id);
+    const statusItem = listaStatus.find((s) => s.value === id);
     return statusItem ? statusItem.label : 'Não selecionado';
   };
 
   const formatFileSize = (size: number) => {
     return (size / 1024 / 1024).toFixed(2) + ' MB';
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <Box>
