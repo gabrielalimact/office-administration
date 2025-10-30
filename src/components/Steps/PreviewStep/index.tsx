@@ -5,6 +5,7 @@ import { Box, Text, Flex, Card, Badge, List, Fieldset, Field } from '@chakra-ui/
 import { StepProps } from '@/types/step-forms';
 import maskCPF from '../../../../utils/maskCPF';
 import { getBeneficios, getStatus } from '@/services/processo-service';
+import { Beneficio, Status } from '../../../../types/processos';
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
   const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([]);
@@ -12,14 +13,14 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
 
   const fetchData = async () => {
     const beneficiosData = await getBeneficios();
-    const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
+    const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
       value: beneficio.id,
     }));
     setListaBeneficios(formattedBeneficios);
 
     const statusData = await getStatus();
-    const formattedStatus = statusData.map((statusItem: any) => ({
+    const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
       value: statusItem.id,
     }));
@@ -27,7 +28,6 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
   };
   const getBeneficioLabel = (id: number) => {
     const beneficio = listaBeneficios.find((b) => b.value === id);
-    console.log(listaBeneficios, id, beneficio);
     return beneficio ? beneficio.label : 'Não selecionado';
   };
 

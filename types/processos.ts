@@ -1,5 +1,14 @@
 import { Cliente } from './cliente';
 
+export interface Beneficio {
+  id: number;
+  nome: string;
+}
+
+export interface Status {
+  id: number;
+  nome: string;
+}
 export interface CriarProcessoRequest {
   cliente: Cliente;
   colaborador: string;
@@ -16,17 +25,7 @@ export interface CriarProcessoRequest {
 
 export interface Processo {
   id: number;
-  colaborador:
-    | string
-    | {
-        id: number;
-        nome: string;
-        cpf: string;
-        email: string;
-        senha: string;
-        cargo: string;
-        id_imagem: string;
-      };
+  colaborador: string;
   olhar_inss: boolean;
   olhar_pje_creta: boolean;
   senha_inss: string;
@@ -44,14 +43,8 @@ export interface Processo {
     filiacao: string;
     naturalidade: string;
   };
-  status: {
-    id: number;
-    nome: string;
-  };
-  beneficio: {
-    id: number;
-    nome: string;
-  };
+  status: Status;
+  beneficio: Beneficio;
 }
 
 export interface ProcessosPorFuncionario {
@@ -63,3 +56,4 @@ export interface ProcessosPorFuncionario {
   processos: Processo[];
   totalProcessos: number;
 }
+

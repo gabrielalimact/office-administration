@@ -2,6 +2,7 @@ import { CriarProcessoRequest, Processo } from '../../types/processos';
 import { NovoCliente } from '../../types/cliente';
 import { api } from './api-service';
 
+
 export interface CriarProcessoComNovoClienteRequest {
   cliente: NovoCliente;
   colaboradorId: number;

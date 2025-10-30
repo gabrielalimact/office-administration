@@ -5,6 +5,7 @@ import { LuCheckCheck } from 'react-icons/lu';
 import { useBreadcrumb } from '@/components/BreadcrumbContext';
 import Breadcrumb from '@/components/Breadcrumb';
 import { useUserContext } from '@/components/UserContext';
+import { useRouter } from 'next/navigation';
 import { toaster } from '@/components/ui/toaster';
 import { ProcessoData } from '@/types/step-forms';
 import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps';
@@ -13,6 +14,7 @@ import { criarProcessoComNovoCliente } from '@/services/processo-service';
 
 const CadastrarProcessosPage = () => {
   const { user } = useUserContext();
+  const router = useRouter();
   const [stepActive, setStepActive] = useState(0);
   const { setBreadcrumbs } = useBreadcrumb();
 
@@ -46,7 +48,7 @@ const CadastrarProcessosPage = () => {
     beneficio: { id: 0 },
     olhar_inss: false,
     olhar_pje_creta: false,
-    data_atendimento: '',
+    data_atendimento: new Date().toISOString().split('T')[0],
     senha_inss: '',
     status: { id: 0 },
   });
@@ -62,7 +64,6 @@ const CadastrarProcessosPage = () => {
     }));
   };
 
-  // Funções de validação para cada step
   const validateStep1 = () => {
     if (!formData.cliente.nome.trim()) {
       toaster.create({
@@ -104,23 +105,31 @@ const CadastrarProcessosPage = () => {
       });
       return false;
     }
+    if (!formData.status.id || formData.status.id === 0) {
+      toaster.create({
+        title: 'Campo obrigatório',
+        description: 'Selecione uma situação para continuar.',
+        type: 'error',
+        duration: 3000,
+      });
+      return false;
+    }
     return true;
   };
 
   const handleNextStep = () => {
     let canProceed = true;
 
-    // Validações por step
     switch (stepActive) {
-      case 0: // Step 1 - Informações do cliente
+      case 0: 
         canProceed = validateStep1();
         break;
-      case 1: // Step 2 - Informações do processo
+      case 1:
         canProceed = validateStep2();
         break;
-      case 2: // Step 3 - Upload de documentos
-      case 3: // Step 4 - Preview
-        canProceed = true; // Estes steps não têm validação obrigatória
+      case 2:
+      case 3:
+        canProceed = true;
         break;
       default:
         canProceed = true;
@@ -139,15 +148,12 @@ const CadastrarProcessosPage = () => {
     try {
       const zip = new JSZip();
 
-      // Adicionar cada arquivo ao ZIP
       for (const file of files) {
         zip.file(file.name, file);
       }
 
-      // Gerar o arquivo ZIP
       const zipBlob = await zip.generateAsync({ type: 'blob' });
 
-      // Criar um File a partir do Blob
       const zipFile = new File([zipBlob], 'documentos.zip', {
         type: 'application/zip',
       });
@@ -179,7 +185,6 @@ const CadastrarProcessosPage = () => {
 
       let arquivoFinal = null;
 
-      // Compactar arquivos se houver mais de um
       if (formData.files && formData.files.length > 1) {
         toaster.create({
           title: 'Compactando arquivos...',
@@ -266,7 +271,7 @@ const CadastrarProcessosPage = () => {
       }).then(() => {
         toaster.create({
           title: 'Sucesso',
-          description: 'O processo do cliente' + formData.cliente.nome + 'criado com sucesso.',
+          description: 'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
           type: 'success',
           duration: 5000,
         });
@@ -344,22 +349,36 @@ const CadastrarProcessosPage = () => {
           </Flex>
         </Steps.CompletedContent>
 
-        <ButtonGroup size="lg" variant="solid" justifyContent="space-between">
-          <Steps.PrevTrigger asChild>
-            <Button bgColor="var(--primary)" w="100px">
-              Voltar
+        {stepActive === steps.length ? (
+          // Botões para step completed
+          <ButtonGroup size="lg" variant="solid" justifyContent="center">
+            <Button 
+              bgColor="var(--primary)" 
+              w="200px"
+              onClick={() => router.push('/processos')}
+            >
+              Ver Processos
             </Button>
-          </Steps.PrevTrigger>
-          {stepActive !== steps.length && (
-            <Button bgColor="var(--primary)" w="100px" onClick={handleNextStep}>
-              {stepActive < steps.length - 1
-                ? 'Próximo'
-                : stepActive === steps.length - 1
-                  ? 'Salvar'
-                  : 'Finalizado'}
-            </Button>
-          )}
-        </ButtonGroup>
+          </ButtonGroup>
+        ) : (
+          // Botões para steps normais
+          <ButtonGroup size="lg" variant="solid" justifyContent="space-between">
+            <Steps.PrevTrigger asChild>
+              <Button bgColor="var(--primary)" w="100px">
+                Voltar
+              </Button>
+            </Steps.PrevTrigger>
+            {stepActive !== steps.length && (
+              <Button bgColor="var(--primary)" w="100px" onClick={handleNextStep}>
+                {stepActive < steps.length - 1
+                  ? 'Próximo'
+                  : stepActive === steps.length - 1
+                    ? 'Salvar'
+                    : 'Finalizado'}
+              </Button>
+            )}
+          </ButtonGroup>
+        )}
       </Steps.Root>
     </Box>
   );

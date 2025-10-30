@@ -18,6 +18,7 @@ import {
 import { CheckedChangeDetails } from '@zag-js/checkbox';
 import { StepProps } from '@/types/step-forms';
 import { getBeneficios, getStatus } from '@/services/processo-service';
+import { Beneficio, Status } from '../../../../types/processos';
 
 type SelectItem = {
   label: string;
@@ -34,7 +35,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
 
   const fetchData = async () => {
     const beneficiosData = await getBeneficios();
-    const formattedBeneficios = beneficiosData.map((beneficio: any) => ({
+    const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
       value: beneficio.id,
     }));
@@ -42,7 +43,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     setListaBeneficios(beneficios);
 
     const statusData = await getStatus();
-    const formattedStatus = statusData.map((statusItem: any) => ({
+    const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
       value: statusItem.id,
     }));
@@ -62,6 +63,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         onDataChange({ senha_inss: value });
         break;
       case 'data-atendimento':
+        console.log(value)
         onDataChange({ data_atendimento: value });
         break;
       case 'observations':
@@ -72,24 +74,24 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     }
   };
 
-  const handleSelectChange = (value: { value: string[] }) => {
+  const handleBeneficioChange = (value: { value: string[] }) => {
     const selectedValue = value.value[0];
     if (!selectedValue) return;
 
     const parsedId = Number(selectedValue);
     if (Number.isNaN(parsedId)) return;
 
-    const isBeneficio = listaBeneficios.items.some((item) => item.value === parsedId);
-    if (isBeneficio) {
-      onDataChange({ beneficio: { id: parsedId } });
-      return;
-    }
+    onDataChange({ beneficio: { id: parsedId } });
+  };
 
-    const isStatus = listaStatus.items.some((item) => item.value === parsedId);
-    if (isStatus) {
-      onDataChange({ status: { id: parsedId } });
-      return;
-    }
+  const handleStatusChange = (value: { value: string[] }) => {
+    const selectedValue = value.value[0];
+    if (!selectedValue) return;
+
+    const parsedId = Number(selectedValue);
+    if (Number.isNaN(parsedId)) return;
+
+    onDataChange({ status: { id: parsedId } });
   };
 
   const handleCheckboxChange = (name: string, checked: CheckedChangeDetails) => {
@@ -100,7 +102,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     <Fieldset.Root minW="full" flex={1}>
       <Fieldset.Content display="flex" gap="20px" flexDir="column">
         <Box>
-          <Select.Root collection={listaBeneficios} size="md" onValueChange={handleSelectChange}>
+          <Select.Root collection={listaBeneficios} size="md" onValueChange={handleBeneficioChange}>
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">
               Benefício{' '}
@@ -143,11 +145,17 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           )}
         </Box>
         <Box>
-          <Select.Root collection={listaStatus} size="md" onValueChange={handleSelectChange}>
+          <Select.Root collection={listaStatus} size="md" onValueChange={handleStatusChange}>
             <Select.HiddenSelect />
             <Select.Label fontWeight="bold">Situação</Select.Label>
             <Select.Control>
-              <Select.Trigger p={2}>
+              <Select.Trigger p={2}
+              borderColor={!data.status.id || data.status.id === 0 ? 'red.300' : undefined}
+                _focus={{
+                  borderColor:
+                    !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500',
+                }}
+              >
                 <Select.ValueText placeholder="Selecione a situação do processo" />
               </Select.Trigger>
               <Select.IndicatorGroup p={2}>
@@ -209,7 +217,17 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
               p={5}
               name="data-atendimento"
               type="date"
-              value={data.data_atendimento}
+              value={
+                data.data_atendimento && data.data_atendimento !== ''
+                  ? data.data_atendimento
+                  : (() => {
+                      const d = new Date();
+                      const yyyy = d.getFullYear();
+                      const mm = String(d.getMonth() + 1).padStart(2, '0');
+                      const dd = String(d.getDate()).padStart(2, '0');
+                      return `${yyyy}-${mm}-${dd}`;
+                    })()
+              }
               onChange={handleInputChange}
             />
           </Field.Root>
