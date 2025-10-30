@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { Cliente } from '../../../types/cliente'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
+import formatDate from '../../../utils/formatDate'
 
 function VisualizarClienteContent() {
   const router = useRouter()
@@ -40,7 +41,6 @@ function VisualizarClienteContent() {
     fetchCliente()
   }, [clienteID])
 
-  // Configurar breadcrumb quando o cliente for carregado
   useEffect(() => {
     if (cliente) {
       setBreadcrumbs([
@@ -204,7 +204,7 @@ function VisualizarClienteContent() {
                     ID
                   </Table.ColumnHeader>
                   <Table.ColumnHeader color="white" p={2}>
-                    Data Atendimento
+                    Data do Atendimento
                   </Table.ColumnHeader>
                   <Table.ColumnHeader color="white" p={2}>
                     Última Atualização
@@ -224,9 +224,9 @@ function VisualizarClienteContent() {
                 {cliente.processos.map((proc) => (
                   <Table.Row key={proc.id} _hover={{ bg: '#e3eafd' }}>
                     <Table.Cell p={2}>#{proc.id}</Table.Cell>
-                    <Table.Cell p={2}>{proc.data_atendimento}</Table.Cell>
-                    <Table.Cell p={2}>{proc.data_ultima_atualizacao}</Table.Cell>
-                    <Table.Cell p={2}>{proc.colaborador}</Table.Cell>
+                    <Table.Cell p={2}>{formatDate(proc.data_atendimento)}</Table.Cell>
+                    <Table.Cell p={2}>{formatDate(proc.data_ultima_atualizacao)}</Table.Cell>
+                    <Table.Cell p={2}>{proc.colaborador.nome}</Table.Cell>
                     <Table.Cell p={2}>
                       {proc.status ? proc.status.nome : 'Não informado'}
                     </Table.Cell>
@@ -290,19 +290,19 @@ function VisualizarClienteContent() {
                   <Text fontSize="sm" fontWeight="bold" color="gray.600">
                     Data do Atendimento
                   </Text>
-                  <Text>{proc.data_atendimento}</Text>
+                  <Text>{formatDate(proc.data_atendimento)}</Text>
                 </Box>
                 <Box>
                   <Text fontSize="sm" fontWeight="bold" color="gray.600">
                     Última Atualização
                   </Text>
-                  <Text>{proc.data_ultima_atualizacao}</Text>
+                  <Text>{formatDate(proc.data_ultima_atualizacao)}</Text>
                 </Box>
                 <Box>
                   <Text fontSize="sm" fontWeight="bold" color="gray.600">
                     Responsável
                   </Text>
-                  <Text>{proc.colaborador}</Text>
+                  <Text>{proc.colaborador.nome}</Text>
                 </Box>
                 <Box>
                   <Text fontSize="sm" fontWeight="bold" color="gray.600">

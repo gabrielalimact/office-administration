@@ -23,6 +23,7 @@ import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
 import { CustomSelect, SelectOption } from '@/components/CustomSelect'
 import GridTable from '@/components/GridTable'
+import formatDate from '../../../utils/formatDate'
 
 const ProcessosPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -239,7 +240,7 @@ const ProcessosPage = () => {
                   return <Text color="gray.700">{processo.status?.nome || ''}</Text>
                 }
                 if (column.key === 'data_atendimento') {
-                  return <Text color="gray.700">{processo.data_atendimento || ''}</Text>
+                  return <Text color="gray.700">{formatDate(processo.data_atendimento)|| ''}</Text>
                 }
                 if (column.key === 'colaborador') {
                   // Tratar colaborador que pode ser string ou objeto

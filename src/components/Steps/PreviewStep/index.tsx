@@ -6,6 +6,7 @@ import { StepProps } from '@/types/step-forms'
 import maskCPF from '../../../../utils/maskCPF'
 import { getBeneficios, getStatus } from '@/services/processo-service'
 import { Beneficio, Status } from '../../../../types/processos'
+import formatDate from '../../../../utils/formatDate'
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
   const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([])
@@ -164,7 +165,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
 
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Data do Atendimento</Field.Label>
-                  <Text>{data.data_atendimento || '-'}</Text>
+                  <Text>{formatDate(data.data_atendimento) || '-'}</Text>
                 </Field.Root>
 
                 <Field.Root>
