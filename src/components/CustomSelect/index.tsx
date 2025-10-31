@@ -1,5 +1,6 @@
 'use client'
 import { Select, Portal, createListCollection } from '@chakra-ui/react'
+import { useState } from 'react'
 
 export interface SelectOption {
   label: string;
@@ -35,17 +36,13 @@ export const CustomSelect = ({
   variant = 'outline',
   defaultValue = [],
 }: CustomSelectProps) => {
-  // Criar collection usando createListCollection
+  const [isEmpty, setIsEmpty] = useState(options.length === 0)
   const collection = createListCollection({
     items: options,
   })
-
-  // Handler para onChange que converte o formato
   const handleValueChange = (details: { value: string[] }) => {
     onValueChange(details.value)
   }
-
-  // Determinar o valor atual para exibir
   const currentValue = value.length > 0 ? value : defaultValue
 
   const getSelectStyles = () => {
@@ -92,7 +89,7 @@ export const CustomSelect = ({
       onValueChange={handleValueChange}
       value={currentValue}
       multiple={multiple}
-      disabled={disabled}
+      disabled={isEmpty || disabled}
     >
       <Select.HiddenSelect />
       <Select.Label fontWeight="bold" fontSize={size === 'sm' ? 'sm' : 'md'}>
