@@ -36,7 +36,7 @@ export interface Processo {
   data_atendimento: string;
   data_ultima_atualizacao: string;
   observacoes: string;
-  links_documentos: string[];
+  arquivo_documentos: ArquivosDocumentos;
   arquivado: boolean;
   cliente: {
     id: number;
@@ -59,4 +59,15 @@ export interface ProcessosPorFuncionario {
   cargo: string;
   processos: Processo[];
   totalProcessos: number;
+}
+
+
+export interface ArquivosDocumentos { 
+  id: number;
+  caminho: string;
+  data_upload: string;
+  nome_arquivo: string;
+  nome_original: string;
+  tamanho: number;
+  tipo_mime: string;
 }

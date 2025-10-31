@@ -152,3 +152,34 @@ export async function uploadDocumentosProcesso(
   })
   return response.data
 }
+
+export async function downloadArquivoProcesso(arquivoId: number, nomeOriginal?: string) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/arquivo/download/${arquivoId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      },
+    )
+
+    if (!response.ok) throw new Error('Erro ao baixar arquivo')
+
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = nomeOriginal || 'arquivo'
+    document.body.appendChild(link)
+    link.click()
+
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Erro no download:', error)
+    alert('Falha ao baixar o arquivo.')
+  }
+}
