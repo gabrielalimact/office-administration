@@ -9,8 +9,19 @@ import { MdOutlineSpaceDashboard } from 'react-icons/md'
 import { HiUserPlus } from 'react-icons/hi2'
 import { FaFilePen } from 'react-icons/fa6'
 import { useRouter } from 'next/navigation'
-import { IoIosArrowBack, IoIosArrowForward, IoIosLogOut } from 'react-icons/io'
+import { IoIosLogOut } from 'react-icons/io'
 import { Avatar } from '../Avatar'
+
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-50%) translateX(-10px); }
+      to { opacity: 1; transform: translateY(-50%) translateX(0); }
+    }
+  `
+  document.head.appendChild(style)
+}
 
 const optionsMenu = [
   { icon: <MdOutlineSpaceDashboard size={24} />, label: 'Painel', href: '/home' },
@@ -41,6 +52,7 @@ const optionsMenu = [
 const SideBar = () => {
   const [expanded, setExpanded] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   const { user } = useUserContext()
   const router = useRouter()
@@ -121,46 +133,71 @@ const SideBar = () => {
         </Flex>
         <Flex direction="column" mt={8} gap={1} flex={1} justifyContent={'space-between'}>
           <Flex direction="column">
-            {filteredMenu.map((option) => (
-              <Link key={option.label} href={option.href} style={{ textDecoration: 'none' }}>
-                <Flex
-                  align="center"
-                  gap={expanded ? 2 : 0}
-                  width="100%"
-                  justify={expanded ? 'flex-start' : 'center'}
-                  borderRadius="50px"
-                  padding={expanded ? '12px 16px' : '12px 0'}
-                  _hover={{ background: 'rgba(255,255,255,0.18)' }}
-                  style={{ cursor: 'pointer', marginBottom: 2, background: 'none' }}
-                >
-                  {option.icon}
-                  {expanded && <Text>{option.label}</Text>}
-                </Flex>
-              </Link>
+            {filteredMenu.map((option, index) => (
+              <Box key={option.label} position="relative">
+                <Link href={option.href} style={{ textDecoration: 'none' }}>
+                  <Flex
+                    align="center"
+                    gap={expanded ? 2 : 0}
+                    width="100%"
+                    justify={expanded ? 'flex-start' : 'center'}
+                    borderRadius="50px"
+                    padding={expanded ? '12px 16px' : '12px 0'}
+                    _hover={{ background: 'rgba(255,255,255,0.18)' }}
+                    style={{ 
+                      cursor: 'pointer', 
+                      marginBottom: 2, 
+                      background: 'none', 
+                      scale: hoveredIndex === index ? '1.3' : '1', 
+                      transition: 'all 0.2s' 
+                    }}
+                    onMouseOver={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    {option.icon}
+                    {expanded && <Text>{option.label}</Text>}
+                  </Flex>
+                </Link>
+                
+                {!expanded && hoveredIndex === index && (
+                  <Box
+                    position="absolute"
+                    left="70px"
+                    top="50%"
+                    transform="translateY(-50%)"
+                    zIndex={1000}
+                    bg="rgba(32, 32, 32, 0.95)"
+                    color="white"
+                    px={3}
+                    py={2}
+                    borderRadius="8px"
+                    fontSize="sm"
+                    fontWeight="medium"
+                    whiteSpace="nowrap"
+                    boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                    _before={{
+                      content: '""',
+                      position: 'absolute',
+                      left: '-6px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 0,
+                      height: 0,
+                      borderTop: '6px solid transparent',
+                      borderBottom: '6px solid transparent',
+                      borderRight: '6px solid rgba(32, 32, 32, 0.95)',
+                    }}
+                    style={{
+                      animation: 'fadeIn 0.2s ease-in-out',
+                    }}
+                  >
+                    {option.label}
+                  </Box>
+                )}
+              </Box>
             ))}
           </Flex>
 
-          <Flex
-            gap={2}
-            onClick={() => handleExpand()}
-            position={'fixed'}
-            bottom={'200px'}
-            left={expanded ? '280px' : '48px'}
-          >
-            <IoIosArrowForward
-              size={40}
-              style={{
-                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 0.3s',
-                borderColor: 'rgba(0, 0, 0, 0.18)',
-                border: '1px solid rgba(0, 0, 0, 0.18)',
-                backgroundColor: 'rgba(247, 247, 250, 1)',
-                borderRadius: '50%',
-                padding: '4px',
-                cursor: 'pointer',
-              }}
-            />
-          </Flex>
           <Flex
             gap={8}
             flexDirection={'column'}

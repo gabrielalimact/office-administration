@@ -1,5 +1,5 @@
-import { Endereco } from './endereco';
-import { Processo } from './processos';
+import { Endereco } from './endereco'
+import { Processo } from './processos'
 
 export interface Cliente {
   id: number;
