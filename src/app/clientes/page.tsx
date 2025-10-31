@@ -1,7 +1,16 @@
 'use client'
-import { Box, Text, IconButton, Flex, Button, ButtonGroup, Pagination } from '@chakra-ui/react'
+import {
+  Box,
+  Text,
+  IconButton,
+  Flex,
+  Button,
+  ButtonGroup,
+  Pagination,
+  Grid
+} from '@chakra-ui/react'
 import { IoEyeOutline, IoTrash } from 'react-icons/io5'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useLoading } from '@/components/LoadingContext'
 import { getClientes, deletarCliente } from '@/services/cliente-service'
 import { Cliente } from '../../../types/cliente'
@@ -11,17 +20,26 @@ import Breadcrumb from '@/components/Breadcrumb'
 import GridTable from '@/components/GridTable'
 import { maskCPF } from '../../../utils/maskCPF'
 import CustomInput from '@/components/CustomInput'
+import CustomCheckbox from '@/components/CustomCheckbox'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function ClientesPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { setLoading } = useLoading()
+  const { setBreadcrumbs } = useBreadcrumb()
+
   const [busca, setBusca] = useState('')
+  const [ativos, setAtivos] = useState(false)
   const [clientes, setClientes] = useState<Cliente[]>([])
+  const [clientesAtivos, setClientesAtivos] = useState<Cliente[]>([])
+  const [showAll, setShowAll] = useState(false)
   const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(null)
   const [modalAberto, setModalAberto] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize] = useState(10)
-  const { setLoading } = useLoading()
-  const { setBreadcrumbs } = useBreadcrumb()
 
+  // 🧭 Breadcrumb
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
@@ -29,9 +47,56 @@ export default function ClientesPage() {
     ])
   }, [setBreadcrumbs])
 
-  const clientesFiltrados = clientes.filter((c) =>
-    c.nome.toLowerCase().includes(busca.toLowerCase())
-  )
+  // 🔄 Atualiza URL quando filtros mudam
+  const updateURLParams = (
+    newParams: Partial<{ busca: string; ativos: boolean; all: boolean }>
+  ) => {
+    const params = new URLSearchParams()
+
+    if (newParams.busca) params.set('busca', newParams.busca)
+    if (newParams.ativos) params.set('ativos', 'true')
+    if (newParams.all) params.set('all', 'true')
+
+    const queryString = params.toString()
+    router.push(`/clientes${queryString ? '?' + queryString : ''}`, { scroll: false })
+  }
+
+  const handleBuscaChange = (value: string) => {
+    setBusca(value)
+    updateURLParams({ busca: value, ativos, all: showAll })
+  }
+
+  const handleAtivosToggle = () => {
+    const novoValor = !ativos
+    setAtivos(novoValor)
+    updateURLParams({ busca, ativos: novoValor, all: showAll })
+  }
+
+  const handleShowAllToggle = () => {
+    const novoValor = !showAll
+    setShowAll(novoValor)
+    updateURLParams({ busca, ativos, all: novoValor })
+  }
+
+  // 🧭 Inicializa filtros da URL
+  useEffect(() => {
+    const buscaParam = searchParams.get('busca') || ''
+    const ativosParam = searchParams.get('ativos') === 'true'
+    const allParam = searchParams.get('all') === 'true'
+
+    setBusca(buscaParam)
+    setAtivos(ativosParam)
+    setShowAll(allParam)
+  }, [searchParams])
+
+  const clientesFiltrados = clientes
+    .filter((c) => c.nome.toLowerCase().includes(busca.toLowerCase()))
+    .filter((c) => {
+      if (showAll) return true
+      if (ativos) return clientesAtivos.some((ativo) => ativo.id === c.id)
+      return true
+    })
+
   const totalItems = clientesFiltrados.length
   const totalPages = Math.ceil(totalItems / pageSize)
   const startIndex = (currentPage - 1) * pageSize
@@ -40,14 +105,14 @@ export default function ClientesPage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [busca])
+  }, [busca, ativos, showAll])
 
   const handleClienteClick = (clienteID: number) => {
     setLoading(true)
     setTimeout(() => {
-      window.location.href = `/visualizar-cliente?cliente=${encodeURIComponent(clienteID)}`
+      router.push(`/visualizar-cliente?cliente=${clienteID}`)
       setLoading(false)
-    }, 600)
+    }, 400)
   }
 
   const handleExcluirClick = (e: React.MouseEvent, cliente: Cliente) => {
@@ -58,11 +123,10 @@ export default function ClientesPage() {
 
   const confirmarExclusao = async () => {
     if (!clienteParaExcluir) return
-
     setLoading(true)
     try {
       await deletarCliente(clienteParaExcluir.id)
-      setClientes(clientes.filter((c) => c.id !== clienteParaExcluir.id))
+      setClientes((prev) => prev.filter((c) => c.id !== clienteParaExcluir.id))
       setModalAberto(false)
       setClienteParaExcluir(null)
     } catch (error) {
@@ -78,16 +142,22 @@ export default function ClientesPage() {
     setClienteParaExcluir(null)
   }
 
-  const fetchClientes = useCallback(async () => {
+  const fetchClientes = async () => {
     setLoading(true)
     const data = await getClientes()
     setClientes(data)
+
+    const ativosData = data.filter((cliente) =>
+      cliente.processos.some((processo) => !processo.arquivado)
+    )
+    setClientesAtivos(ativosData)
+
     setLoading(false)
-  }, [setLoading])
+  }
 
   useEffect(() => {
     fetchClientes()
-  }, [fetchClientes])
+  }, [])
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
@@ -95,13 +165,22 @@ export default function ClientesPage() {
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
         Clientes
       </Text>
-      <CustomInput
-        placeholder="Buscar cliente..."
-        isSearch
-        value={busca}
-        onChange={(e) => setBusca(e.target.value)}
-      />
-      <Box mt={4}>
+
+      <Grid gridTemplateColumns={'1fr 250px'} gap={4} alignItems="center">
+        <CustomInput
+          placeholder="Buscar cliente..."
+          isSearch
+          value={busca}
+          onChange={(e) => handleBuscaChange(e.target.value)}
+        />
+        <CustomCheckbox
+          label="Clientes com processos ativos"
+          onChange={handleAtivosToggle}
+          isChecked={ativos}
+        />
+      </Grid>
+
+      <Box my={4}>
         <GridTable<Cliente>
           columns={[
             { key: 'nome', label: 'Nome', width: '2fr' },
@@ -113,16 +192,10 @@ export default function ClientesPage() {
           data={clientesPaginados}
           onRowClick={(cliente) => handleClienteClick(cliente.id)}
           renderCell={(cliente, column) => {
-            if (column.key === 'cpf') {
-              return <Text color="gray.700">{maskCPF(cliente.cpf)}</Text>
-            }
-            if (column.key === 'email') {
-              return <Text color="gray.700">{cliente.email ?? 'Não informado'}</Text>
-            }
-            if (column.key === 'processosCount') {
-              return <Text color="gray.700">{cliente.processos.length ?? 0}</Text>
-            }
-            if (column.key === 'actions') {
+            if (column.key === 'cpf') return <Text>{maskCPF(cliente.cpf)}</Text>
+            if (column.key === 'email') return <Text>{cliente.email ?? 'Não informado'}</Text>
+            if (column.key === 'processosCount') return <Text>{cliente.processos.length ?? 0}</Text>
+            if (column.key === 'actions')
               return (
                 <Flex gap={1}>
                   <IconButton
@@ -147,15 +220,16 @@ export default function ClientesPage() {
                   </IconButton>
                 </Flex>
               )
-            }
-            return (
-              <Text color="gray.700">{String(cliente[column.key as keyof Cliente] || '')}</Text>
-            )
+            return <Text>{String(cliente[column.key as keyof Cliente] || '')}</Text>
           }}
           emptyMessage="Nenhum cliente encontrado"
         />
       </Box>
-
+      <Flex justifyContent="space-between" alignItems="center" mb={3} ml={2}>
+        <Text fontSize="sm" color="gray.600">
+          Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} clientes
+        </Text>
+      </Flex>
       <Pagination.Root
         count={totalItems}
         pageSize={pageSize}
@@ -174,6 +248,7 @@ export default function ClientesPage() {
           <Pagination.Items
             render={(page) => (
               <IconButton
+                key={page.value}
                 variant={page.value === currentPage ? 'outline' : 'ghost'}
                 onClick={() => setCurrentPage(page.value)}
               >
