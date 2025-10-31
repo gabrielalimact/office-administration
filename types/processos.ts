@@ -1,4 +1,4 @@
-import { Cliente } from './cliente';
+import { Cliente } from './cliente'
 
 export interface Beneficio {
   id: number;
@@ -25,7 +25,11 @@ export interface CriarProcessoRequest {
 
 export interface Processo {
   id: number;
-  colaborador: string;
+  colaborador: {
+    id: number;
+    nome: string;
+    cargo: string;
+  };
   olhar_inss: boolean;
   olhar_pje_creta: boolean;
   senha_inss: string;
