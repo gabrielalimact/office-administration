@@ -3,16 +3,16 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 import { MdOutlineSpaceDashboard } from 'react-icons/md'
 
 export interface BreadcrumbItem {
-  label: string;
-  path: string;
-  icon?: ReactNode;
+  label: string
+  path: string
+  icon?: ReactNode
 }
 
 interface BreadcrumbContextType {
-  breadcrumbs: BreadcrumbItem[];
-  setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => void;
-  addBreadcrumb: (item: BreadcrumbItem) => void;
-  clearBreadcrumbs: () => void;
+  breadcrumbs: BreadcrumbItem[]
+  setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => void
+  addBreadcrumb: (item: BreadcrumbItem) => void
+  clearBreadcrumbs: () => void
 }
 
 const BreadcrumbContext = createContext<BreadcrumbContextType | undefined>(undefined)

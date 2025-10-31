@@ -1,14 +1,14 @@
 import { RadioGroup, HStack, UseRadioGroupProps } from '@chakra-ui/react'
 type Item = {
-  label: string;
-  value: string;
-};
+  label: string
+  value: string
+}
 
 type Props = {
-  items: Item[];
-  onChange: (value: string) => void;
-  value?: string;
-} & UseRadioGroupProps;
+  items: Item[]
+  onChange: (value: string) => void
+  value?: string
+} & UseRadioGroupProps
 
 const CustomRadioGroup = ({ items, onChange, value, ...rest }: Props) => {
   const handleValueChange = (details: { value: string | null }) => {

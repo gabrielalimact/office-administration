@@ -3,15 +3,15 @@ import { useState, useEffect } from 'react'
 import { maskCPF, validateCPF, unmaskCPF } from '../../../utils/maskCPF'
 
 interface CPFInputProps {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string, isValid: boolean) => void;
-  onValidation?: (isValid: boolean, error?: string) => void;
-  variant?: 'outline' | 'flushed' | 'subtle';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  required?: boolean;
-  disabled?: boolean;
+  label?: string
+  placeholder?: string
+  value?: string
+  onChange?: (value: string, isValid: boolean) => void
+  onValidation?: (isValid: boolean, error?: string) => void
+  variant?: 'outline' | 'flushed' | 'subtle'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  required?: boolean
+  disabled?: boolean
 }
 
 export function CPFInput({

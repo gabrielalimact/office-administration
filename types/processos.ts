@@ -1,72 +1,72 @@
 import { Cliente } from './cliente'
 
 export interface Beneficio {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
 }
 
 export interface Status {
-  id: number;
-  nome: string;
+  id: number
+  nome: string
 }
 export interface CriarProcessoRequest {
-  cliente: Cliente;
-  colaborador: string;
-  beneficio: string;
-  olhar_inss: boolean;
-  olhar_pje_creta: boolean;
-  senha_inss: string;
-  data_atendimento: string;
-  data_ultima_atualizacao: string;
-  status: string;
-  observacoes: string;
-  links_documentos: string[];
+  cliente: Cliente
+  colaborador: string
+  beneficio: string
+  olhar_inss: boolean
+  olhar_pje_creta: boolean
+  senha_inss: string
+  data_atendimento: string
+  data_ultima_atualizacao: string
+  status: string
+  observacoes: string
+  links_documentos: string[]
 }
 
 export interface Processo {
-  id: number;
+  id: number
   colaborador: {
-    id: number;
-    nome: string;
-    cargo: string;
-  };
-  olhar_inss: boolean;
-  olhar_pje_creta: boolean;
-  senha_inss: string;
-  data_atendimento: string;
-  data_ultima_atualizacao: string;
-  observacoes: string;
-  arquivo_documentos: ArquivosDocumentos;
-  arquivado: boolean;
+    id: number
+    nome: string
+    cargo: string
+  }
+  olhar_inss: boolean
+  olhar_pje_creta: boolean
+  senha_inss: string
+  data_atendimento: string
+  data_ultima_atualizacao: string
+  observacoes: string
+  arquivo_documentos: ArquivosDocumentos
+  arquivado: boolean
   cliente: {
-    id: number;
-    nome: string;
-    data_nascimento: string;
-    cpf: string;
-    rg: string;
-    filiacao: string;
-    naturalidade: string;
-  };
-  status: Status;
-  beneficio: Beneficio;
+    id: number
+    nome: string
+    data_nascimento: string
+    cpf: string
+    rg: string
+    filiacao: string
+    naturalidade: string
+  }
+  status: Status
+  beneficio: Beneficio
 }
 
 export interface ProcessosPorFuncionario {
-  id: number;
-  nome: string;
-  cpf: string;
-  email: string;
-  cargo: string;
-  processos: Processo[];
-  totalProcessos: number;
+  id: number
+  nome: string
+  cpf: string
+  email: string
+  cargo: string
+  processos: Processo[]
+  totalProcessos: number
 }
 
 export interface ArquivosDocumentos {
-  id: number;
-  caminho: string;
-  data_upload: string;
-  nome_arquivo: string;
-  nome_original: string;
-  tamanho: number;
-  tipo_mime: string;
+  id: number
+  caminho: string
+  data_upload: string
+  nome_arquivo: string
+  nome_original: string
+  tamanho: number
+  tipo_mime: string
 }

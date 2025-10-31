@@ -63,9 +63,9 @@ export function isValidCPFFormat(value: string): boolean {
  * Formata CPF para exibição, validando e aplicando máscara
  */
 export function formatCPF(value: string): {
-  formatted: string;
-  isValid: boolean;
-  error?: string;
+  formatted: string
+  isValid: boolean
+  error?: string
 } {
   if (!value) {
     return {

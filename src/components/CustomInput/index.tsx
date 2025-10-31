@@ -2,15 +2,15 @@ import { Field, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/rea
 import { IoSearchOutline } from 'react-icons/io5'
 
 type Props = {
-  label?: string;
-  type?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  isPassword?: boolean;
-  isSearch?: boolean;
-} & InputProps;
+  label?: string
+  type?: string
+  placeholder?: string
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  isPassword?: boolean
+  isSearch?: boolean
+} & InputProps
 const CustomInput = ({
   label,
   type = 'text',

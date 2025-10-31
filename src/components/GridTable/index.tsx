@@ -2,18 +2,18 @@ import { Box, Text } from '@chakra-ui/react'
 import { ReactNode } from 'react'
 
 interface GridTableColumn {
-  key: string;
-  label: string;
-  width?: string;
-  align?: 'left' | 'center' | 'right';
+  key: string
+  label: string
+  width?: string
+  align?: 'left' | 'center' | 'right'
 }
 
 interface GridTableProps<T = Record<string, unknown>> {
-  columns: GridTableColumn[];
-  data: T[];
-  onRowClick?: (item: T) => void;
-  renderCell?: (item: T, column: GridTableColumn) => ReactNode;
-  emptyMessage?: string;
+  columns: GridTableColumn[]
+  data: T[]
+  onRowClick?: (item: T) => void
+  renderCell?: (item: T, column: GridTableColumn) => ReactNode
+  emptyMessage?: string
 }
 
 export function GridTable<T = Record<string, unknown>>({
@@ -72,8 +72,8 @@ export function GridTable<T = Record<string, unknown>>({
             _hover={
               onRowClick
                 ? {
-                  bg: 'gray.50'
-                }
+                    bg: 'gray.50'
+                  }
                 : {}
             }
             onClick={() => onRowClick?.(item)}

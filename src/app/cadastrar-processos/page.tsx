@@ -121,18 +121,18 @@ const CadastrarProcessosPage = () => {
     let canProceed = true
 
     switch (stepActive) {
-    case 0:
-      canProceed = validateStep1()
-      break
-    case 1:
-      canProceed = validateStep2()
-      break
-    case 2:
-    case 3:
-      canProceed = true
-      break
-    default:
-      canProceed = true
+      case 0:
+        canProceed = validateStep1()
+        break
+      case 1:
+        canProceed = validateStep2()
+        break
+      case 2:
+      case 3:
+        canProceed = true
+        break
+      default:
+        canProceed = true
     }
 
     if (canProceed) {

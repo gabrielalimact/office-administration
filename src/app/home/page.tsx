@@ -7,10 +7,12 @@ import { getDashboardData } from '@/services/dashboard-service'
 import { useUserContext } from '@/components/UserContext'
 import { getFuncionariosEProcessos } from '@/services/usuario-service'
 import { ProcessosPorFuncionario } from '../../../types/processos'
+import { useRouter } from 'next/navigation'
 
 const Home = () => {
   const { user } = useUserContext()
   const { setBreadcrumbs } = useBreadcrumb()
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [funcionarios, setFuncionarios] = useState<ProcessosPorFuncionario[]>([])
   const [totalProcessos, setTotalProcessos] = useState(0)
@@ -71,11 +73,19 @@ const Home = () => {
       </Box>
 
       <Box mb={8}>
-        <Text fontSize="20px" mb={4} color="var(--primary)">
+        <Text fontSize="20px" mb={4}>
           Estatísticas Gerais
         </Text>
         <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} gap={6}>
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Box
+            bg="white"
+            borderRadius={5}
+            p={6}
+            border="1px solid"
+            borderColor="gray.300"
+            onClick={() => router.push('/processos?all=true')}
+            cursor={'pointer'}
+          >
             <Flex align="center" justify="space-between" mb={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
                 TOTAL DE PROCESSOS
@@ -90,7 +100,15 @@ const Home = () => {
             </Text>
           </Box>
 
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Box
+            bg="white"
+            borderRadius={5}
+            p={6}
+            border="1px solid"
+            borderColor="gray.300"
+            onClick={() => router.push('/processos?arquivados=false')}
+            cursor={'pointer'}
+          >
             <Flex align="center" justify="space-between" mb={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
                 PROCESSOS ATIVOS
@@ -105,7 +123,15 @@ const Home = () => {
             </Text>
           </Box>
 
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Box
+            bg="white"
+            borderRadius={5}
+            p={6}
+            border="1px solid"
+            borderColor="gray.300"
+            onClick={() => router.push('/processos?arquivados=true')}
+            cursor={'pointer'}
+          >
             <Flex align="center" justify="space-between" mb={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
                 PROCESSOS ARQUIVADOS
@@ -120,7 +146,15 @@ const Home = () => {
             </Text>
           </Box>
 
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Box
+            bg="white"
+            borderRadius={5}
+            p={6}
+            border="1px solid"
+            borderColor="gray.300"
+            onClick={() => router.push('/clientes?ativos=true')}
+            cursor={'pointer'}
+          >
             <Flex align="center" justify="space-between" mb={2}>
               <Text fontSize="sm" fontWeight="medium" color="gray.600">
                 TOTAL DE CLIENTES
@@ -159,6 +193,10 @@ const Home = () => {
                   borderColor="gray.300"
                   transition="all 0.2s"
                   _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+                  onClick={() =>
+                    router.push('/processos?tipoProcesso=' + encodeURIComponent(item.beneficio))
+                  }
+                  cursor={'pointer'}
                 >
                   <Text
                     fontSize="sm"
@@ -207,9 +245,11 @@ const Home = () => {
                     justify="space-between"
                     p={3}
                     borderRadius={6}
-                    _hover={{ bg: 'gray.50' }}
+                    _hover={{ bg: 'gray.50', scale: 1.01 }}
                     borderBottom={index < funcionarios.length - 1 ? '1px solid' : 'none'}
                     borderColor="gray.100"
+                    onClick={() => router.push('/visualizar-relatorio/' + funcionario.id)}
+                    cursor={'pointer'}
                   >
                     <Box>
                       <Text fontWeight="medium" color="gray.800">

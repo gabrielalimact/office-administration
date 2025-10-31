@@ -3,8 +3,8 @@ import { createContext, useContext, useState, ReactNode } from 'react'
 import { Flex, Spinner, Box } from '@chakra-ui/react'
 
 interface LoadingContextProps {
-  isLoading: boolean;
-  setLoading: (value: boolean) => void;
+  isLoading: boolean
+  setLoading: (value: boolean) => void
 }
 
 const LoadingContext = createContext<LoadingContextProps | undefined>(undefined)

@@ -3,23 +3,23 @@ import { Select, Portal, createListCollection } from '@chakra-ui/react'
 import { useState } from 'react'
 
 export interface SelectOption {
-  label: string;
-  value: string;
+  label: string
+  value: string
 }
 
 interface CustomSelectProps {
-  label: string;
-  placeholder: string;
-  options: SelectOption[];
-  onValueChange: (value: string[]) => void;
-  value?: string[];
-  isRequired?: boolean;
-  disabled?: boolean;
-  clearable?: boolean;
-  multiple?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'outline' | 'filled' | 'flushed';
-  defaultValue?: string[]; // Adicionar valor padrão
+  label?: string
+  placeholder: string
+  options: SelectOption[]
+  onValueChange: (value: string[]) => void
+  value?: string[]
+  isRequired?: boolean
+  disabled?: boolean
+  clearable?: boolean
+  multiple?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'outline' | 'filled' | 'flushed'
+  defaultValue?: string[] // Adicionar valor padrão
 }
 
 export const CustomSelect = ({
@@ -92,10 +92,12 @@ export const CustomSelect = ({
       disabled={isEmpty || disabled}
     >
       <Select.HiddenSelect />
-      <Select.Label fontWeight="bold" fontSize={size === 'sm' ? 'sm' : 'md'}>
-        {label}
-        {isRequired && <span style={{ color: 'red', marginLeft: '4px' }}>*</span>}
-      </Select.Label>
+      {label && (
+        <Select.Label fontWeight="bold" fontSize={size === 'sm' ? 'sm' : 'md'}>
+          {label}
+          {isRequired && <span style={{ color: 'red', marginLeft: '4px' }}>*</span>}
+        </Select.Label>
+      )}
       <Select.Control>
         <Select.Trigger style={getSelectStyles()}>
           <Select.ValueText placeholder={placeholder} px={4} />

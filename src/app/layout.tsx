@@ -16,7 +16,7 @@ const montserratSans = Montserrat({
 export default function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   const pathname = usePathname()
   const showLayout = pathname !== '/'

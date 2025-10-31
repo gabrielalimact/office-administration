@@ -3,36 +3,36 @@ import { NovoCliente } from '../../types/cliente'
 import { api } from './api-service'
 
 export interface CriarProcessoComNovoClienteRequest {
-  cliente: NovoCliente;
-  colaboradorId: number;
+  cliente: NovoCliente
+  colaboradorId: number
   beneficio: {
-    id?: number;
-    nome?: string;
-  };
-  olhar_inss: boolean;
-  olhar_pje_creta: boolean;
-  senha_inss?: string;
-  data_atendimento: string;
-  data_ultima_atualizacao: string;
+    id?: number
+    nome?: string
+  }
+  olhar_inss: boolean
+  olhar_pje_creta: boolean
+  senha_inss?: string
+  data_atendimento: string
+  data_ultima_atualizacao: string
   status: {
-    id?: number;
-    nome?: string;
-  };
-  observacoes?: string;
-  arquivo?: File;
+    id?: number
+    nome?: string
+  }
+  observacoes?: string
+  arquivo?: File
 }
 
 export interface CriarProcessoClienteExistenteRequest {
-  statusId: number;
-  beneficioId: number;
-  colaboradorId: number;
-  olhar_inss: boolean;
-  olhar_pje_creta: boolean;
-  senha_inss?: string;
-  data_atendimento: string;
-  data_ultima_atualizacao?: string;
-  observacoes?: string;
-  arquivo?: File;
+  statusId: number
+  beneficioId: number
+  colaboradorId: number
+  olhar_inss: boolean
+  olhar_pje_creta: boolean
+  senha_inss?: string
+  data_atendimento: string
+  data_ultima_atualizacao?: string
+  observacoes?: string
+  arquivo?: File
 }
 
 export async function getStatus() {
@@ -57,7 +57,7 @@ export async function getProcessoPorId(id: number): Promise<Processo> {
 
 export async function criarProcesso(
   processo: CriarProcessoRequest,
-  clienteID?: number,
+  clienteID?: number
 ): Promise<Processo> {
   if (clienteID) {
     const response = await api.post(`/processos/cliente/${clienteID}/processos`, processo)
@@ -68,7 +68,7 @@ export async function criarProcesso(
 }
 
 export async function criarProcessoComNovoCliente(
-  dados: CriarProcessoComNovoClienteRequest,
+  dados: CriarProcessoComNovoClienteRequest
 ): Promise<Processo> {
   const formData = new FormData()
 
@@ -95,15 +95,15 @@ export async function criarProcessoComNovoCliente(
 
   const response = await api.post('/processos', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   })
   return response.data
 }
 
 export async function criarProcessoParaClienteExistente(
   clienteId: number,
-  dados: CriarProcessoClienteExistenteRequest,
+  dados: CriarProcessoClienteExistenteRequest
 ): Promise<Processo> {
   const formData = new FormData()
 
@@ -132,23 +132,23 @@ export async function criarProcessoParaClienteExistente(
 
   const response = await api.post(`/processos/cliente/${clienteId}`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   })
   return response.data
 }
 
 export async function uploadDocumentosProcesso(
   processoId: number,
-  arquivo: File,
+  arquivo: File
 ): Promise<{ message: string; documentos?: string[] }> {
   const formData = new FormData()
   formData.append('arquivo', arquivo)
 
   const response = await api.post(`/processos/${processoId}/documentos`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   })
   return response.data
 }
@@ -160,9 +160,9 @@ export async function downloadArquivoProcesso(arquivoId: number, nomeOriginal?: 
       {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      },
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
     )
 
     if (!response.ok) throw new Error('Erro ao baixar arquivo')

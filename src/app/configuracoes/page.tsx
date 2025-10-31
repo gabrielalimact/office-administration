@@ -14,13 +14,13 @@ import CustomInput from '@/components/CustomInput'
 import CustomRadioGroup from '@/components/CustomRadioGroup'
 
 type UsuarioData = {
-  id: number;
-  name: string;
-  cpf: string;
-  email: string;
-  cargo: string;
-  avatar?: string;
-};
+  id: number
+  name: string
+  cpf: string
+  email: string
+  cargo: string
+  avatar?: string
+}
 const ConfiguracoesPage = () => {
   const { user, setUser } = useUserContext()
   const [editMode, setEditMode] = useState(false)
@@ -168,9 +168,9 @@ const ConfiguracoesPage = () => {
               _hover={
                 editMode
                   ? {
-                    transform: 'scale(1.05)',
-                    filter: 'brightness(0.9)'
-                  }
+                      transform: 'scale(1.05)',
+                      filter: 'brightness(0.9)'
+                    }
                   : {}
               }
               border="4px solid"

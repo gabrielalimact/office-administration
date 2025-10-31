@@ -1,13 +1,13 @@
 import { Button, CloseButton, Dialog, Portal } from '@chakra-ui/react'
 
 type ModalProps = {
-  hasButton?: boolean;
-  buttonText?: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
-  title: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-};
+  hasButton?: boolean
+  buttonText?: string
+  children?: React.ReactNode
+  icon?: React.ReactNode
+  title: string
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+}
 export const Modal = ({
   hasButton = true,
   buttonText = 'Open Modal',

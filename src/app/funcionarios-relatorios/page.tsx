@@ -25,11 +25,11 @@ import CustomInput from '@/components/CustomInput'
 import maskCPF from '../../../utils/maskCPF'
 
 export interface IFuncionarios {
-  id: number;
-  nome: string;
-  cargo: string;
-  cpf: string;
-  email: string;
+  id: number
+  nome: string
+  cargo: string
+  cpf: string
+  email: string
 }
 const FuncionariosRelatoriosPage = () => {
   const router = useRouter()
@@ -158,7 +158,13 @@ const FuncionariosRelatoriosPage = () => {
           </Table.Header>
           <Table.Body>
             {funcionariosPage.map((item) => (
-              <Table.Row height="50px" key={item.id} _hover={{ bgColor: 'var(--hover)' }}>
+              <Table.Row
+                height="50px"
+                key={item.id}
+                _hover={{ bgColor: 'var(--hover)' }}
+                cursor="pointer"
+                onClick={() => handlePush(`/visualizar-relatorio/${item.id}`)}
+              >
                 <Table.Cell padding="0 0 0 20px">{item.nome}</Table.Cell>
                 <Table.Cell>{item.cargo === 'socio' ? 'Sócio' : 'Funcionário'}</Table.Cell>
                 <Table.Cell>{maskCPF(item.cpf)}</Table.Cell>

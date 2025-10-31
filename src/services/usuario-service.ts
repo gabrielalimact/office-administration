@@ -2,20 +2,20 @@ import { ProcessosPorFuncionario } from '../../types/processos'
 import { api } from './api-service'
 
 export interface IUsuario {
-  cpf: string;
-  cargo: string;
-  nome: string;
-  senha: string;
-  email: string;
+  cpf: string
+  cargo: string
+  nome: string
+  senha: string
+  email: string
 }
 
 export interface IUsuarioResponse {
-  id: number;
-  cpf: string;
-  cargo: string;
-  nome: string;
-  senha: string;
-  email: string;
+  id: number
+  cpf: string
+  cargo: string
+  nome: string
+  senha: string
+  email: string
 }
 export async function cadastrarNovoUsuario(usuario: IUsuario) {
   const params = new URLSearchParams()
@@ -53,12 +53,12 @@ export async function updateAvatar(params: { id: number; avatar: File }) {
 }
 
 export async function updateUsuario(params: {
-  id: number;
-  nome?: string;
-  email?: string;
-  cargo?: string;
-  cpf?: string;
-  avatar?: File;
+  id: number
+  nome?: string
+  email?: string
+  cargo?: string
+  cpf?: string
+  avatar?: File
 }) {
   const formData = new FormData()
   if (params.avatar) formData.append('imagem', params.avatar)

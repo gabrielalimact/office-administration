@@ -13,6 +13,7 @@ const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     rules: {
+      // --- estilo base ---
       semi: ['error', 'never'],
       'comma-dangle': ['error', 'never'],
       'quote-props': ['error', 'as-needed'],
@@ -24,7 +25,20 @@ const eslintConfig = [
       'key-spacing': ['error', { beforeColon: false, afterColon: true }],
       'no-trailing-spaces': 'error',
       'eol-last': ['error', 'always'],
-      indent: ['error', 2]
+      indent: ['error', 2],
+
+      // --- integração com prettier ---
+      'prettier/prettier': [
+        'error',
+        {
+          semi: false,
+          singleQuote: true,
+          trailingComma: 'none',
+          printWidth: 100,
+          tabWidth: 2,
+          endOfLine: 'auto'
+        }
+      ]
     }
   }
 ]

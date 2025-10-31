@@ -6,50 +6,50 @@ import { useParams } from 'next/navigation'
 import { getRelatoriosByFuncionarioID } from '@/services/relatorios-service'
 import { getFuncionariosByID, getLogDeAtividades } from '@/services/usuario-service'
 interface IFuncionario {
-  id: number;
-  nome: string;
-  cargo: string;
-  cpf: string;
-  email: string;
+  id: number
+  nome: string
+  cargo: string
+  cpf: string
+  email: string
 }
 
 interface IRelatorio {
-  created_at: string;
-  conteudo: string | string[];
-  titulo: string;
+  created_at: string
+  conteudo: string | string[]
+  titulo: string
 }
 
 interface ILogAtividade {
-  id: number;
-  usuario_id: number;
-  acao: string;
-  entidade_tipo: string;
-  entidade_id: number;
-  descricao: string;
-  dados_anteriores: Record<string, unknown> | null;
-  dados_novos: Record<string, unknown> | null;
-  ip_address: string;
-  user_agent: string;
-  data_acao: string;
+  id: number
+  usuario_id: number
+  acao: string
+  entidade_tipo: string
+  entidade_id: number
+  descricao: string
+  dados_anteriores: Record<string, unknown> | null
+  dados_novos: Record<string, unknown> | null
+  ip_address: string
+  user_agent: string
+  data_acao: string
   usuario: {
-    id: number;
-    nome: string;
-    cpf: string;
-    email: string;
-    cargo: string;
-    id_imagem: number;
-  };
+    id: number
+    nome: string
+    cpf: string
+    email: string
+    cargo: string
+    id_imagem: number
+  }
 }
 
 interface ILogsResponse {
-  logs: ILogAtividade[];
-  total: number;
-  pagina: number;
-  totalPaginas: number;
-  limite: number;
+  logs: ILogAtividade[]
+  total: number
+  pagina: number
+  totalPaginas: number
+  limite: number
 }
 interface Props {
-  conteudo: string;
+  conteudo: string
 }
 function RelatorioPreview({ conteudo }: Props) {
   const html = marked(conteudo, { breaks: true })
@@ -94,7 +94,7 @@ function VisualizarRelatorioPage() {
       const relatorios = data.map((rel) => ({
         created_at: rel.created_at,
         conteudo: rel.conteudo,
-        titulo: rel.titulo,
+        titulo: rel.titulo
       }))
       setFuncionario(funcionario)
       setRelatorio(relatorios)
@@ -159,7 +159,7 @@ function VisualizarRelatorioPage() {
                         Data de envio:{' '}
                         {new Date(rel?.created_at).toLocaleString('pt-BR', {
                           dateStyle: 'short',
-                          timeStyle: 'short',
+                          timeStyle: 'short'
                         })}
                       </Text>
                     </Flex>
@@ -203,7 +203,7 @@ function VisualizarRelatorioPage() {
                       <Text fontSize="xs" color="gray.500">
                         {new Date(log.data_acao).toLocaleString('pt-BR', {
                           dateStyle: 'short',
-                          timeStyle: 'short',
+                          timeStyle: 'short'
                         })}
                       </Text>
                     </Flex>

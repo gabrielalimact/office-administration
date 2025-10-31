@@ -2,18 +2,18 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 
 export interface User {
-  id: number;
-  nome: string;
-  cpf: string;
-  cargo: string;
-  email: string;
-  avatar?: string;
+  id: number
+  nome: string
+  cpf: string
+  cargo: string
+  email: string
+  avatar?: string
 }
 
 interface UserContextProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
-  logout: () => void;
+  user: User | null
+  setUser: (user: User | null) => void
+  logout: () => void
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined)

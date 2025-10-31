@@ -2,14 +2,14 @@ import { Box, Image, Text } from '@chakra-ui/react'
 import { useAvatar } from '@/hooks/useAvatar'
 
 interface AvatarProps {
-  avatarPath?: string;
-  userName?: string;
-  size?: string;
-  fontSize?: string;
-  fallbackColor?: string;
-  fallbackBg?: string;
-  borderRadius?: string;
-  showLoading?: boolean;
+  avatarPath?: string
+  userName?: string
+  size?: string
+  fontSize?: string
+  fallbackColor?: string
+  fallbackBg?: string
+  borderRadius?: string
+  showLoading?: boolean
 }
 
 export const Avatar = ({

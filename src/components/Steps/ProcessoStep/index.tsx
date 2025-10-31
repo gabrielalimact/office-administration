@@ -21,9 +21,9 @@ import { getBeneficios, getStatus } from '@/services/processo-service'
 import { Beneficio, Status } from '../../../../types/processos'
 
 type SelectItem = {
-  label: string;
-  value: number;
-};
+  label: string
+  value: number
+}
 
 const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [listaBeneficios, setListaBeneficios] = useState<ListCollection<SelectItem>>(
@@ -59,17 +59,17 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const { name, value } = e.target
 
     switch (name) {
-    case 'senha-inss':
-      onDataChange({ senha_inss: value })
-      break
-    case 'data-atendimento':
-      onDataChange({ data_atendimento: value })
-      break
-    case 'observations':
-      onDataChange({ observacoes: value })
-      break
-    default:
-      break
+      case 'senha-inss':
+        onDataChange({ senha_inss: value })
+        break
+      case 'data-atendimento':
+        onDataChange({ data_atendimento: value })
+        break
+      case 'observations':
+        onDataChange({ observacoes: value })
+        break
+      default:
+        break
     }
   }
 
@@ -220,12 +220,12 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
                 data.data_atendimento && data.data_atendimento !== ''
                   ? data.data_atendimento
                   : (() => {
-                    const d = new Date()
-                    const yyyy = d.getFullYear()
-                    const mm = String(d.getMonth() + 1).padStart(2, '0')
-                    const dd = String(d.getDate()).padStart(2, '0')
-                    return `${yyyy}-${mm}-${dd}`
-                  })()
+                      const d = new Date()
+                      const yyyy = d.getFullYear()
+                      const mm = String(d.getMonth() + 1).padStart(2, '0')
+                      const dd = String(d.getDate()).padStart(2, '0')
+                      return `${yyyy}-${mm}-${dd}`
+                    })()
               }
               onChange={handleInputChange}
             />
