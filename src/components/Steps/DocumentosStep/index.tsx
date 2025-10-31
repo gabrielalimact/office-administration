@@ -1,15 +1,22 @@
 'use client'
-
-import React from 'react'
-import { Box, Text, List, FileUpload, Icon, CloseButton } from '@chakra-ui/react'
-import { LuUpload } from 'react-icons/lu'
+import React, { useState } from 'react'
+import { Box, Text, List, FileUpload, Icon, CloseButton, HStack, VStack } from '@chakra-ui/react'
+import { LuFile, LuUpload } from 'react-icons/lu'
 import { StepProps } from '@/types/step-forms'
 
 const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
-  const handleFileChange = (files: File[]) => {
-    onDataChange({
-      files: files,
-    })
+  const [files, setFiles] = useState<File[]>([])
+
+  const handleFileChange = (details: FileUpload.FileChangeDetails) => {
+    const accepted = details?.acceptedFiles ?? []
+    setFiles(accepted)
+    onDataChange({ files: accepted })
+  }
+
+  const removeFile = (name: string) => {
+    const updated = files.filter((f) => f.name !== name)
+    setFiles(updated)
+    onDataChange({ files: updated })
   }
 
   return (
@@ -52,7 +59,7 @@ const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
 
       <FileUpload.Root
         alignItems="stretch"
-        onFileChange={(details) => handleFileChange(details.acceptedFiles)}
+        onFileChange={(details) => handleFileChange(details)}
         maxFiles={10}
       >
         <FileUpload.HiddenInput />
@@ -62,17 +69,37 @@ const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
           </Icon>
           <FileUpload.DropzoneContent>
             <Box>Clique aqui para anexar os arquivos</Box>
-            <Box color="fg.muted">.png, .jpg, .pdf (sem limite de arquivos)</Box>
+            <Box color="fg.muted">.png, .jpg, .pdf</Box>
           </FileUpload.DropzoneContent>
         </FileUpload.Dropzone>
 
-        <FileUpload.ClearTrigger asChild>
-          <Text fontSize="sm" color="fg.muted" display="flex" alignItems="center" gap={2}>
-            Limpar arquivos enviados
-            <CloseButton size="sm" variant="plain" />
-          </Text>
-        </FileUpload.ClearTrigger>
-        <FileUpload.List />
+        {files.length > 0 && (
+          <VStack align="stretch" gap={2}>
+            {files.map((file) => (
+              <HStack
+                key={file.name}
+                justify="space-between"
+                p={2}
+                bg="white"
+                borderRadius="md"
+                boxShadow="sm"
+              >
+                <HStack>
+                  <Icon as={LuFile} color="blue.500" />
+                  <Box>
+                    <Text fontSize="sm">
+                      {file.name}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      {((file.size / 1048576).toFixed(1))} MB
+                    </Text>
+                  </Box>
+                </HStack>
+                <CloseButton size="sm" onClick={() => removeFile(file.name)} />
+              </HStack>
+            ))}
+          </VStack>
+        )}
       </FileUpload.Root>
     </Box>
   )
