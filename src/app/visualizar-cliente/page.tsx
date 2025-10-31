@@ -263,27 +263,38 @@ function VisualizarClienteContent() {
             ['CPF', cliente.cpf],
             ['RG', cliente.rg],
             ['Data de Nascimento', formatDate(cliente.data_nascimento)],
-            ['Email', cliente.email || 'Não informado'],
+            ['Email', cliente.email],
             ['Filiação', cliente.filiacao],
             ['Naturalidade', cliente.naturalidade],
-          ].map(([label, value]) => (
-            <Text mb={1} key={label}><strong>{label}:</strong> {value}</Text>
-          ))}
+          ].map(([label, value]) => {
+            return (
+              value && <Text mb={1} key={label}><strong>{label}:</strong> {value}</Text>
+            )
+          })}
 
-          <Box mt={2}>
-            <Text fontWeight="bold">Endereço:</Text>
-            <Text fontSize="sm">
-              {cliente.endereco.logradouro}, {cliente.endereco.numero}
-              {cliente.endereco.complemento && `, ${cliente.endereco.complemento}`}
-              <br />
-              {cliente.endereco.bairro}<br />
-              {cliente.endereco.cidade}/{cliente.endereco.estado} - {cliente.endereco.cep}
-            </Text>
-          </Box>
-        </Box>
 
-        <ListaProcessos cliente={cliente} />
-      </Flex>
+        {cliente.endereco ? (
+          <Text fontSize="sm">
+            {[
+              cliente.endereco.logradouro,
+              cliente.endereco.numero && `nº ${cliente.endereco.numero}`,
+              cliente.endereco.complemento,
+              cliente.endereco.bairro,
+              cliente.endereco.cidade && cliente.endereco.estado
+                ? `${cliente.endereco.cidade}/${cliente.endereco.estado}`
+                : cliente.endereco.cidade || cliente.endereco.estado,
+              cliente.endereco.cep && `CEP: ${cliente.endereco.cep}`,
+            ]
+              .filter(Boolean)
+              .join(', ')}
+          </Text>
+        ) : (
+          <Text fontSize="sm" color="gray.500">Não informado</Text>
+        )}
+      </Box>
+
+      <ListaProcessos cliente={cliente} />
+    </Flex>
     </Box>
   )
 }
