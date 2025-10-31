@@ -30,23 +30,23 @@ const optionsMenu = [
   {
     icon: <LuFilePlus2 size={24} />,
     label: 'Cadastrar processos',
-    href: '/cadastrar-processos',
+    href: '/cadastrar-processos'
   },
   {
     icon: <BsPersonVcard size={24} />,
     label: 'Funcionários',
-    href: '/funcionarios-relatorios',
+    href: '/funcionarios-relatorios'
   },
   {
     icon: <HiUserPlus size={24} />,
     label: 'Adicionar funcionário',
-    href: '/adicionar-funcionario',
+    href: '/adicionar-funcionario'
   },
   {
     icon: <FaFilePen size={22} />,
     label: 'Enviar relatório',
-    href: '/enviar-relatorio',
-  },
+    href: '/enviar-relatorio'
+  }
 ]
 
 const SideBar = () => {
@@ -61,7 +61,7 @@ const SideBar = () => {
   const filteredMenu = optionsMenu.filter(
     (option) =>
       isSocio ||
-      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario'),
+      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario')
   )
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const SideBar = () => {
         transition: 'width 0.2s',
         zIndex: 100,
         borderColor: 'rgba(0, 0, 0, 0.18)',
-        borderRight: '1px solid rgba(0, 0, 0, 0.18)',
+        borderRight: '1px solid rgba(0, 0, 0, 0.18)'
       }}
     >
       <Flex
@@ -108,7 +108,7 @@ const SideBar = () => {
           marginTop: expanded ? '24px' : '8px',
           width: '100%',
           height: '100%',
-          flex: 1,
+          flex: 1
         }}
       >
         <Flex
@@ -117,7 +117,7 @@ const SideBar = () => {
             alignItems: 'center',
             flexDirection: 'row',
             gap: 10,
-            cursor: 'pointer',
+            cursor: 'pointer'
           }}
           onClick={() => router.push('/home')}
         >
@@ -144,12 +144,12 @@ const SideBar = () => {
                     borderRadius="50px"
                     padding={expanded ? '12px 16px' : '12px 0'}
                     _hover={{ background: 'rgba(255,255,255,0.18)' }}
-                    style={{ 
-                      cursor: 'pointer', 
-                      marginBottom: 2, 
-                      background: 'none', 
-                      scale: hoveredIndex === index ? '1.3' : '1', 
-                      transition: 'all 0.2s' 
+                    style={{
+                      cursor: 'pointer',
+                      marginBottom: 2,
+                      background: 'none',
+                      scale: hoveredIndex === index ? '1.3' : '1',
+                      transition: 'all 0.2s'
                     }}
                     onMouseOver={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
@@ -158,7 +158,7 @@ const SideBar = () => {
                     {expanded && <Text>{option.label}</Text>}
                   </Flex>
                 </Link>
-                
+
                 {!expanded && hoveredIndex === index && (
                   <Box
                     position="absolute"
@@ -185,10 +185,10 @@ const SideBar = () => {
                       height: 0,
                       borderTop: '6px solid transparent',
                       borderBottom: '6px solid transparent',
-                      borderRight: '6px solid rgba(32, 32, 32, 0.95)',
+                      borderRight: '6px solid rgba(32, 32, 32, 0.95)'
                     }}
                     style={{
-                      animation: 'fadeIn 0.2s ease-in-out',
+                      animation: 'fadeIn 0.2s ease-in-out'
                     }}
                   >
                     {option.label}

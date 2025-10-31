@@ -14,7 +14,7 @@ export const Modal = ({
   icon,
   children,
   title,
-  size = 'lg',
+  size = 'lg'
 }: ModalProps) => {
   return (
     <Dialog.Root size={size} placement="center" motionPreset="slide-in-bottom">

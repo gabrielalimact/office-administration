@@ -12,13 +12,13 @@ const cargos = [
   {
     label: 'socio',
     nome: 'Sócio',
-    descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.',
+    descricao: 'Acesso total ao sistema, pode gerenciar todos os aspectos do escritório.'
   },
   {
     label: 'funcionario',
     nome: 'Funcionário',
-    descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.',
-  },
+    descricao: 'Acesso aos processos e clientes, pode cadastrar, editar e remover.'
+  }
 ]
 
 export default function AdicionarFuncionarioPage() {
@@ -35,7 +35,7 @@ export default function AdicionarFuncionarioPage() {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
       { label: 'Funcionários', path: '/funcionarios-relatorios' },
-      { label: 'Adicionar Funcionário', path: '/adicionar-funcionario' },
+      { label: 'Adicionar Funcionário', path: '/adicionar-funcionario' }
     ])
   }, [setBreadcrumbs])
 
@@ -52,7 +52,7 @@ export default function AdicionarFuncionarioPage() {
       email,
       cpf: cpf.replace(/\D/g, ''),
       senha,
-      cargo: cargoSelecionado,
+      cargo: cargoSelecionado
     } as IUsuario)
       .then(() => {
         alert('Funcionário cadastrado com sucesso!')
@@ -157,7 +157,7 @@ export default function AdicionarFuncionarioPage() {
                   <div
                     style={{
                       fontSize: 13,
-                      color: cargoSelecionado === cargo.label ? 'white' : '#555',
+                      color: cargoSelecionado === cargo.label ? 'white' : '#555'
                     }}
                   >
                     {cargo.descricao}

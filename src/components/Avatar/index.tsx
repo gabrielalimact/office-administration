@@ -20,7 +20,7 @@ export const Avatar = ({
   fallbackColor = 'white',
   fallbackBg = '#A8D0F0',
   borderRadius = '50%',
-  showLoading = true,
+  showLoading = true
 }: AvatarProps) => {
   const { avatarUrl, isLoading, error } = useAvatar(avatarPath)
 

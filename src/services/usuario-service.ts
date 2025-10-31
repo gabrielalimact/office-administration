@@ -40,7 +40,7 @@ export async function getFuncionariosByID(id: number) {
 }
 
 export async function getFuncionariosEProcessos() {
-  const response = await api.get<ProcessosPorFuncionario[]>(`/usuario/funcionarios/processos`)
+  const response = await api.get<ProcessosPorFuncionario[]>('/usuario/funcionarios/processos')
   return response.data
 }
 

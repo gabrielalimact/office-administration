@@ -8,11 +8,11 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 const baseURL = process.env.NEXT_PUBLIC_API_URL
 
 export const api = axios.create({
-  baseURL: `${baseURL}`,
+  baseURL: `${baseURL}`
 })
 
 export const apiCep = axios.create({
-  baseURL: `https://viacep.com.br/ws`,
+  baseURL: 'https://viacep.com.br/ws'
 })
 
 async function setAuthorizationHeader(config: InternalAxiosRequestConfig) {
@@ -49,13 +49,13 @@ export async function refreshToken() {
     const { data } = await axios.post(
       `${baseURL}/auth/refresh`,
       {
-        refresh_token: refresh_token,
+        refresh_token: refresh_token
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+          'Content-Type': 'application/json'
+        }
+      }
     )
 
     const accessToken = data.access_token
@@ -63,7 +63,7 @@ export async function refreshToken() {
     Cookies.set('access_token', accessToken, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      expires: 1 / 96,
+      expires: 1 / 96
     })
 
     return data

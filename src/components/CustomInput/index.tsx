@@ -1,4 +1,4 @@
-import { Field, Fieldset, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/react'
+import { Field, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/react'
 import { IoSearchOutline } from 'react-icons/io5'
 
 type Props = {

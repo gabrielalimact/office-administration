@@ -2,16 +2,7 @@
 
 import { useEffect, useState, Suspense, useMemo, ElementType } from 'react'
 import { useSearchParams } from 'next/navigation'
-import {
-  Box,
-  Flex,
-  Text,
-  Stack,
-  Badge,
-  Icon,
-  Button,
-  Spinner,
-} from '@chakra-ui/react'
+import { Box, Flex, Text, Stack, Badge, Icon, Button, Spinner } from '@chakra-ui/react'
 import { LuCalendarDays, LuFileArchive, LuDownload, LuUser } from 'react-icons/lu'
 import { Tooltip } from '@/components/ui/tooltip'
 import { toaster } from '@/components/ui/toaster'
@@ -25,47 +16,62 @@ import { Cliente } from '../../../types/cliente'
 
 /* ------------------------- Helper: Status visual config ------------------------ */
 const getStatusColors = (status?: string, arquivado?: boolean) => {
-  if (arquivado)
-    return { bg: 'gray.100', color: 'gray.700' }
+  if (arquivado) return { bg: 'gray.100', color: 'gray.700' }
 
   switch (status) {
-    case 'AUDIENCIA':
-      return { bg: 'orange.100', color: 'orange.800' }
-    case 'PERÍCIA':
-      return { bg: 'blue.100', color: 'blue.800' }
-    default:
-      return { bg: 'green.100', color: 'green.800' }
+  case 'AUDIENCIA':
+    return { bg: 'orange.100', color: 'orange.800' }
+  case 'PERÍCIA':
+    return { bg: 'blue.100', color: 'blue.800' }
+  default:
+    return { bg: 'green.100', color: 'green.800' }
   }
 }
 
 /* ----------------------------- Subcomponentes ----------------------------- */
 
-const InfoItem = ({ icon, label, value }: { icon: ElementType, label: string, value: string | number | undefined }) => (
+const InfoItem = ({
+  icon,
+  label,
+  value
+}: {
+  icon: ElementType;
+  label: string;
+  value: string | number | undefined;
+}) => (
   <Flex align="center" gap={3}>
     <Icon as={icon} color="gray.500" />
     <Box>
-      <Text fontSize="xs" color="gray.500">{label}</Text>
+      <Text fontSize="xs" color="gray.500">
+        {label}
+      </Text>
       <Text fontWeight="medium">{value || '-'}</Text>
     </Box>
   </Flex>
 )
 
 const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
-  const { bg, color } = useMemo(() => getStatusColors(proc.status?.nome, proc.arquivado), [proc.status?.nome, proc.arquivado])
+  const { bg, color } = useMemo(
+    () => getStatusColors(proc.status?.nome, proc.arquivado),
+    [proc.status?.nome, proc.arquivado]
+  )
 
   const handleDownload = async () => {
     try {
-      await downloadArquivoProcesso(proc.arquivo_documentos.id, proc.arquivo_documentos.nome_original)
+      await downloadArquivoProcesso(
+        proc.arquivo_documentos.id,
+        proc.arquivo_documentos.nome_original
+      )
       toaster.create({
         title: 'Download feito com sucesso',
         description: `O arquivo "${proc.arquivo_documentos.nome_arquivo}" foi baixado com sucesso.`,
-        type: 'success',
+        type: 'success'
       })
     } catch {
       toaster.create({
         title: 'Erro ao baixar arquivo',
         description: `Não foi possível baixar "${proc.arquivo_documentos.nome_arquivo}".`,
-        type: 'error',
+        type: 'error'
       })
     }
   }
@@ -110,9 +116,21 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
 
       {/* Dados principais */}
       <Stack direction={{ base: 'column', md: 'row' }} gap={8} flexWrap="wrap">
-        <InfoItem icon={LuCalendarDays} label="Atendimento" value={formatDate(proc.data_atendimento)} />
-        <InfoItem icon={LuCalendarDays} label="Última atualização" value={formatDate(proc.data_ultima_atualizacao)} />
-        <InfoItem icon={LuUser} label="Responsável" value={`${proc.colaborador?.nome || '-'} (${proc.colaborador?.cargo || '-'})`} />
+        <InfoItem
+          icon={LuCalendarDays}
+          label="Atendimento"
+          value={formatDate(proc.data_atendimento)}
+        />
+        <InfoItem
+          icon={LuCalendarDays}
+          label="Última atualização"
+          value={formatDate(proc.data_ultima_atualizacao)}
+        />
+        <InfoItem
+          icon={LuUser}
+          label="Responsável"
+          value={`${proc.colaborador?.nome || '-'} (${proc.colaborador?.cargo || '-'})`}
+        />
         <InfoItem icon={LuFileArchive} label="Benefício" value={proc.beneficio?.nome} />
       </Stack>
 
@@ -123,10 +141,12 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
         {[
           { label: 'Olhar INSS', value: proc.olhar_inss ? 'Sim' : 'Não' },
           { label: 'PJE/CRETA', value: proc.olhar_pje_creta ? 'Sim' : 'Não' },
-          { label: 'Status', value: proc.arquivado ? 'Arquivado' : 'Ativo' },
+          { label: 'Status', value: proc.arquivado ? 'Arquivado' : 'Ativo' }
         ].map(({ label, value }) => (
           <Box key={label}>
-            <Text fontSize="sm" fontWeight="bold" color="gray.600">{label}:</Text>
+            <Text fontSize="sm" fontWeight="bold" color="gray.600">
+              {label}:
+            </Text>
             <Text>{value}</Text>
           </Box>
         ))}
@@ -135,7 +155,9 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
       {/* Observações */}
       {proc.observacoes && (
         <Box mt={4}>
-          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={1}>Observações</Text>
+          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={1}>
+            Observações
+          </Text>
           <Box bg="gray.50" p={3} borderRadius="sm">
             <Text fontSize="sm">{proc.observacoes}</Text>
           </Box>
@@ -145,7 +167,9 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
       {/* Documentos */}
       {proc.arquivo_documentos && (
         <Box mt={4}>
-          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>Documentos</Text>
+          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>
+            Documentos
+          </Text>
           <Flex
             align={{ base: 'flex-start', md: 'center' }}
             direction={{ base: 'column', md: 'row' }}
@@ -182,7 +206,7 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
 
 const ListaProcessos = ({ cliente }: { cliente: Cliente }) => (
   <Box w={'100%'}>
-    {cliente.processos.map((proc : Processo) => (
+    {cliente.processos.map((proc: Processo) => (
       <ProcessoCard key={proc.id} proc={proc} />
     ))}
   </Box>
@@ -225,7 +249,7 @@ function VisualizarClienteContent() {
       setBreadcrumbs([
         { label: 'Início', path: '/home' },
         { label: 'Clientes', path: '/clientes' },
-        { label: cliente.nome, path: `/visualizar-cliente?cliente=${cliente.id}` },
+        { label: cliente.nome, path: `/visualizar-cliente?cliente=${cliente.id}` }
       ])
     }
   }, [cliente])
@@ -234,12 +258,18 @@ function VisualizarClienteContent() {
     return (
       <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
         <Spinner size="xl" color="blue.500" />
-        <Text fontSize="lg" color="gray.600">Carregando cliente...</Text>
+        <Text fontSize="lg" color="gray.600">
+          Carregando cliente...
+        </Text>
       </Flex>
     )
 
   if (error)
-    return <Text color="red.500" textAlign="center" mt={10}>{error}</Text>
+    return (
+      <Text color="red.500" textAlign="center" mt={10}>
+        {error}
+      </Text>
+    )
 
   if (!cliente) return null
 
@@ -265,36 +295,46 @@ function VisualizarClienteContent() {
             ['Data de Nascimento', formatDate(cliente.data_nascimento)],
             ['Email', cliente.email],
             ['Filiação', cliente.filiacao],
-            ['Naturalidade', cliente.naturalidade],
+            ['Naturalidade', cliente.naturalidade]
           ].map(([label, value]) => {
             return (
-              value && <Text mb={1} key={label}><strong>{label}:</strong> {value}</Text>
+              value && (
+                <Text mb={1} key={label}>
+                  <strong>{label}:</strong> {value}
+                </Text>
+              )
             )
           })}
+          <Box mt={4}>
+            <Text fontWeight="bold" mb={1}>
+              Endereço
+            </Text>
 
+            {cliente.endereco.logradouro ? (
+              <Text fontSize="sm">
+                {[
+                  cliente.endereco.logradouro,
+                  cliente.endereco.numero && `nº ${cliente.endereco.numero}`,
+                  cliente.endereco.complemento,
+                  cliente.endereco.bairro,
+                  cliente.endereco.cidade && cliente.endereco.estado
+                    ? `${cliente.endereco.cidade}/${cliente.endereco.estado}`
+                    : cliente.endereco.cidade || cliente.endereco.estado,
+                  cliente.endereco.cep && `CEP: ${cliente.endereco.cep}`
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
+              </Text>
+            ) : (
+              <Text fontSize="sm" color="gray.300">
+                Não informado
+              </Text>
+            )}
+          </Box>
+        </Box>
 
-        {cliente.endereco ? (
-          <Text fontSize="sm">
-            {[
-              cliente.endereco.logradouro,
-              cliente.endereco.numero && `nº ${cliente.endereco.numero}`,
-              cliente.endereco.complemento,
-              cliente.endereco.bairro,
-              cliente.endereco.cidade && cliente.endereco.estado
-                ? `${cliente.endereco.cidade}/${cliente.endereco.estado}`
-                : cliente.endereco.cidade || cliente.endereco.estado,
-              cliente.endereco.cep && `CEP: ${cliente.endereco.cep}`,
-            ]
-              .filter(Boolean)
-              .join(', ')}
-          </Text>
-        ) : (
-          <Text fontSize="sm" color="gray.500">Não informado</Text>
-        )}
-      </Box>
-
-      <ListaProcessos cliente={cliente} />
-    </Flex>
+        <ListaProcessos cliente={cliente} />
+      </Flex>
     </Box>
   )
 }
@@ -303,12 +343,16 @@ function VisualizarClienteContent() {
 
 export default function VisualizarClientePage() {
   return (
-    <Suspense fallback={
-      <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
-        <Spinner size="xl" color="blue.500" />
-        <Text fontSize="lg" color="gray.600">Carregando cliente...</Text>
-      </Flex>
-    }>
+    <Suspense
+      fallback={
+        <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
+          <Spinner size="xl" color="blue.500" />
+          <Text fontSize="lg" color="gray.600">
+            Carregando cliente...
+          </Text>
+        </Flex>
+      }
+    >
       <VisualizarClienteContent />
     </Suspense>
   )

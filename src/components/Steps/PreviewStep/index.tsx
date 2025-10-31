@@ -16,14 +16,14 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
     const beneficiosData = await getBeneficios()
     const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
-      value: beneficio.id,
+      value: beneficio.id
     }))
     setListaBeneficios(formattedBeneficios)
 
     const statusData = await getStatus()
     const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
-      value: statusItem.id,
+      value: statusItem.id
     }))
     setListaStatus(formattedStatus)
   }

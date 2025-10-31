@@ -13,7 +13,7 @@ import {
   Portal,
   Text,
   Box,
-  ListCollection,
+  ListCollection
 } from '@chakra-ui/react'
 import { CheckedChangeDetails } from '@zag-js/checkbox'
 import { StepProps } from '@/types/step-forms'
@@ -27,17 +27,17 @@ type SelectItem = {
 
 const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const [listaBeneficios, setListaBeneficios] = useState<ListCollection<SelectItem>>(
-    createListCollection<SelectItem>({ items: [] }),
+    createListCollection<SelectItem>({ items: [] })
   )
   const [listaStatus, setListaStatus] = useState<ListCollection<SelectItem>>(
-    createListCollection<SelectItem>({ items: [] }),
+    createListCollection<SelectItem>({ items: [] })
   )
 
   const fetchData = async () => {
     const beneficiosData = await getBeneficios()
     const formattedBeneficios = beneficiosData.map((beneficio: Beneficio) => ({
       label: beneficio.nome,
-      value: beneficio.id,
+      value: beneficio.id
     }))
     const beneficios = createListCollection<SelectItem>({ items: formattedBeneficios })
     setListaBeneficios(beneficios)
@@ -45,7 +45,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const statusData = await getStatus()
     const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
-      value: statusItem.id,
+      value: statusItem.id
     }))
     const status = createListCollection<SelectItem>({ items: formattedStatus })
     setListaStatus(status)
@@ -59,17 +59,17 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const { name, value } = e.target
 
     switch (name) {
-      case 'senha-inss':
-        onDataChange({ senha_inss: value })
-        break
-      case 'data-atendimento':
-        onDataChange({ data_atendimento: value })
-        break
-      case 'observations':
-        onDataChange({ observacoes: value })
-        break
-      default:
-        break
+    case 'senha-inss':
+      onDataChange({ senha_inss: value })
+      break
+    case 'data-atendimento':
+      onDataChange({ data_atendimento: value })
+      break
+    case 'observations':
+      onDataChange({ observacoes: value })
+      break
+    default:
+      break
     }
   }
 
@@ -115,7 +115,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
                 borderColor={!data.beneficio.id || data.beneficio.id === 0 ? 'red.300' : undefined}
                 _focus={{
                   borderColor:
-                    !data.beneficio.id || data.beneficio.id === 0 ? 'red.500' : 'blue.500',
+                    !data.beneficio.id || data.beneficio.id === 0 ? 'red.500' : 'blue.500'
                 }}
               >
                 <Select.ValueText placeholder="Selecione o benefício" />
@@ -152,7 +152,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
                 p={2}
                 borderColor={!data.status.id || data.status.id === 0 ? 'red.300' : undefined}
                 _focus={{
-                  borderColor: !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500',
+                  borderColor: !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500'
                 }}
               >
                 <Select.ValueText placeholder="Selecione a situação do processo" />
@@ -220,12 +220,12 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
                 data.data_atendimento && data.data_atendimento !== ''
                   ? data.data_atendimento
                   : (() => {
-                      const d = new Date()
-                      const yyyy = d.getFullYear()
-                      const mm = String(d.getMonth() + 1).padStart(2, '0')
-                      const dd = String(d.getDate()).padStart(2, '0')
-                      return `${yyyy}-${mm}-${dd}`
-                    })()
+                    const d = new Date()
+                    const yyyy = d.getFullYear()
+                    const mm = String(d.getMonth() + 1).padStart(2, '0')
+                    const dd = String(d.getDate()).padStart(2, '0')
+                    return `${yyyy}-${mm}-${dd}`
+                  })()
               }
               onChange={handleInputChange}
             />

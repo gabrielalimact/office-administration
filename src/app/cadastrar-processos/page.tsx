@@ -21,7 +21,7 @@ const CadastrarProcessosPage = () => {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
-      { label: 'Cadastrar Processos', path: '/cadastrar-processos' },
+      { label: 'Cadastrar Processos', path: '/cadastrar-processos' }
     ])
   }, [setBreadcrumbs])
 
@@ -41,8 +41,8 @@ const CadastrarProcessosPage = () => {
         bairro: '',
         complemento: '',
         cidade: '',
-        estado: '',
-      },
+        estado: ''
+      }
     },
     colaboradorId: user ? user.id : 0,
     beneficio: { id: 0 },
@@ -50,7 +50,7 @@ const CadastrarProcessosPage = () => {
     olhar_pje_creta: false,
     data_atendimento: new Date().toISOString().split('T')[0],
     senha_inss: '',
-    status: { id: 0 },
+    status: { id: 0 }
   })
 
   const handleStepChange = (e: { step: number }) => {
@@ -60,7 +60,7 @@ const CadastrarProcessosPage = () => {
   const handleDataChange = (newData: Partial<ProcessoData>) => {
     setFormData((prev) => ({
       ...prev,
-      ...newData,
+      ...newData
     }))
   }
 
@@ -70,7 +70,7 @@ const CadastrarProcessosPage = () => {
         title: 'Campo obrigatório',
         description: 'Nome do cliente é obrigatório.',
         type: 'error',
-        duration: 3000,
+        duration: 3000
       })
       return false
     }
@@ -79,7 +79,7 @@ const CadastrarProcessosPage = () => {
         title: 'Campo obrigatório',
         description: 'CPF do cliente é obrigatório.',
         type: 'error',
-        duration: 3000,
+        duration: 3000
       })
       return false
     }
@@ -88,7 +88,7 @@ const CadastrarProcessosPage = () => {
         title: 'CPF inválido',
         description: 'CPF deve conter 11 dígitos.',
         type: 'error',
-        duration: 3000,
+        duration: 3000
       })
       return false
     }
@@ -101,7 +101,7 @@ const CadastrarProcessosPage = () => {
         title: 'Campo obrigatório',
         description: 'Selecione um benefício para continuar.',
         type: 'error',
-        duration: 3000,
+        duration: 3000
       })
       return false
     }
@@ -110,7 +110,7 @@ const CadastrarProcessosPage = () => {
         title: 'Campo obrigatório',
         description: 'Selecione uma situação para continuar.',
         type: 'error',
-        duration: 3000,
+        duration: 3000
       })
       return false
     }
@@ -121,18 +121,18 @@ const CadastrarProcessosPage = () => {
     let canProceed = true
 
     switch (stepActive) {
-      case 0:
-        canProceed = validateStep1()
-        break
-      case 1:
-        canProceed = validateStep2()
-        break
-      case 2:
-      case 3:
-        canProceed = true
-        break
-      default:
-        canProceed = true
+    case 0:
+      canProceed = validateStep1()
+      break
+    case 1:
+      canProceed = validateStep2()
+      break
+    case 2:
+    case 3:
+      canProceed = true
+      break
+    default:
+      canProceed = true
     }
 
     if (canProceed) {
@@ -155,7 +155,7 @@ const CadastrarProcessosPage = () => {
       const zipBlob = await zip.generateAsync({ type: 'blob' })
 
       const zipFile = new File([zipBlob], 'documentos.zip', {
-        type: 'application/zip',
+        type: 'application/zip'
       })
 
       return zipFile
@@ -165,7 +165,7 @@ const CadastrarProcessosPage = () => {
         title: 'Erro na compactação',
         description: 'Não foi possível compactar os arquivos.',
         type: 'error',
-        duration: 5000,
+        duration: 5000
       })
       return null
     }
@@ -178,7 +178,7 @@ const CadastrarProcessosPage = () => {
           title: 'Erro de validação',
           description: 'Nome e CPF são obrigatórios.',
           type: 'error',
-          duration: 5000,
+          duration: 5000
         })
         return
       }
@@ -190,7 +190,7 @@ const CadastrarProcessosPage = () => {
           title: 'Compactando arquivos...',
           description: 'Criando arquivo ZIP dos documentos.',
           type: 'info',
-          duration: 3000,
+          duration: 3000
         })
 
         arquivoFinal = await createZipFile(formData.files)
@@ -200,7 +200,7 @@ const CadastrarProcessosPage = () => {
             title: 'Arquivos compactados',
             description: `${formData.files.length} arquivos foram compactados em ${arquivoFinal.name}`,
             type: 'success',
-            duration: 3000,
+            duration: 3000
           })
         }
       } else if (formData.files && formData.files.length === 1) {
@@ -223,8 +223,8 @@ const CadastrarProcessosPage = () => {
             bairro: formData.cliente.endereco.bairro,
             cidade: formData.cliente.endereco.cidade,
             estado: formData.cliente.endereco.estado,
-            cep: formData.cliente.endereco.cep,
-          },
+            cep: formData.cliente.endereco.cep
+          }
         },
         colaboradorId: formData.colaboradorId,
         beneficio: formData.beneficio,
@@ -235,14 +235,14 @@ const CadastrarProcessosPage = () => {
         status: formData.status,
         senha_inss: formData.senha_inss,
         observacoes: formData.observacoes,
-        arquivo: arquivoFinal || undefined,
+        arquivo: arquivoFinal || undefined
       }).then(() => {
         toaster.create({
           title: 'Sucesso',
           description:
             'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
           type: 'success',
-          duration: 5000,
+          duration: 5000
         })
       })
     } catch (error) {
@@ -252,7 +252,7 @@ const CadastrarProcessosPage = () => {
         title: 'Erro de conexão',
         description: 'Verifique sua conexão e tente novamente.',
         type: 'error',
-        duration: 5000,
+        duration: 5000
       })
     }
   }
@@ -260,20 +260,20 @@ const CadastrarProcessosPage = () => {
   const steps = [
     {
       title: 'Informações do cliente',
-      component: <ClienteStep data={formData} onDataChange={handleDataChange} />,
+      component: <ClienteStep data={formData} onDataChange={handleDataChange} />
     },
     {
       title: 'Informações do processo',
-      component: <ProcessoStep data={formData} onDataChange={handleDataChange} />,
+      component: <ProcessoStep data={formData} onDataChange={handleDataChange} />
     },
     {
       title: 'Envio de documentos',
-      component: <DocumentosStep data={formData} onDataChange={handleDataChange} />,
+      component: <DocumentosStep data={formData} onDataChange={handleDataChange} />
     },
     {
       title: 'Revisar informações',
-      component: <PreviewStep data={formData} onDataChange={handleDataChange} />,
-    },
+      component: <PreviewStep data={formData} onDataChange={handleDataChange} />
+    }
   ]
 
   return (

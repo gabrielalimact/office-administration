@@ -27,7 +27,7 @@ const ConfiguracoesPage = () => {
   const { setBreadcrumbs } = useBreadcrumb()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [avisoImagem, setAvisoImagem] = useState<string>(
-    'Clique na foto ou no ícone para alterar (JPG, PNG, máximo 5MB)',
+    'Clique na foto ou no ícone para alterar (JPG, PNG, máximo 5MB)'
   )
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -37,7 +37,7 @@ const ConfiguracoesPage = () => {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
-      { label: 'Configurações', path: '/configuracoes' },
+      { label: 'Configurações', path: '/configuracoes' }
     ])
   }, [setBreadcrumbs])
 
@@ -47,7 +47,7 @@ const ConfiguracoesPage = () => {
     cpf: user?.cpf || '',
     email: user?.email || '',
     cargo: user?.cargo || '',
-    avatar: user?.avatar || '',
+    avatar: user?.avatar || ''
   })
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +105,7 @@ const ConfiguracoesPage = () => {
           nome: usuario.name,
           email: usuario.email,
           cargo: usuario.cargo,
-          avatar: avatarFile || undefined,
+          avatar: avatarFile || undefined
         })
 
         setUser({
@@ -114,14 +114,14 @@ const ConfiguracoesPage = () => {
           nome: result.usuario.nome || '',
           email: result.usuario.email || '',
           cargo: result.usuario.cargo || '',
-          avatar: '/imagens/' + result.usuario.imagem.nome_arquivo || '',
+          avatar: '/imagens/' + result.usuario.imagem.nome_arquivo || ''
         })
 
         toaster.create({
           title: 'Sucesso!',
           description: 'Dados atualizados com sucesso.',
           type: 'success',
-          duration: 3000,
+          duration: 3000
         })
 
         setAvatarFile(null)
@@ -137,7 +137,7 @@ const ConfiguracoesPage = () => {
           title: 'Erro!',
           description: 'Não foi possível atualizar os dados. Tente novamente.',
           type: 'error',
-          duration: 5000,
+          duration: 5000
         })
 
         setIsLoading(false)
@@ -168,9 +168,9 @@ const ConfiguracoesPage = () => {
               _hover={
                 editMode
                   ? {
-                      transform: 'scale(1.05)',
-                      filter: 'brightness(0.9)',
-                    }
+                    transform: 'scale(1.05)',
+                    filter: 'brightness(0.9)'
+                  }
                   : {}
               }
               border="4px solid"
@@ -258,7 +258,7 @@ const ConfiguracoesPage = () => {
                 value={usuario.cargo === 'socio' ? 'socio' : 'funcionario'}
                 items={[
                   { label: 'Sócio(a)', value: 'socio' },
-                  { label: 'Funcionário(a)', value: 'funcionario' },
+                  { label: 'Funcionário(a)', value: 'funcionario' }
                 ]}
                 onChange={(value) => {
                   const cargo = value === 'socio' ? 'socio' : 'funcionario'

@@ -23,9 +23,9 @@ export default function EnviarRelatorioPage() {
       placeholder: 'Descreva seu trabalho, atividades, etc...',
       toolbar: false,
       spellChecker: false,
-      status: false,
+      status: false
     }),
-    [],
+    []
   )
 
   if (!user) {
@@ -38,10 +38,10 @@ export default function EnviarRelatorioPage() {
     const relatorioData = {
       idFuncionario: Number(user?.id),
       titulo,
-      conteudo,
+      conteudo
     }
 
-    localStorage.setItem(`relatorio`, JSON.stringify(relatorioData))
+    localStorage.setItem('relatorio', JSON.stringify(relatorioData))
 
     enviarNovoRelatorio(relatorioData)
       .then(() => {
@@ -117,7 +117,7 @@ export default function EnviarRelatorioPage() {
                 variant="outline"
                 style={{
                   backgroundColor: negritoActive ? 'black' : 'transparent',
-                  color: negritoActive ? 'white' : 'black',
+                  color: negritoActive ? 'white' : 'black'
                 }}
               >
                 <FaBold style={{ marginRight: '8px' }} />

@@ -19,7 +19,7 @@ const BreadcrumbContext = createContext<BreadcrumbContextType | undefined>(undef
 
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
-    { label: 'Início', path: '/home', icon: <MdOutlineSpaceDashboard size={16} /> },
+    { label: 'Início', path: '/home', icon: <MdOutlineSpaceDashboard size={16} /> }
   ])
 
   const addBreadcrumb = (item: BreadcrumbItem) => {
@@ -40,7 +40,7 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
         breadcrumbs,
         setBreadcrumbs,
         addBreadcrumb,
-        clearBreadcrumbs,
+        clearBreadcrumbs
       }}
     >
       {children}

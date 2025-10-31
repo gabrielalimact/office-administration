@@ -24,6 +24,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import { CustomSelect, SelectOption } from '@/components/CustomSelect'
 import GridTable from '@/components/GridTable'
 import formatDate from '../../../utils/formatDate'
+import CustomCheckbox from '@/components/CustomCheckbox'
 
 const ProcessosPage = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -31,8 +32,16 @@ const ProcessosPage = () => {
   const [responsaveisList, setResponsaveisList] = useState<SelectOption[]>([])
   const [tiposProcessosList, setTiposProcessosList] = useState<SelectOption[]>([])
   const [statusOptions, setStatusOptions] = useState<SelectOption[]>([])
+  const [showArquivados, setShowArquivados] = useState(false)
   const router = useRouter()
   const { setLoading } = useLoading()
+  const [formData, setFormData] = useState({ situacao: '', tipoProcesso: '', responsavel: '' })
+  const [selectedResponsavel, setSelectedResponsavel] = useState<string[]>([])
+  const [selectedTipoProcesso, setSelectedTipoProcesso] = useState<string[]>([])
+  const [selectedSituacao, setSelectedSituacao] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize] = useState(10)
+  const { setBreadcrumbs } = useBreadcrumb()
 
   const handlePush = (path: string) => {
     setLoading(true)
@@ -41,14 +50,6 @@ const ProcessosPage = () => {
       setLoading(false)
     }, 400)
   }
-  const [busca, setBusca] = useState('')
-  const [formData, setFormData] = useState({ situacao: '', tipoProcesso: '', responsavel: '' })
-  const [selectedResponsavel, setSelectedResponsavel] = useState<string[]>([])
-  const [selectedTipoProcesso, setSelectedTipoProcesso] = useState<string[]>([])
-  const [selectedSituacao, setSelectedSituacao] = useState<string[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize] = useState(10)
-  const { setBreadcrumbs } = useBreadcrumb()
 
   useEffect(() => {
     setBreadcrumbs([
@@ -111,7 +112,6 @@ const ProcessosPage = () => {
       .filter((value, index, self) => !!value && self.indexOf(value) === index)
       .map((tipo) => ({ label: tipo!, value: tipo! }))
     setStatusOptions(status)
-
     setIsLoading(false)
   }
 
@@ -120,11 +120,9 @@ const ProcessosPage = () => {
   }, [])
 
   const processosFiltrados = processos.filter((proc) => {
-    const nomeCliente = proc.cliente?.nome || ''
     const nomeBeneficio = proc.beneficio?.nome || ''
     const nomeStatus = proc.status?.nome || ''
 
-    // Tratar colaborador que pode ser string ou objeto
     let colaborador = ''
     if (typeof proc.colaborador === 'object' && proc.colaborador !== null) {
       const colaboradorObj = proc.colaborador as { nome?: string }
@@ -133,26 +131,22 @@ const ProcessosPage = () => {
       colaborador = proc.colaborador
     }
 
-    const matchBusca =
-      nomeCliente.toLowerCase().includes(busca.toLowerCase()) ||
-      nomeBeneficio.toLowerCase().includes(busca.toLowerCase())
     const matchResponsavel = !formData.responsavel || colaborador === formData.responsavel
     const matchTipo = !formData.tipoProcesso || nomeBeneficio === formData.tipoProcesso
     const matchSituacao = !formData.situacao || nomeStatus === formData.situacao
-    return matchBusca && matchResponsavel && matchTipo && matchSituacao
+    const matchArquivado = !showArquivados || (showArquivados && proc.arquivado === true)
+    return matchResponsavel && matchTipo && matchSituacao && matchArquivado
   })
 
-  // Paginação
   const totalItems = processosFiltrados.length
   const totalPages = Math.ceil(totalItems / pageSize)
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = startIndex + pageSize
   const processosPaginados = processosFiltrados.slice(startIndex, endIndex)
 
-  // Reset da página quando filtros mudarem
   useEffect(() => {
     setCurrentPage(1)
-  }, [busca, formData.responsavel, formData.tipoProcesso, formData.situacao])
+  }, [formData.responsavel, formData.tipoProcesso, formData.situacao])
 
   return (
     <Box p={6} bg="#fff" minH="100vh" margin="0 auto">
@@ -165,25 +159,6 @@ const ProcessosPage = () => {
       ) : (
         <>
           <Flex gap={3} mb={3} alignItems="center">
-            <Field.Root required>
-              <Field.Label fontWeight={'bold'}>Buscar</Field.Label>
-              <InputGroup
-                endElement={
-                  <IconButton variant="ghost" aria-label="Buscar">
-                    <IoSearchOutline />
-                  </IconButton>
-                }
-              >
-                <Input
-                  placeholder="Buscar processo..."
-                  p={5}
-                  borderRadius="4px"
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                />
-              </InputGroup>
-            </Field.Root>
-
             <CustomSelect
               label="Responsável"
               placeholder="Selecione o funcionário"
@@ -214,8 +189,12 @@ const ProcessosPage = () => {
               variant="outline"
             />
           </Flex>
-
-          <Box mb={4}>
+          <CustomCheckbox
+            label="Arquivados"
+            isChecked={showArquivados}
+            onChange={() => setShowArquivados(!showArquivados)}
+          />
+          <Box my={4}>
             <GridTable<Processo>
               columns={[
                 { key: 'cliente', label: 'Nome do cliente', width: '2fr' },
@@ -240,7 +219,9 @@ const ProcessosPage = () => {
                   return <Text color="gray.700">{processo.status?.nome || ''}</Text>
                 }
                 if (column.key === 'data_atendimento') {
-                  return <Text color="gray.700">{formatDate(processo.data_atendimento)|| ''}</Text>
+                  return (
+                    <Text color="gray.700">{formatDate(processo.data_atendimento) || ''}</Text>
+                  )
                 }
                 if (column.key === 'colaborador') {
                   // Tratar colaborador que pode ser string ou objeto

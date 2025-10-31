@@ -11,10 +11,10 @@ import { BreadcrumbProvider } from '@/components/BreadcrumbContext'
 
 const montserratSans = Montserrat({
   variable: '--font-montserrat-sans',
-  subsets: ['latin'],
+  subsets: ['latin']
 })
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {

@@ -21,7 +21,7 @@ export function GridTable<T = Record<string, unknown>>({
   data,
   onRowClick,
   renderCell,
-  emptyMessage = 'Nenhum item encontrado',
+  emptyMessage = 'Nenhum item encontrado'
 }: GridTableProps<T>) {
   const gridTemplateColumns = columns.map((col) => col.width || '1fr').join(' ')
 
@@ -72,8 +72,8 @@ export function GridTable<T = Record<string, unknown>>({
             _hover={
               onRowClick
                 ? {
-                    bg: 'gray.50',
-                  }
+                  bg: 'gray.50'
+                }
                 : {}
             }
             onClick={() => onRowClick?.(item)}

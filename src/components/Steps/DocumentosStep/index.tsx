@@ -87,11 +87,9 @@ const DocumentosStep: React.FC<StepProps> = ({ onDataChange }) => {
                 <HStack>
                   <Icon as={LuFile} color="blue.500" />
                   <Box>
-                    <Text fontSize="sm">
-                      {file.name}
-                    </Text>
+                    <Text fontSize="sm">{file.name}</Text>
                     <Text fontSize="xs" color="gray.500">
-                      {((file.size / 1048576).toFixed(1))} MB
+                      {(file.size / 1048576).toFixed(1)} MB
                     </Text>
                   </Box>
                 </HStack>

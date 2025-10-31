@@ -108,9 +108,7 @@ function VisualizarRelatorioPage() {
     getFuncionariosByID(id).then((funcionario) => {
       setFuncionario(funcionario)
     })
-
   }, [id])
-
 
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
@@ -142,10 +140,10 @@ function VisualizarRelatorioPage() {
         <>
           {relatorio && relatorio.length > 0 && (
             <>
-            <Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
-              Todos os relatórios enviados:
-            </Text>
-            <Box p={4} bg="white" borderRadius={8} boxShadow="sm" mb={6}>
+              <Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
+                Todos os relatórios enviados:
+              </Text>
+              <Box p={4} bg="white" borderRadius={8} boxShadow="sm" mb={6}>
                 {relatorio.map((rel, index) => (
                   <Box
                     key={index}
@@ -168,8 +166,8 @@ function VisualizarRelatorioPage() {
                     <RelatorioPreview conteudo={rel?.conteudo as string} />
                   </Box>
                 ))}
-            </Box>
-          </>
+              </Box>
+            </>
           )}
           {/* Seção de Logs de Atividades */}
           <Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
@@ -190,9 +188,9 @@ function VisualizarRelatorioPage() {
                     <Flex align="center" justify="space-between" mb={2}>
                       <Flex align="center" gap={2}>
                         <Text fontSize="lg">{getEntidadeTipoIcon(log.entidade_tipo)}</Text>
-                        <Text 
-                          fontSize="sm" 
-                          fontWeight="bold" 
+                        <Text
+                          fontSize="sm"
+                          fontWeight="bold"
                           color={getAcaoColor(log.acao)}
                           textTransform="uppercase"
                         >
@@ -209,13 +207,13 @@ function VisualizarRelatorioPage() {
                         })}
                       </Text>
                     </Flex>
-                    
+
                     <Text fontSize="sm" mb={2}>
                       {log.descricao}
                     </Text>
                   </Box>
                 ))}
-                
+
                 {logs.total > 0 && (
                   <Box textAlign="center" pt={4} borderTop="1px solid" borderColor="gray.200">
                     <Text fontSize="sm" color="gray.600">

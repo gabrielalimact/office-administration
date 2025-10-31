@@ -61,8 +61,7 @@ export interface ProcessosPorFuncionario {
   totalProcessos: number;
 }
 
-
-export interface ArquivosDocumentos { 
+export interface ArquivosDocumentos {
   id: number;
   caminho: string;
   data_upload: string;

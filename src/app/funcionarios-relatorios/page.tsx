@@ -9,7 +9,7 @@ import {
   Skeleton,
   Stack,
   Table,
-  Text,
+  Text
 } from '@chakra-ui/react'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { MdPersonAdd } from 'react-icons/md'
@@ -47,7 +47,7 @@ const FuncionariosRelatoriosPage = () => {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
-      { label: 'Funcionários', path: '/funcionarios-relatorios' },
+      { label: 'Funcionários', path: '/funcionarios-relatorios' }
     ])
   }, [setBreadcrumbs])
 
@@ -75,7 +75,7 @@ const FuncionariosRelatoriosPage = () => {
           nome: item.nome,
           cargo: item.cargo,
           cpf: item.cpf,
-          email: item.email,
+          email: item.email
         }))
         .sort((a, b) => {
           if (a.cargo === 'socio' && b.cargo !== 'socio') return -1

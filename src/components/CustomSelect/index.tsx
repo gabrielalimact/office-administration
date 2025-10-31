@@ -34,11 +34,11 @@ export const CustomSelect = ({
   multiple = false,
   size = 'md',
   variant = 'outline',
-  defaultValue = [],
+  defaultValue = []
 }: CustomSelectProps) => {
   const [isEmpty, setIsEmpty] = useState(options.length === 0)
   const collection = createListCollection({
-    items: options,
+    items: options
   })
   const handleValueChange = (details: { value: string[] }) => {
     onValueChange(details.value)
@@ -47,7 +47,7 @@ export const CustomSelect = ({
 
   const getSelectStyles = () => {
     const baseStyles = {
-      padding: size === 'sm' ? 1 : size === 'lg' ? 3 : 2,
+      padding: size === 'sm' ? 1 : size === 'lg' ? 3 : 2
     }
 
     const variantStyles = {
@@ -56,8 +56,8 @@ export const CustomSelect = ({
         borderRadius: 'md',
         _focus: {
           borderColor: '#3182ce',
-          boxShadow: '0 0 0 1px #3182ce',
-        },
+          boxShadow: '0 0 0 1px #3182ce'
+        }
       },
       filled: {
         backgroundColor: '#f7fafc',
@@ -65,8 +65,8 @@ export const CustomSelect = ({
         borderRadius: 'md',
         _focus: {
           backgroundColor: 'white',
-          borderColor: '#3182ce',
-        },
+          borderColor: '#3182ce'
+        }
       },
       flushed: {
         borderRadius: 0,
@@ -75,9 +75,9 @@ export const CustomSelect = ({
         borderTop: 'none',
         borderBottom: '2px solid #e2e8f0',
         _focus: {
-          borderBottomColor: '#3182ce',
-        },
-      },
+          borderBottomColor: '#3182ce'
+        }
+      }
     }
 
     return { ...baseStyles, ...variantStyles[variant] }

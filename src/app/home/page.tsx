@@ -55,7 +55,7 @@ const Home = () => {
       '#FFE5F5',
       '#F5E5FF',
       '#E5FFFF',
-      '#FFFFE5',
+      '#FFFFE5'
     ]
     return pastelColors[index % pastelColors.length]
   }

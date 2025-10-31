@@ -61,6 +61,6 @@ export const useAvatar = (avatarPath?: string) => {
         URL.revokeObjectURL(avatarUrl)
       }
       setAvatarUrl('')
-    },
+    }
   }
 }

@@ -9,7 +9,7 @@ import {
   Text,
   Link,
   IconButton,
-  InputGroup,
+  InputGroup
 } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation'
 import { useLoading } from '@/components/LoadingContext'
@@ -54,7 +54,7 @@ export default function Login() {
           cpf: res.cpf,
           cargo: res.cargo,
           email: res.email,
-          avatar: res.avatar ? res.avatar.url : '/next.svg',
+          avatar: res.avatar ? res.avatar.url : '/next.svg'
         })
         router.push(path)
       })
@@ -63,7 +63,7 @@ export default function Login() {
           title: 'Erro ao fazer login',
           description: 'CPF ou senha incorretos. Tente novamente.',
           type: 'error',
-          duration: 3000,
+          duration: 3000
         })
       })
       .finally(() => {

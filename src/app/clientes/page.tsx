@@ -25,12 +25,12 @@ export default function ClientesPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
-      { label: 'Clientes', path: '/clientes' },
+      { label: 'Clientes', path: '/clientes' }
     ])
   }, [setBreadcrumbs])
 
   const clientesFiltrados = clientes.filter((c) =>
-    c.nome.toLowerCase().includes(busca.toLowerCase()),
+    c.nome.toLowerCase().includes(busca.toLowerCase())
   )
   const totalItems = clientesFiltrados.length
   const totalPages = Math.ceil(totalItems / pageSize)
@@ -108,7 +108,7 @@ export default function ClientesPage() {
             { key: 'cpf', label: 'CPF', width: '1fr' },
             { key: 'email', label: 'Email', width: '1fr' },
             { key: 'processosCount', label: 'Processos', width: '1fr' },
-            { key: 'actions', label: '', width: '120px', align: 'right' },
+            { key: 'actions', label: '', width: '120px', align: 'right' }
           ]}
           data={clientesPaginados}
           onRowClick={(cliente) => handleClienteClick(cliente.id)}

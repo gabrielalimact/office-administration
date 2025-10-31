@@ -15,88 +15,88 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     const { name, value } = e.target
 
     switch (name) {
-      case 'name':
-        onDataChange({
-          cliente: { ...data.cliente, nome: value },
-        })
-        break
-      case 'birthdate':
-        onDataChange({
-          cliente: { ...data.cliente, data_nascimento: value },
-        })
-        break
-      case 'cpf':
-        const digits = value.replace(/\D/g, '').slice(0, 11)
-        onDataChange({
-          cliente: { ...data.cliente, cpf: digits },
-        })
-        break
-      case 'rg':
-        onDataChange({
-          cliente: { ...data.cliente, rg: value },
-        })
-        break
-      case 'filiation':
-        onDataChange({
-          cliente: { ...data.cliente, filiacao: value },
-        })
-        break
-      case 'naturalidade':
-        onDataChange({
-          cliente: { ...data.cliente, naturalidade: value },
-        })
-        break
+    case 'name':
+      onDataChange({
+        cliente: { ...data.cliente, nome: value }
+      })
+      break
+    case 'birthdate':
+      onDataChange({
+        cliente: { ...data.cliente, data_nascimento: value }
+      })
+      break
+    case 'cpf':
+      const digits = value.replace(/\D/g, '').slice(0, 11)
+      onDataChange({
+        cliente: { ...data.cliente, cpf: digits }
+      })
+      break
+    case 'rg':
+      onDataChange({
+        cliente: { ...data.cliente, rg: value }
+      })
+      break
+    case 'filiation':
+      onDataChange({
+        cliente: { ...data.cliente, filiacao: value }
+      })
+      break
+    case 'naturalidade':
+      onDataChange({
+        cliente: { ...data.cliente, naturalidade: value }
+      })
+      break
       // Campos de endereço
-      case 'cep':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, cep: value },
-          },
-        })
-        break
-      case 'street':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, logradouro: value },
-          },
-        })
-        break
-      case 'number':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, numero: value },
-          },
-        })
-        break
-      case 'neighborhood':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, bairro: value },
-          },
-        })
-        break
-      case 'city':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, cidade: value },
-          },
-        })
-        break
-      case 'state':
-        onDataChange({
-          cliente: {
-            ...data.cliente,
-            endereco: { ...data.cliente.endereco, estado: value },
-          },
-        })
-        break
-      default:
-        break
+    case 'cep':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, cep: value }
+        }
+      })
+      break
+    case 'street':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, logradouro: value }
+        }
+      })
+      break
+    case 'number':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, numero: value }
+        }
+      })
+      break
+    case 'neighborhood':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, bairro: value }
+        }
+      })
+      break
+    case 'city':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, cidade: value }
+        }
+      })
+      break
+    case 'state':
+      onDataChange({
+        cliente: {
+          ...data.cliente,
+          endereco: { ...data.cliente.endereco, estado: value }
+        }
+      })
+      break
+    default:
+      break
     }
   }
 
@@ -117,7 +117,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             onChange={handleInputChange}
             borderColor={!data.cliente.nome.trim() ? 'red.300' : undefined}
             _focus={{
-              borderColor: !data.cliente.nome.trim() ? 'red.500' : 'blue.500',
+              borderColor: !data.cliente.nome.trim() ? 'red.500' : 'blue.500'
             }}
           />
           {!data.cliente.nome.trim() && (
@@ -157,7 +157,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             }
             _focus={{
               borderColor:
-                !data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? 'red.500' : 'blue.500',
+                !data.cliente.cpf.trim() || !isValidCPF(data.cliente.cpf) ? 'red.500' : 'blue.500'
             }}
           />
           {!data.cliente.cpf.trim() ? (

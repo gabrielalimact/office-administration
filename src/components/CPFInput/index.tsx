@@ -23,7 +23,7 @@ export function CPFInput({
   variant = 'outline',
   size = 'md',
   required = false,
-  disabled = false,
+  disabled = false
 }: CPFInputProps) {
   const [inputValue, setInputValue] = useState(maskCPF(value))
   const [error, setError] = useState<string | undefined>()
