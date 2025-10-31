@@ -1,44 +1,223 @@
 'use client'
-import { getClientePorId } from '@/services/cliente-service'
-import { Box, Flex, Text, Table, Button, Spinner } from '@chakra-ui/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, useEffect, useState } from 'react'
-import { Cliente } from '../../../types/cliente'
-import { useBreadcrumb } from '@/components/BreadcrumbContext'
+
+import { useEffect, useState, Suspense, useMemo, ElementType } from 'react'
+import { useSearchParams } from 'next/navigation'
+import {
+  Box,
+  Flex,
+  Text,
+  Stack,
+  Badge,
+  Icon,
+  Button,
+  Spinner,
+} from '@chakra-ui/react'
+import { LuCalendarDays, LuFileArchive, LuDownload, LuUser } from 'react-icons/lu'
+import { Tooltip } from '@/components/ui/tooltip'
+import { toaster } from '@/components/ui/toaster'
 import Breadcrumb from '@/components/Breadcrumb'
+import { useBreadcrumb } from '@/components/BreadcrumbContext'
+import { getClientePorId } from '@/services/cliente-service'
+import { downloadArquivoProcesso } from '@/services/processo-service'
+import { Processo } from '../../../types/processos'
 import formatDate from '../../../utils/formatDate'
+import { Cliente } from '../../../types/cliente'
+
+/* ------------------------- Helper: Status visual config ------------------------ */
+const getStatusColors = (status?: string, arquivado?: boolean) => {
+  if (arquivado)
+    return { bg: 'gray.100', color: 'gray.700' }
+
+  switch (status) {
+    case 'AUDIENCIA':
+      return { bg: 'orange.100', color: 'orange.800' }
+    case 'PERÍCIA':
+      return { bg: 'blue.100', color: 'blue.800' }
+    default:
+      return { bg: 'green.100', color: 'green.800' }
+  }
+}
+
+/* ----------------------------- Subcomponentes ----------------------------- */
+
+const InfoItem = ({ icon, label, value }: { icon: ElementType, label: string, value: string | number | undefined }) => (
+  <Flex align="center" gap={3}>
+    <Icon as={icon} color="gray.500" />
+    <Box>
+      <Text fontSize="xs" color="gray.500">{label}</Text>
+      <Text fontWeight="medium">{value || '-'}</Text>
+    </Box>
+  </Flex>
+)
+
+const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
+  const { bg, color } = useMemo(() => getStatusColors(proc.status?.nome, proc.arquivado), [proc.status?.nome, proc.arquivado])
+
+  const handleDownload = async () => {
+    try {
+      await downloadArquivoProcesso(proc.arquivo_documentos.id, proc.arquivo_documentos.nome_original)
+      toaster.create({
+        title: 'Download feito com sucesso',
+        description: `O arquivo "${proc.arquivo_documentos.nome_original}" foi baixado com sucesso.`,
+        type: 'success',
+      })
+    } catch {
+      toaster.create({
+        title: 'Erro ao baixar arquivo',
+        description: `Não foi possível baixar "${proc.arquivo_documentos.nome_original}".`,
+        type: 'error',
+      })
+    }
+  }
+
+  return (
+    <Box
+      key={proc.id}
+      mb={6}
+      p={8}
+      borderWidth={1}
+      borderRadius="lg"
+      bg="white"
+      boxShadow="md"
+      _hover={{ boxShadow: 'lg' }}
+      transition="0.2s"
+    >
+      {/* Cabeçalho */}
+      <Flex
+        justify="space-between"
+        align={{ base: 'flex-start', md: 'center' }}
+        direction={{ base: 'column', md: 'row' }}
+        gap={3}
+      >
+        <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold" color="var(--primary)">
+          Processo #{proc.id}
+        </Text>
+
+        <Badge
+          bg={bg}
+          color={color}
+          px={3}
+          py={1}
+          borderRadius="sm"
+          fontWeight="bold"
+          textTransform="capitalize"
+        >
+          {proc.status?.nome || 'SEM STATUS'}
+        </Badge>
+      </Flex>
+
+      <Box my={4} bgColor="gray.100" h="1px" />
+
+      {/* Dados principais */}
+      <Stack direction={{ base: 'column', md: 'row' }} gap={8} flexWrap="wrap">
+        <InfoItem icon={LuCalendarDays} label="Atendimento" value={formatDate(proc.data_atendimento)} />
+        <InfoItem icon={LuCalendarDays} label="Última atualização" value={formatDate(proc.data_ultima_atualizacao)} />
+        <InfoItem icon={LuUser} label="Responsável" value={`${proc.colaborador?.nome || '-'} (${proc.colaborador?.cargo || '-'})`} />
+        <InfoItem icon={LuFileArchive} label="Benefício" value={proc.beneficio?.nome} />
+      </Stack>
+
+      <Box my={4} bgColor="gray.100" h="1px" />
+
+      {/* Informações adicionais */}
+      <Stack direction={{ base: 'column', md: 'row' }} gap={6} wrap="wrap">
+        {[
+          { label: 'Olhar INSS', value: proc.olhar_inss ? 'Sim' : 'Não' },
+          { label: 'PJE/CRETA', value: proc.olhar_pje_creta ? 'Sim' : 'Não' },
+          { label: 'Status', value: proc.arquivado ? 'Arquivado' : 'Ativo' },
+        ].map(({ label, value }) => (
+          <Box key={label}>
+            <Text fontSize="sm" fontWeight="bold" color="gray.600">{label}:</Text>
+            <Text>{value}</Text>
+          </Box>
+        ))}
+      </Stack>
+
+      {/* Observações */}
+      {proc.observacoes && (
+        <Box mt={4}>
+          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={1}>Observações</Text>
+          <Box bg="gray.50" p={3} borderRadius="sm">
+            <Text fontSize="sm">{proc.observacoes}</Text>
+          </Box>
+        </Box>
+      )}
+
+      {/* Documentos */}
+      {proc.arquivo_documentos && (
+        <Box mt={4}>
+          <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>Documentos</Text>
+          <Flex
+            align={{ base: 'flex-start', md: 'center' }}
+            direction={{ base: 'column', md: 'row' }}
+            justify="space-between"
+            bg="gray.50"
+            p={3}
+            borderRadius="sm"
+            gap={3}
+          >
+            <Box>
+              <Text fontWeight="medium">{proc.arquivo_documentos.nome_original}</Text>
+              <Text fontSize="xs" color="gray.500">
+                {(proc.arquivo_documentos.tamanho / 1024 / 1024).toFixed(2)} MB
+              </Text>
+            </Box>
+            <Tooltip content="Baixar documento">
+              <Button
+                onClick={handleDownload}
+                variant="ghost"
+                size="sm"
+                w={{ base: 'full', md: 'auto' }}
+              >
+                <LuDownload /> Baixar
+              </Button>
+            </Tooltip>
+          </Flex>
+        </Box>
+      )}
+    </Box>
+  )
+}
+
+/* ---------------------------- Lista de Processos ---------------------------- */
+
+const ListaProcessos = ({ cliente }: { cliente: Cliente }) => (
+  <Box w={'100%'}>
+    {cliente.processos.map((proc : Processo) => (
+      <ProcessoCard key={proc.id} proc={proc} />
+    ))}
+  </Box>
+)
+
+/* -------------------------- Visualização de Cliente -------------------------- */
 
 function VisualizarClienteContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const clienteID = searchParams.get('cliente') || ''
+  const clienteID = searchParams.get('cliente')
   const [cliente, setCliente] = useState<Cliente | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { setBreadcrumbs } = useBreadcrumb()
 
-  const fetchCliente = async () => {
+  useEffect(() => {
     if (!clienteID) {
       setError('ID do cliente não fornecido')
       setLoading(false)
       return
     }
 
-    try {
-      setLoading(true)
-      setError(null)
-      const clienteData = await getClientePorId(Number(clienteID))
-      setCliente(clienteData)
-    } catch (err) {
-      console.error('Erro ao buscar cliente:', err)
-      setError('Erro ao carregar dados do cliente. Tente novamente.')
-    } finally {
-      setLoading(false)
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await getClientePorId(Number(clienteID))
+        setCliente(data)
+      } catch {
+        setError('Erro ao carregar dados do cliente.')
+      } finally {
+        setLoading(false)
+      }
     }
-  }
 
-  useEffect(() => {
-    fetchCliente()
+    fetchData()
   }, [clienteID])
 
   useEffect(() => {
@@ -49,325 +228,76 @@ function VisualizarClienteContent() {
         { label: cliente.nome, path: `/visualizar-cliente?cliente=${cliente.id}` },
       ])
     }
-  }, [cliente, setBreadcrumbs])
+  }, [cliente])
 
-  if (!clienteID) {
+  if (loading)
     return (
-      <Box
-        p={6}
-        bg="#f4f8fb"
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Box textAlign="center">
-          <Text fontSize="xl" color="red.500" mb={4}>
-            Cliente não encontrado
-          </Text>
-          <Button onClick={() => router.back()} bg="var(--primary)" color="white">
-            Voltar
-          </Button>
-        </Box>
-      </Box>
+      <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
+        <Spinner size="xl" color="blue.500" />
+        <Text fontSize="lg" color="gray.600">Carregando cliente...</Text>
+      </Flex>
     )
-  }
 
-  if (loading) {
-    return (
-      <Box
-        p={6}
-        bg="#f4f8fb"
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Box textAlign="center">
-          <Spinner size="xl" color="blue.500" />
-          <Text fontSize="lg" color="gray.600">
-            Carregando dados do cliente...
-          </Text>
-        </Box>
-      </Box>
-    )
-  }
+  if (error)
+    return <Text color="red.500" textAlign="center" mt={10}>{error}</Text>
 
-  if (error) {
-    return (
-      <Box
-        p={6}
-        bg="#f4f8fb"
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Box textAlign="center">
-          <Text fontSize="xl" color="red.500" mb={4}>
-            {error}
-          </Text>
-          <Flex gap={3} justifyContent="center">
-            <Button onClick={fetchCliente} bg="var(--primary)" color="white">
-              Tentar Novamente
-            </Button>
-            <Button onClick={() => router.back()} variant="ghost">
-              Voltar
-            </Button>
-          </Flex>
-        </Box>
-      </Box>
-    )
-  }
-
-  if (!cliente) {
-    return (
-      <Box
-        p={6}
-        bg="#f4f8fb"
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Box textAlign="center">
-          <Text fontSize="xl" color="gray.500" mb={4}>
-            Nenhum dado encontrado para este cliente
-          </Text>
-          <Button onClick={() => router.back()} bg="var(--primary)" color="white">
-            Voltar
-          </Button>
-        </Box>
-      </Box>
-    )
-  }
+  if (!cliente) return null
 
   return (
-    <Box p={6} bg="#f4f8fb" minH="100vh">
+    <Box p={{ base: 4, md: 6 }} bg="#f4f8fb" minH="100vh">
       <Breadcrumb />
-
-      <Flex gap={12} mb={8}>
-        <Box minW={320} bg="var(--primary)" color="white" borderRadius={12} p={6} boxShadow="md">
-          <Text fontSize="2xl" fontWeight="bold" mb={2}>
+      <Flex direction={{ base: 'column', md: 'row' }} gap={{ base: 6, md: 12 }} mb={8}>
+        <Box
+          minW={{ base: '100%', md: 320 }}
+          h={'fit-content'}
+          bg="var(--primary)"
+          color="white"
+          borderRadius="md"
+          p={{ base: 4, md: 6 }}
+          boxShadow="md"
+        >
+          <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="bold" mb={2}>
             {cliente.nome}
           </Text>
-          <Text mb={1}>
-            <strong>CPF:</strong> {cliente.cpf}
-          </Text>
-          <Text mb={1}>
-            <strong>RG:</strong> {cliente.rg}
-          </Text>
-          <Text mb={1}>
-            <strong>Data de Nascimento:</strong> {cliente.data_nascimento}
-          </Text>
-          <Text mb={1}>
-            <strong>Email:</strong> {cliente.email || 'Não informado'}
-          </Text>
-          <Text mb={1}>
-            <strong>Filiação:</strong> {cliente.filiacao}
-          </Text>
-          <Text mb={1}>
-            <strong>Naturalidade:</strong> {cliente.naturalidade}
-          </Text>
-          <Text mb={2}>
-            <strong>Endereço:</strong>
-          </Text>
-          <Text fontSize="sm" mb={1}>
-            {cliente.endereco.logradouro}, {cliente.endereco.numero}
-          </Text>
-          {cliente.endereco.complemento && (
-            <Text fontSize="sm" mb={1}>
-              {cliente.endereco.complemento}
-            </Text>
-          )}
-          <Text fontSize="sm" mb={1}>
-            {cliente.endereco.bairro}
-          </Text>
-          <Text fontSize="sm">
-            {cliente.endereco.cidade}/{cliente.endereco.estado} - {cliente.endereco.cep}
-          </Text>
-        </Box>
-
-        <Box flex={1}>
-          <Text fontSize="xl" fontWeight="bold" mb={2} color="var(--primary)">
-            Processos do cliente ({cliente.processos.length})
-          </Text>
-          {cliente.processos.length === 0 ? (
-            <Box p={6} textAlign="center" bg="white" borderRadius={8} boxShadow="sm">
-              <Text color="gray.500">Nenhum processo encontrado para este cliente</Text>
-            </Box>
-          ) : (
-            <Table.Root size="sm" variant="outline" borderRadius="8px" boxShadow="sm">
-              <Table.Header bg="var(--primary)">
-                <Table.Row>
-                  <Table.ColumnHeader color="white" p={2}>
-                    ID
-                  </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white" p={2}>
-                    Data do Atendimento
-                  </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white" p={2}>
-                    Última Atualização
-                  </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white" p={2}>
-                    Responsável
-                  </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white" p={2}>
-                    Status
-                  </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white" p={2}>
-                    Arquivado
-                  </Table.ColumnHeader>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {cliente.processos.map((proc) => (
-                  <Table.Row key={proc.id} _hover={{ bg: '#e3eafd' }}>
-                    <Table.Cell p={2}>#{proc.id}</Table.Cell>
-                    <Table.Cell p={2}>{formatDate(proc.data_atendimento)}</Table.Cell>
-                    <Table.Cell p={2}>{formatDate(proc.data_ultima_atualizacao)}</Table.Cell>
-                    <Table.Cell p={2}>{proc.colaborador.nome}</Table.Cell>
-                    <Table.Cell p={2}>
-                      {proc.status ? proc.status.nome : 'Não informado'}
-                    </Table.Cell>
-                    <Table.Cell p={2}>
-                      <Box
-                        as="span"
-                        px={2}
-                        py={1}
-                        borderRadius="md"
-                        fontSize="xs"
-                        fontWeight="bold"
-                        bg={proc.arquivado ? 'gray.200' : 'green.100'}
-                        color={proc.arquivado ? 'gray.600' : 'green.800'}
-                      >
-                        {proc.arquivado ? 'ARQUIVADO' : 'ATIVO'}
-                      </Box>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Root>
-          )}
-        </Box>
-      </Flex>
-
-      {cliente.processos.length > 0 && (
-        <Box>
-          <Text fontSize="xl" fontWeight="bold" mb={4} color="var(--primary)">
-            Detalhes dos Processos
-          </Text>
-          {cliente.processos.map((proc) => (
-            <Box
-              key={proc.id}
-              id={`detalhe-proc-${proc.id}`}
-              mb={6}
-              p={6}
-              borderWidth={1}
-              borderRadius={12}
-              bg="white"
-              boxShadow="sm"
-            >
-              <Flex justify="space-between" align="center" mb={4}>
-                <Text fontSize="lg" fontWeight="bold" color="var(--primary)">
-                  Processo #{proc.id}
-                </Text>
-                <Box
-                  px={3}
-                  py={1}
-                  borderRadius="md"
-                  fontSize="sm"
-                  fontWeight="bold"
-                  bg={proc.arquivado ? 'gray.200' : 'green.100'}
-                  color={proc.arquivado ? 'gray.600' : 'green.800'}
-                >
-                  {proc.arquivado ? 'ARQUIVADO' : 'ATIVO'}
-                </Box>
-              </Flex>
-
-              <Flex wrap="wrap" gap={8} mb={4}>
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
-                    Data do Atendimento
-                  </Text>
-                  <Text>{formatDate(proc.data_atendimento)}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
-                    Última Atualização
-                  </Text>
-                  <Text>{formatDate(proc.data_ultima_atualizacao)}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
-                    Responsável
-                  </Text>
-                  <Text>{proc.colaborador.nome}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
-                    INSS
-                  </Text>
-                  <Text>{proc.olhar_inss ? 'Sim' : 'Não'}</Text>
-                </Box>
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
-                    PJE/CRETA
-                  </Text>
-                  <Text>{proc.olhar_pje_creta ? 'Sim' : 'Não'}</Text>
-                </Box>
-              </Flex>
-
-              {proc.observacoes && (
-                <Box mb={4}>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={1}>
-                    Observações
-                  </Text>
-                  <Text bg="gray.50" p={3} borderRadius="md">
-                    {proc.observacoes}
-                  </Text>
-                </Box>
-              )}
-
-              {proc.links_documentos && (
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>
-                    Documentos
-                  </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {proc.links_documentos}
-                  </Text>
-                </Box>
-              )}
-            </Box>
+          {[
+            ['CPF', cliente.cpf],
+            ['RG', cliente.rg],
+            ['Data de Nascimento', formatDate(cliente.data_nascimento)],
+            ['Email', cliente.email || 'Não informado'],
+            ['Filiação', cliente.filiacao],
+            ['Naturalidade', cliente.naturalidade],
+          ].map(([label, value]) => (
+            <Text mb={1} key={label}><strong>{label}:</strong> {value}</Text>
           ))}
+
+          <Box mt={2}>
+            <Text fontWeight="bold">Endereço:</Text>
+            <Text fontSize="sm">
+              {cliente.endereco.logradouro}, {cliente.endereco.numero}
+              {cliente.endereco.complemento && `, ${cliente.endereco.complemento}`}
+              <br />
+              {cliente.endereco.bairro}<br />
+              {cliente.endereco.cidade}/{cliente.endereco.estado} - {cliente.endereco.cep}
+            </Text>
+          </Box>
         </Box>
-      )}
+
+        <ListaProcessos cliente={cliente} />
+      </Flex>
     </Box>
   )
 }
 
+/* ----------------------------- Página Principal ----------------------------- */
+
 export default function VisualizarClientePage() {
   return (
-    <Suspense
-      fallback={
-        <Box
-          p={6}
-          bg="#f4f8fb"
-          minH="100vh"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Box textAlign="center">
-            <Spinner size="xl" color="blue.500" />
-            <Text fontSize="lg" color="gray.600">
-              Carregando cliente...
-            </Text>
-          </Box>
-        </Box>
-      }
-    >
+    <Suspense fallback={
+      <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
+        <Spinner size="xl" color="blue.500" />
+        <Text fontSize="lg" color="gray.600">Carregando cliente...</Text>
+      </Flex>
+    }>
       <VisualizarClienteContent />
     </Suspense>
   )
