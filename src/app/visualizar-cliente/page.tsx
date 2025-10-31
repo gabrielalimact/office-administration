@@ -58,13 +58,13 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
       await downloadArquivoProcesso(proc.arquivo_documentos.id, proc.arquivo_documentos.nome_original)
       toaster.create({
         title: 'Download feito com sucesso',
-        description: `O arquivo "${proc.arquivo_documentos.nome_original}" foi baixado com sucesso.`,
+        description: `O arquivo "${proc.arquivo_documentos.nome_arquivo}" foi baixado com sucesso.`,
         type: 'success',
       })
     } catch {
       toaster.create({
         title: 'Erro ao baixar arquivo',
-        description: `Não foi possível baixar "${proc.arquivo_documentos.nome_original}".`,
+        description: `Não foi possível baixar "${proc.arquivo_documentos.nome_arquivo}".`,
         type: 'error',
       })
     }
@@ -156,7 +156,7 @@ const ProcessoCard = ({ proc }: { proc: Cliente['processos'][0] }) => {
             gap={3}
           >
             <Box>
-              <Text fontWeight="medium">{proc.arquivo_documentos.nome_original}</Text>
+              <Text fontWeight="medium">{proc.arquivo_documentos.nome_arquivo}</Text>
               <Text fontSize="xs" color="gray.500">
                 {(proc.arquivo_documentos.tamanho / 1024 / 1024).toFixed(2)} MB
               </Text>
