@@ -220,8 +220,8 @@ const ProcessosPage = () => {
               columns={[
                 { key: 'cliente', label: 'Nome do cliente', width: '2fr' },
                 { key: 'beneficio', label: 'Tipo de processo', width: '1.5fr' },
-                { key: 'status', label: 'Tipo de agendamento', width: '1fr' },
-                { key: 'data_atendimento', label: 'Data de cadastro', width: '1fr' },
+                { key: 'status', label: 'Situação', width: '1fr' },
+                { key: 'data_atendimento', label: 'Atendimento', width: '1fr' },
                 { key: 'colaborador', label: 'Responsável', width: '1fr' },
                 { key: 'actions', label: '', width: '80px', align: 'right' },
               ]}
