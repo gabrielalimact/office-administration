@@ -6,32 +6,23 @@ import {
   Field,
   Input,
   Textarea,
-  Select,
-  createListCollection,
   Checkbox,
   Flex,
-  Portal,
   Text,
-  Box,
-  ListCollection
+  Grid
 } from '@chakra-ui/react'
 import { CheckedChangeDetails } from '@zag-js/checkbox'
 import { StepProps } from '@/types/step-forms'
 import { getBeneficios, getStatus } from '@/services/processo-service'
 import { Beneficio, Status } from '../../../../types/processos'
-
-type SelectItem = {
-  label: string
-  value: number
-}
+import { CustomSelect, SelectOption } from '@/components/CustomSelect'
 
 const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
-  const [listaBeneficios, setListaBeneficios] = useState<ListCollection<SelectItem>>(
-    createListCollection<SelectItem>({ items: [] })
-  )
-  const [listaStatus, setListaStatus] = useState<ListCollection<SelectItem>>(
-    createListCollection<SelectItem>({ items: [] })
-  )
+  const [listaBeneficios, setListaBeneficios] = useState<SelectOption[]>([])
+  const [listaStatus, setListaStatus] = useState<SelectOption[]>([])
+
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([])
+  const [selectedBeneficio, setSelectedBeneficio] = useState<string[]>([])
 
   const fetchData = async () => {
     const beneficiosData = await getBeneficios()
@@ -39,16 +30,14 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
       label: beneficio.nome,
       value: beneficio.id
     }))
-    const beneficios = createListCollection<SelectItem>({ items: formattedBeneficios })
-    setListaBeneficios(beneficios)
+    setListaBeneficios(formattedBeneficios)
 
     const statusData = await getStatus()
     const formattedStatus = statusData.map((statusItem: Status) => ({
       label: statusItem.nome,
       value: statusItem.id
     }))
-    const status = createListCollection<SelectItem>({ items: formattedStatus })
-    setListaStatus(status)
+    setListaStatus(formattedStatus)
   }
 
   useEffect(() => {
@@ -63,7 +52,7 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         onDataChange({ senha_inss: value })
         break
       case 'data-atendimento':
-        onDataChange({ data_atendimento: value })
+        onDataChange({ data_cadastro: value })
         break
       case 'observations':
         onDataChange({ observacoes: value })
@@ -73,23 +62,23 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     }
   }
 
-  const handleBeneficioChange = (value: { value: string[] }) => {
-    const selectedValue = value.value[0]
+  const handleBeneficioChange = (value: string[]) => {
+    const selectedValue = value[0]
     if (!selectedValue) return
 
     const parsedId = Number(selectedValue)
     if (Number.isNaN(parsedId)) return
-
+    setSelectedBeneficio(value)
     onDataChange({ beneficio: { id: parsedId } })
   }
 
-  const handleStatusChange = (value: { value: string[] }) => {
-    const selectedValue = value.value[0]
+  const handleStatusChange = (value: string[]) => {
+    const selectedValue = value[0]
     if (!selectedValue) return
 
     const parsedId = Number(selectedValue)
     if (Number.isNaN(parsedId)) return
-
+    setSelectedStatus(value)
     onDataChange({ status: { id: parsedId } })
   }
 
@@ -99,87 +88,37 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
 
   return (
     <Fieldset.Root minW="full" flex={1}>
-      <Fieldset.Content display="flex" gap="20px" flexDir="column">
-        <Box>
-          <Select.Root collection={listaBeneficios} size="md" onValueChange={handleBeneficioChange}>
-            <Select.HiddenSelect />
-            <Select.Label fontWeight="bold">
-              Benefício{' '}
-              <Text as="span" color="red.500">
-                *
-              </Text>
-            </Select.Label>
-            <Select.Control>
-              <Select.Trigger
-                p={2}
-                borderColor={!data.beneficio.id || data.beneficio.id === 0 ? 'red.300' : undefined}
-                _focus={{
-                  borderColor:
-                    !data.beneficio.id || data.beneficio.id === 0 ? 'red.500' : 'blue.500'
-                }}
-              >
-                <Select.ValueText placeholder="Selecione o benefício" />
-              </Select.Trigger>
-              <Select.IndicatorGroup p={2}>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {listaBeneficios.items.map((beneficio) => (
-                    <Select.Item p={2} item={beneficio} key={beneficio.value}>
-                      {beneficio.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+      <Fieldset.Content display="flex" gap={6} flexDir="column">
+        <Grid templateColumns="1fr 1fr" gap={4}>
+          <CustomSelect
+            label="Benefício"
+            options={listaBeneficios}
+            placeholder="Selecione o tipo de benefício"
+            onValueChange={handleBeneficioChange}
+            value={selectedBeneficio}
+            isRequired
+            clearable
+          />
           {(!data.beneficio.id || data.beneficio.id === 0) && (
             <Text fontSize="xs" color="red.500" mt={1}>
               Campo obrigatório
             </Text>
           )}
-        </Box>
-        <Box>
-          <Select.Root collection={listaStatus} size="md" onValueChange={handleStatusChange}>
-            <Select.HiddenSelect />
-            <Select.Label fontWeight="bold">Situação</Select.Label>
-            <Select.Control>
-              <Select.Trigger
-                p={2}
-                borderColor={!data.status.id || data.status.id === 0 ? 'red.300' : undefined}
-                _focus={{
-                  borderColor: !data.status.id || data.status.id === 0 ? 'red.500' : 'blue.500'
-                }}
-              >
-                <Select.ValueText placeholder="Selecione a situação do processo" />
-              </Select.Trigger>
-              <Select.IndicatorGroup p={2}>
-                <Select.Indicator />
-              </Select.IndicatorGroup>
-            </Select.Control>
-            <Portal>
-              <Select.Positioner>
-                <Select.Content>
-                  {listaStatus.items.map((statusItem) => (
-                    <Select.Item p={2} item={statusItem} key={statusItem.value}>
-                      {statusItem.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Portal>
-          </Select.Root>
+          <CustomSelect
+            label="Situação"
+            options={listaStatus}
+            placeholder="Selecione a situação do processo"
+            onValueChange={handleStatusChange}
+            value={selectedStatus}
+            isRequired
+            clearable
+          />
           {(!data.status.id || data.status.id === 0) && (
             <Text fontSize="xs" color="red.500" mt={1}>
               Campo obrigatório
             </Text>
           )}
-        </Box>
+        </Grid>
 
         <Flex gap="2rem">
           <Checkbox.Root
@@ -211,14 +150,14 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             />
           </Field.Root>
           <Field.Root>
-            <Field.Label fontWeight="bold">Data do atendimento</Field.Label>
+            <Field.Label fontWeight="bold">Data do Cadastro</Field.Label>
             <Input
               p={5}
               name="data-atendimento"
               type="date"
               value={
-                data.data_atendimento && data.data_atendimento !== ''
-                  ? data.data_atendimento
+                data.data_cadastro && data.data_cadastro !== ''
+                  ? data.data_cadastro
                   : (() => {
                       const d = new Date()
                       const yyyy = d.getFullYear()

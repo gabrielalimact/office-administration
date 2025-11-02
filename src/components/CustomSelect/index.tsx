@@ -1,6 +1,6 @@
 'use client'
 import { Select, Portal, createListCollection } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export interface SelectOption {
   label: string
@@ -19,7 +19,8 @@ interface CustomSelectProps {
   multiple?: boolean
   size?: 'sm' | 'md' | 'lg'
   variant?: 'outline' | 'filled' | 'flushed'
-  defaultValue?: string[] // Adicionar valor padrão
+  defaultValue?: string[]
+  portalled?: boolean
 }
 
 export const CustomSelect = ({
@@ -34,7 +35,8 @@ export const CustomSelect = ({
   multiple = false,
   size = 'md',
   variant = 'outline',
-  defaultValue = []
+  defaultValue = [],
+  portalled = true
 }: CustomSelectProps) => {
   const [isEmpty, setIsEmpty] = useState(options.length === 0)
   const collection = createListCollection({
@@ -52,7 +54,7 @@ export const CustomSelect = ({
 
     const variantStyles = {
       outline: {
-        border: '1px solid #d1d5db',
+        border: '1px solid #717171ff',
         borderRadius: 'md',
         _focus: {
           borderColor: '#3182ce',
@@ -83,6 +85,10 @@ export const CustomSelect = ({
     return { ...baseStyles, ...variantStyles[variant] }
   }
 
+  useEffect(() => {
+    setIsEmpty(options.length === 0)
+  }, [options])
+
   return (
     <Select.Root
       collection={collection}
@@ -93,7 +99,7 @@ export const CustomSelect = ({
     >
       <Select.HiddenSelect />
       {label && (
-        <Select.Label fontWeight="bold" fontSize={size === 'sm' ? 'sm' : 'md'}>
+        <Select.Label fontWeight="bold">
           {label}
           {isRequired && <span style={{ color: 'red', marginLeft: '4px' }}>*</span>}
         </Select.Label>
@@ -107,15 +113,44 @@ export const CustomSelect = ({
           <Select.Indicator />
         </Select.IndicatorGroup>
       </Select.Control>
-      <Portal>
+      {portalled ? (
+        <Portal>
+          <Select.Positioner>
+            <Select.Content
+              borderRadius="md"
+              boxShadow="lg"
+              bg="white"
+              border="1px solid #d8d5d5ff"
+              maxH="200px"
+              overflowY="auto"
+              zIndex={9999}
+            >
+              {options.map((option) => (
+                <Select.Item
+                  key={option.value}
+                  item={option}
+                  p={size === 'sm' ? 2 : 3}
+                  cursor="pointer"
+                  _hover={{ bg: 'gray.50' }}
+                  _selected={{ bg: 'blue.50', color: 'blue.600' }}
+                >
+                  {option.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      ) : (
         <Select.Positioner>
           <Select.Content
-            borderRadius="md"
+            borderRadius="4px"
             boxShadow="lg"
             bg="white"
-            border="1px solid #e2e8f0"
+            border={'1px solid #d8d5d5ff'}
             maxH="200px"
             overflowY="auto"
+            zIndex={9999}
           >
             {options.map((option) => (
               <Select.Item
@@ -132,7 +167,7 @@ export const CustomSelect = ({
             ))}
           </Select.Content>
         </Select.Positioner>
-      </Portal>
+      )}
     </Select.Root>
   )
 }
