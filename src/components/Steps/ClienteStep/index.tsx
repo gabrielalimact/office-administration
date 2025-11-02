@@ -46,7 +46,6 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
           cliente: { ...data.cliente, naturalidade: value }
         })
         break
-      // Campos de endereço
       case 'cep':
         onDataChange({
           cliente: {

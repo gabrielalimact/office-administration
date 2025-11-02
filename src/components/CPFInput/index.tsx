@@ -28,7 +28,6 @@ export function CPFInput({
   const [inputValue, setInputValue] = useState(maskCPF(value))
   const [error, setError] = useState<string | undefined>()
 
-  // Atualiza o valor quando a prop value muda
   useEffect(() => {
     setInputValue(maskCPF(value))
   }, [value])
@@ -40,7 +39,6 @@ export function CPFInput({
 
     setInputValue(maskedValue)
 
-    // Validação
     let valid = false
     let errorMessage: string | undefined
 
@@ -59,13 +57,11 @@ export function CPFInput({
 
     setError(errorMessage)
 
-    // Chama os callbacks
     onChange?.(unmaskedValue, valid)
     onValidation?.(valid, errorMessage)
   }
 
   const handleBlur = () => {
-    // Validação final no blur
     if (inputValue.length > 0 && inputValue.length < 14) {
       setError('CPF incompleto')
       onValidation?.(false, 'CPF incompleto')

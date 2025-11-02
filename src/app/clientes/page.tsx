@@ -39,7 +39,6 @@ export default function ClientesPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize] = useState(10)
 
-  // 🧭 Breadcrumb
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
@@ -47,7 +46,6 @@ export default function ClientesPage() {
     ])
   }, [setBreadcrumbs])
 
-  // 🔄 Atualiza URL quando filtros mudam
   const updateURLParams = (
     newParams: Partial<{ busca: string; ativos: boolean; all: boolean }>
   ) => {
@@ -78,7 +76,6 @@ export default function ClientesPage() {
     updateURLParams({ busca, ativos, all: novoValor })
   }
 
-  // 🧭 Inicializa filtros da URL
   useEffect(() => {
     const buscaParam = searchParams.get('busca') || ''
     const ativosParam = searchParams.get('ativos') === 'true'

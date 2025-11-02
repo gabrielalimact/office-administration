@@ -80,14 +80,11 @@ const ConfiguracoesPage = () => {
         return
       }
 
-      // Armazena o arquivo para envio ao backend
       setAvatarFile(file)
 
-      // Cria URL para preview da imagem
       const previewUrl = URL.createObjectURL(file)
       setNewAvatarPreview(previewUrl)
-
-      // Limpa o input para permitir seleção do mesmo arquivo novamente
+      
       if (event.target) {
         event.target.value = ''
       }
