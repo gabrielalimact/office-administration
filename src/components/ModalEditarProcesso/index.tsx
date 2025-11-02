@@ -109,18 +109,18 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
         return
       }
     }
-    
+
     if (Array.isArray(value) && value.length > 0) {
       const processedValue = parseInt(value[0])
       setFormData((prev) => ({ ...prev, [field]: processedValue }))
       return
     }
-    
+
     if ((field === 'data_cadastro' || field === 'data_agendamento') && value === '') {
       setFormData((prev) => ({ ...prev, [field]: '' }))
       return
     }
-    
+
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -141,15 +141,20 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
               nome: statusOptions.find((s) => s.value === formData.status.toString())?.label || ''
             }
           : proc.status,
-          
-        tipo_agendamento: formData.tipo_agendamento === 0 
-          ? null 
-          : tipoAgendamentoOptions.find((t) => t.value === formData.tipo_agendamento.toString())?.label
-            ? {
-                id: formData.tipo_agendamento,
-                nome: tipoAgendamentoOptions.find((s) => s.value === formData.tipo_agendamento.toString())?.label || ''
-              }
-            : proc.tipo_agendamento,
+
+        tipo_agendamento:
+          formData.tipo_agendamento === 0
+            ? null
+            : tipoAgendamentoOptions.find((t) => t.value === formData.tipo_agendamento.toString())
+                  ?.label
+              ? {
+                  id: formData.tipo_agendamento,
+                  nome:
+                    tipoAgendamentoOptions.find(
+                      (s) => s.value === formData.tipo_agendamento.toString()
+                    )?.label || ''
+                }
+              : proc.tipo_agendamento,
         data_agendamento: formData.data_agendamento || null,
         olhar_inss: formData.olhar_inss,
         olhar_pje_creta: formData.olhar_pje_creta,
@@ -162,19 +167,19 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
       onUpdate(updatedProcesso)
       const payload = { ...updatedProcesso } as any
       if (payload.cliente) delete payload.cliente
-      
+
       if (formData.tipo_agendamento === 0) {
         payload.tipo_agendamento = null
       }
-      
+
       if (!formData.data_cadastro || formData.data_cadastro === '') {
         payload.data_cadastro = null
       }
-      
+
       if (!formData.data_agendamento || formData.data_agendamento === '') {
         payload.data_agendamento = null
       }
-      
+
       console.log('Payload enviado:', payload)
       updateProcesso(proc.id, payload)
         .then(() => {
@@ -240,21 +245,20 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
                     portalled={false}
                   />
                   <CustomInput
-                  label="Data do Cadastro"
-                  type="date"
-                  value={formData.data_cadastro}
-                  onChange={(e) => handleInputChange('data_cadastro', e.target.value)}
-                />
-                <CustomInput
-                  label="Senha INSS"
-                  placeholder="Digite a senha do INSS"
-                  value={formData.senha_inss}
-                  onChange={(e) => handleInputChange('senha_inss', e.target.value)}
-                  disabled={formData.olhar_inss === false}
-                />
+                    label="Data do Cadastro"
+                    type="date"
+                    value={formData.data_cadastro}
+                    onChange={(e) => handleInputChange('data_cadastro', e.target.value)}
+                  />
+                  <CustomInput
+                    label="Senha INSS"
+                    placeholder="Digite a senha do INSS"
+                    value={formData.senha_inss}
+                    onChange={(e) => handleInputChange('senha_inss', e.target.value)}
+                    disabled={formData.olhar_inss === false}
+                  />
                 </Grid>
 
-                
                 <Flex gap={6}>
                   <CustomCheckbox
                     label="Olhar INSS"
@@ -274,7 +278,9 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
                     label="Agendamento"
                     placeholder="Selecione o tipo"
                     options={tipoAgendamentoOptions}
-                    value={formData.tipo_agendamento === 0 ? [] : [formData.tipo_agendamento.toString()]}
+                    value={
+                      formData.tipo_agendamento === 0 ? [] : [formData.tipo_agendamento.toString()]
+                    }
                     onValueChange={(value) => handleInputChange('tipo_agendamento', value)}
                     portalled={false}
                   />

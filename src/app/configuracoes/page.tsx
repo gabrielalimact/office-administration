@@ -84,7 +84,7 @@ const ConfiguracoesPage = () => {
 
       const previewUrl = URL.createObjectURL(file)
       setNewAvatarPreview(previewUrl)
-      
+
       if (event.target) {
         event.target.value = ''
       }

@@ -195,7 +195,6 @@ export async function downloadArquivoProcesso(arquivoId: number, nomeOriginal?: 
   }
 }
 
-
 export async function updateProcesso(
   processoId: number,
   dados: Partial<CriarProcessoComNovoClienteRequest>
@@ -226,7 +225,7 @@ export async function updateProcesso(
   })
 
   const response = await api.patch(`/processos/${processoId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: { 'Content-Type': 'multipart/form-data' }
   })
 
   return response.data

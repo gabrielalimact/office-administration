@@ -1,16 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-  Fieldset,
-  Field,
-  Input,
-  Textarea,
-  Checkbox,
-  Flex,
-  Text,
-  Grid
-} from '@chakra-ui/react'
+import { Fieldset, Field, Input, Textarea, Checkbox, Flex, Text, Grid } from '@chakra-ui/react'
 import { CheckedChangeDetails } from '@zag-js/checkbox'
 import { StepProps } from '@/types/step-forms'
 import { getBeneficios, getStatus } from '@/services/processo-service'

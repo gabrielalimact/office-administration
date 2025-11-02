@@ -100,10 +100,10 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
 
         {/* Dados principais */}
         <Stack direction={{ base: 'column', md: 'row' }} gap={8} flexWrap="wrap">
-          <InfoItem 
-            icon={LuCalendarDays} 
-            label="Cadastro" 
-            value={proc.data_cadastro ? formatDate(proc.data_cadastro) : '-'} 
+          <InfoItem
+            icon={LuCalendarDays}
+            label="Cadastro"
+            value={proc.data_cadastro ? formatDate(proc.data_cadastro) : '-'}
           />
           <InfoItem
             icon={LuCalendarDays}
