@@ -1,4 +1,12 @@
-import { Field, IconButton, Input, InputGroup, InputProps } from '@chakra-ui/react'
+import {
+  Field,
+  IconButton,
+  Input,
+  InputGroup,
+  InputProps,
+  Textarea,
+  TextareaProps
+} from '@chakra-ui/react'
 import { IoSearchOutline } from 'react-icons/io5'
 
 type Props = {
@@ -10,7 +18,9 @@ type Props = {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
   isPassword?: boolean
   isSearch?: boolean
-} & InputProps
+  isTextArea?: boolean
+} & InputProps &
+  TextareaProps
 const CustomInput = ({
   label,
   type = 'text',
@@ -20,6 +30,7 @@ const CustomInput = ({
   onKeyDown,
   isPassword = false,
   isSearch = false,
+  isTextArea = false,
   ...rest
 }: Props) => {
   return (
@@ -42,6 +53,19 @@ const CustomInput = ({
             {...rest}
           />
         </InputGroup>
+      ) : isTextArea ? (
+        <Textarea
+          {...rest}
+          as="textarea"
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          p={3}
+          border={'1px solid #717171ff'}
+          borderRadius={'4px'}
+          minH="100px"
+        />
       ) : (
         <Input
           {...rest}
