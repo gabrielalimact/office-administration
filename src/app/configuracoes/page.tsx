@@ -50,8 +50,8 @@ const ConfiguracoesPage = () => {
     avatar: user?.avatar || ''
   })
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target as HTMLInputElement | HTMLTextAreaElement
     if (name === 'cpf') {
       const raw = value.replace(/\D/g, '')
       if (raw.length <= 11) {
