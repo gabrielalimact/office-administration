@@ -12,7 +12,12 @@ export interface CriarProcessoComNovoClienteRequest {
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss?: string
-  data_atendimento: string
+  data_cadastro: string
+  data_agendamento?: string
+  tipo_agendamento?: {
+    id?: number
+    nome?: string
+  }
   data_ultima_atualizacao: string
   status: {
     id?: number
@@ -24,12 +29,14 @@ export interface CriarProcessoComNovoClienteRequest {
 
 export interface CriarProcessoClienteExistenteRequest {
   statusId: number
+  tipoAgendamentoId: number
   beneficioId: number
   colaboradorId: number
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss?: string
-  data_atendimento: string
+  data_cadastro: string
+  data_agendamento?: string
   data_ultima_atualizacao?: string
   observacoes?: string
   arquivo?: File
@@ -37,6 +44,10 @@ export interface CriarProcessoClienteExistenteRequest {
 
 export async function getStatus() {
   const response = await api.get('/status-processo')
+  return response.data
+}
+export async function getTipoAgendamento() {
+  const response = await api.get('/tipo-agendamento')
   return response.data
 }
 
@@ -77,7 +88,7 @@ export async function criarProcessoComNovoCliente(
   formData.append('beneficio', JSON.stringify(dados.beneficio))
   formData.append('olhar_inss', dados.olhar_inss.toString())
   formData.append('olhar_pje_creta', dados.olhar_pje_creta.toString())
-  formData.append('data_atendimento', dados.data_atendimento)
+  formData.append('data_cadastro', dados.data_cadastro)
   formData.append('data_ultima_atualizacao', dados.data_ultima_atualizacao)
   formData.append('status', JSON.stringify(dados.status))
 
@@ -112,7 +123,7 @@ export async function criarProcessoParaClienteExistente(
   formData.append('colaboradorId', dados.colaboradorId.toString())
   formData.append('olhar_inss', dados.olhar_inss.toString())
   formData.append('olhar_pje_creta', dados.olhar_pje_creta.toString())
-  formData.append('data_atendimento', dados.data_atendimento)
+  formData.append('data_cadastro', dados.data_cadastro)
 
   if (dados.senha_inss) {
     formData.append('senha_inss', dados.senha_inss)
@@ -182,4 +193,41 @@ export async function downloadArquivoProcesso(arquivoId: number, nomeOriginal?: 
     console.error('Erro no download:', error)
     alert('Falha ao baixar o arquivo.')
   }
+}
+
+
+export async function updateProcesso(
+  processoId: number,
+  dados: Partial<CriarProcessoComNovoClienteRequest>
+): Promise<Processo> {
+  const formData = new FormData()
+
+  Object.entries(dados).forEach(([key, value]) => {
+    if (value === undefined || value === null) return
+    const camposJSON = ['cliente', 'beneficio', 'status', 'tipo_agendamento']
+
+    if (camposJSON.includes(key)) {
+      formData.append(key, JSON.stringify(value))
+      return
+    }
+    if (typeof value === 'boolean') {
+      formData.append(key, value.toString())
+      return
+    }
+    if (typeof value === 'number') {
+      formData.append(key, value.toString())
+      return
+    }
+    if (key === 'arquivo' && value instanceof File) {
+      formData.append(key, value)
+      return
+    }
+    formData.append(key, value as string)
+  })
+
+  const response = await api.patch(`/processos/${processoId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+
+  return response.data
 }
