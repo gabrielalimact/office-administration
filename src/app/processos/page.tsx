@@ -250,7 +250,7 @@ const ProcessosPage = () => {
                 { key: 'cliente', label: 'Nome do cliente', width: '2fr' },
                 { key: 'beneficio', label: 'Tipo de processo', width: '1.5fr' },
                 { key: 'status', label: 'Situação', width: '1fr' },
-                { key: 'data_atendimento', label: 'Atendimento', width: '1fr' },
+                { key: 'data_cadastro', label: 'Atendimento', width: '1fr' },
                 { key: 'colaborador', label: 'Responsável', width: '1fr' },
                 { key: 'actions', label: '', width: '80px', align: 'right' }
               ]}
@@ -262,8 +262,8 @@ const ProcessosPage = () => {
                 if (col.key === 'cliente') return <Text>{proc.cliente?.nome || ''}</Text>
                 if (col.key === 'beneficio') return <Text>{proc.beneficio?.nome || ''}</Text>
                 if (col.key === 'status') return <Text>{proc.status?.nome || ''}</Text>
-                if (col.key === 'data_atendimento')
-                  return <Text>{formatDate(proc.data_atendimento)}</Text>
+                if (col.key === 'data_cadastro')
+                  return <Text>{formatDate(proc.data_cadastro)}</Text>
                 if (col.key === 'colaborador') {
                   const nome =
                     typeof proc.colaborador === 'object'

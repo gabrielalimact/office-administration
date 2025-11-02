@@ -48,7 +48,7 @@ const CadastrarProcessosPage = () => {
     beneficio: { id: 0 },
     olhar_inss: false,
     olhar_pje_creta: false,
-    data_atendimento: new Date().toISOString().split('T')[0],
+    data_cadastro: new Date().toISOString().split('T')[0],
     senha_inss: '',
     status: { id: 0 }
   })
@@ -230,7 +230,7 @@ const CadastrarProcessosPage = () => {
         beneficio: formData.beneficio,
         olhar_inss: formData.olhar_inss,
         olhar_pje_creta: formData.olhar_pje_creta,
-        data_atendimento: formData.data_atendimento,
+        data_cadastro: formData.data_cadastro,
         data_ultima_atualizacao: new Date().toISOString().split('T')[0],
         status: formData.status,
         senha_inss: formData.senha_inss,
@@ -319,14 +319,12 @@ const CadastrarProcessosPage = () => {
         </Steps.CompletedContent>
 
         {stepActive === steps.length ? (
-          // Botões para step completed
           <ButtonGroup size="lg" variant="solid" justifyContent="center">
             <Button bgColor="var(--primary)" w="200px" onClick={() => router.push('/processos')}>
               Ver Processos
             </Button>
           </ButtonGroup>
         ) : (
-          // Botões para steps normais
           <ButtonGroup size="lg" variant="solid" justifyContent="space-between">
             <Steps.PrevTrigger asChild>
               <Button bgColor="var(--primary)" w="100px">

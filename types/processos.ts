@@ -5,6 +5,10 @@ export interface Beneficio {
   nome: string
 }
 
+export interface Agendamento {
+  id: number
+  nome: string
+}
 export interface Status {
   id: number
   nome: string
@@ -16,7 +20,7 @@ export interface CriarProcessoRequest {
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss: string
-  data_atendimento: string
+  data_cadastro: string
   data_ultima_atualizacao: string
   status: string
   observacoes: string
@@ -33,7 +37,7 @@ export interface Processo {
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss: string
-  data_atendimento: string
+  data_cadastro: string
   data_ultima_atualizacao: string
   observacoes: string
   arquivo_documentos: ArquivosDocumentos
@@ -49,6 +53,8 @@ export interface Processo {
   }
   status: Status
   beneficio: Beneficio
+  tipo_agendamento?: Agendamento | null
+  data_agendamento?: string | null
 }
 
 export interface ProcessosPorFuncionario {

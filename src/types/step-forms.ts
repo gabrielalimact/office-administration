@@ -18,7 +18,7 @@ export interface ProcessoData {
   beneficio: { id: number }
   olhar_inss: boolean
   olhar_pje_creta: boolean
-  data_atendimento: string
+  data_cadastro: string
   data_ultima_atualizacao?: string
   status: { id: number }
   observacoes?: string
@@ -47,7 +47,7 @@ export interface ProcessoStepData {
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss?: string
-  data_atendimento: string
+  data_cadastro: string
   observacoes?: string
 }
 

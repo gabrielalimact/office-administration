@@ -164,8 +164,8 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                 </Field.Root>
 
                 <Field.Root>
-                  <Field.Label fontWeight="semibold">Data do Atendimento</Field.Label>
-                  <Text>{formatDate(data.data_atendimento) || '-'}</Text>
+                  <Field.Label fontWeight="semibold">Data do Cadastro</Field.Label>
+                  <Text>{formatDate(data.data_cadastro) || '-'}</Text>
                 </Field.Root>
 
                 <Field.Root>
