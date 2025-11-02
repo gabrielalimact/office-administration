@@ -1,0 +1,12 @@
+# ESLint ignore patterns
+.next/
+dist/
+build/
+node_modules/
+out/
+coverage/
+*.config.js
+*.config.mjs
+next-env.d.ts
+# Ignore Next.js generated files
+.next/types/

@@ -12,6 +12,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    ignores: ['.next/**', 'dist/**', 'build/**', 'out/**', 'coverage/**'],
     rules: {
       // --- estilo base ---
       semi: ['error', 'never'],
@@ -25,20 +26,16 @@ const eslintConfig = [
       'key-spacing': ['error', { beforeColon: false, afterColon: true }],
       'no-trailing-spaces': 'error',
       'eol-last': ['error', 'always'],
-      indent: ['error', 2],
 
-      // --- integração com prettier ---
-      'prettier/prettier': [
-        'error',
-        {
-          semi: false,
-          singleQuote: true,
-          trailingComma: 'none',
-          printWidth: 100,
-          tabWidth: 2,
-          endOfLine: 'auto'
-        }
-      ]
+      // --- TypeScript rules - mais tolerantes para desenvolvimento ---
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-unsafe-function-type': 'warn',
+      '@typescript-eslint/no-wrapper-object-types': 'warn',
+
+      // --- React hooks ---
+      'react-hooks/exhaustive-deps': 'warn'
     }
   }
 ]

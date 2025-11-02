@@ -7,7 +7,6 @@ import {
   Text,
   Stack,
   Button,
-  Spinner,
   Portal,
   Dialog,
   CloseButton,
@@ -197,7 +196,7 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
             type: 'error'
           })
         })
-    } catch (error) {
+    } catch {
       toaster.create({
         title: 'Erro ao atualizar',
         description: 'Não foi possível atualizar o processo.',

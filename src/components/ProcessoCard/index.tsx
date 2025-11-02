@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Box, Flex, Text, Stack, Badge, Icon, Button } from '@chakra-ui/react'
+import { Box, Flex, Text, Stack, Badge, Button } from '@chakra-ui/react'
 import { LuCalendarDays, LuFileArchive, LuDownload, LuUser, LuPencil } from 'react-icons/lu'
 import { Tooltip } from '@/components/ui/tooltip'
 import { toaster } from '@/components/ui/toaster'
