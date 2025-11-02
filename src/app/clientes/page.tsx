@@ -7,10 +7,11 @@ import {
   Button,
   ButtonGroup,
   Pagination,
-  Grid
+  Grid,
+  Spinner
 } from '@chakra-ui/react'
 import { IoEyeOutline, IoTrash } from 'react-icons/io5'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useLoading } from '@/components/LoadingContext'
 import { getClientes, deletarCliente } from '@/services/cliente-service'
 import { Cliente } from '../../../types/cliente'
@@ -23,7 +24,7 @@ import CustomInput from '@/components/CustomInput'
 import CustomCheckbox from '@/components/CustomCheckbox'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function ClientesPage() {
+function ClientesPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setLoading } = useLoading()
@@ -304,5 +305,22 @@ export default function ClientesPage() {
         </Box>
       )}
     </Box>
+  )
+}
+
+export default function ClientesPage() {
+  return (
+    <Suspense
+      fallback={
+        <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
+          <Spinner size="xl" color="blue.500" />
+          <Text fontSize="lg" color="gray.600">
+            Carregando cliente...
+          </Text>
+        </Flex>
+      }
+    >
+      <ClientesPageContent />
+    </Suspense>
   )
 }

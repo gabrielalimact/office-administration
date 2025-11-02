@@ -12,7 +12,7 @@ import {
 import { IoEyeOutline } from 'react-icons/io5'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useLoading } from '@/components/LoadingContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getProcessos } from '@/services/processo-service'
@@ -25,7 +25,7 @@ import formatDate from '../../../utils/formatDate'
 import CustomCheckbox from '@/components/CustomCheckbox'
 import { MdPersonAdd } from 'react-icons/md'
 
-const ProcessosPage = () => {
+const ProcessosContent = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [processos, setProcessos] = useState<Processo[]>([])
   const [responsaveisList, setResponsaveisList] = useState<SelectOption[]>([])
@@ -331,6 +331,20 @@ const ProcessosPage = () => {
         </>
       )}
     </Box>
+  )
+}
+
+const ProcessosPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <Box p={6} bg="#fff" minH="100vh" margin="0 auto">
+          <Skeleton height="400px" />
+        </Box>
+      }
+    >
+      <ProcessosContent />
+    </Suspense>
   )
 }
 
