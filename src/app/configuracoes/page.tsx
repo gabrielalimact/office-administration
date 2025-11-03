@@ -111,6 +111,7 @@ const ConfiguracoesPage = () => {
           nome: result.usuario.nome || '',
           email: result.usuario.email || '',
           cargo: result.usuario.cargo || '',
+          isSocio: result.usuario.cargo === 'socio' ? true : false,
           avatar: '/imagens/' + result.usuario.imagem.nome_arquivo || ''
         })
 
@@ -261,7 +262,7 @@ const ConfiguracoesPage = () => {
                   const cargo = value === 'socio' ? 'socio' : 'funcionario'
                   setUsuario((prev) => ({ ...prev, cargo }))
                 }}
-                disabled={!editMode}
+                disabled={!editMode || (user?.cargo !== 'socio')}
               />
             </Fieldset.Content>
           </Fieldset.Root>
