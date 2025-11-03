@@ -1,4 +1,4 @@
-export default function formatDate(value: string | Date): string {
+export function formatDate(value: string | Date): string {
   const pad = (n: number) => n.toString().padStart(2, '0')
 
   if (value instanceof Date) {
@@ -23,4 +23,25 @@ export default function formatDate(value: string | Date): string {
   }
 
   return ''
+}
+
+export function formatDateHour(value: string | Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0')
+
+  let date: Date
+  if (value instanceof Date) {
+    date = value
+  } else {
+    date = new Date(value)
+  }
+
+  if (isNaN(date.getTime())) return ''
+
+  const day = pad(date.getDate())
+  const month = pad(date.getMonth() + 1)
+  const year = date.getFullYear()
+  const hours = pad(date.getHours())
+  const minutes = pad(date.getMinutes())
+
+  return `${hours}:${minutes} de ${day}/${month}/${year}`
 }
