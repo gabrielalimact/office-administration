@@ -1,20 +1,24 @@
 'use client'
 import { Button, ButtonGroup, Steps, Text, Flex, Box } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { LuCheckCheck } from 'react-icons/lu'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
 import { useUserContext } from '@/components/UserContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toaster } from '@/components/ui/toaster'
 import { ProcessoData } from '@/types/step-forms'
 import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps'
 import JSZip from 'jszip'
-import { criarProcessoComNovoCliente } from '@/services/processo-service'
+import {
+  criarProcessoComNovoCliente,
+  criarProcessoParaClienteExistente
+} from '@/services/processo-service'
 
-const CadastrarProcessosPage = () => {
+const CadastrarProcessosContent = () => {
   const { user } = useUserContext()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [stepActive, setStepActive] = useState(0)
   const { setBreadcrumbs } = useBreadcrumb()
 
@@ -24,6 +28,33 @@ const CadastrarProcessosPage = () => {
       { label: 'Cadastrar Processos', path: '/cadastrar-processos' }
     ])
   }, [setBreadcrumbs])
+
+  useEffect(() => {
+    const clienteId = searchParams.get('clienteId')
+    if (clienteId) {
+      setFormData((prev) => ({
+        ...prev,
+        cliente: {
+          id: parseInt(clienteId),
+          nome: searchParams.get('clienteNome') || '',
+          cpf: searchParams.get('clienteCpf') || '',
+          rg: searchParams.get('clienteRg') || '',
+          data_nascimento: searchParams.get('clienteDataNascimento') || '',
+          filiacao: searchParams.get('clienteFiliacao') || '',
+          naturalidade: searchParams.get('clienteNaturalidade') || '',
+          endereco: {
+            cep: searchParams.get('endereco_cep') || '',
+            logradouro: searchParams.get('endereco_logradouro') || '',
+            numero: searchParams.get('endereco_numero') || '',
+            bairro: searchParams.get('endereco_bairro') || '',
+            complemento: searchParams.get('endereco_complemento') || '',
+            cidade: searchParams.get('endereco_cidade') || '',
+            estado: searchParams.get('endereco_estado') || ''
+          }
+        }
+      }))
+    }
+  }, [searchParams])
 
   const [formData, setFormData] = useState<ProcessoData>({
     cliente: {
@@ -208,42 +239,60 @@ const CadastrarProcessosPage = () => {
       }
       setStepActive(steps.length)
 
-      await criarProcessoComNovoCliente({
-        cliente: {
-          nome: formData.cliente.nome,
-          data_nascimento: formData.cliente.data_nascimento,
-          cpf: formData.cliente.cpf,
-          rg: formData.cliente.rg,
-          filiacao: formData.cliente.filiacao,
-          naturalidade: formData.cliente.naturalidade,
-          endereco: {
-            logradouro: formData.cliente.endereco.logradouro,
-            numero: formData.cliente.endereco.numero,
-            complemento: formData.cliente.endereco.complemento,
-            bairro: formData.cliente.endereco.bairro,
-            cidade: formData.cliente.endereco.cidade,
-            estado: formData.cliente.endereco.estado,
-            cep: formData.cliente.endereco.cep
-          }
-        },
-        colaboradorId: formData.colaboradorId,
-        beneficio: formData.beneficio,
-        olhar_inss: formData.olhar_inss,
-        olhar_pje_creta: formData.olhar_pje_creta,
-        data_cadastro: formData.data_cadastro,
-        data_ultima_atualizacao: new Date().toISOString().split('T')[0],
-        status: formData.status,
-        senha_inss: formData.senha_inss,
-        observacoes: formData.observacoes,
-        arquivo: arquivoFinal || undefined
-      }).then(() => {
-        toaster.create({
-          title: 'Sucesso',
-          description:
-            'O processo do cliente ' + formData.cliente.nome + ' foi criado com sucesso.',
-          type: 'success',
-          duration: 5000
+      // Verificar se é um cliente existente (veio da URL com ID)
+      const isClienteExistente = formData.cliente.id > 0
+
+      if (isClienteExistente) {
+        await criarProcessoParaClienteExistente(formData.cliente.id, {
+          statusId: formData.status.id,
+          tipoAgendamentoId: null,
+          beneficioId: formData.beneficio.id,
+          colaboradorId: formData.colaboradorId,
+          olhar_inss: formData.olhar_inss,
+          olhar_pje_creta: formData.olhar_pje_creta,
+          data_cadastro: formData.data_cadastro,
+          data_ultima_atualizacao: new Date().toISOString().split('T')[0],
+          senha_inss: formData.senha_inss,
+          observacoes: formData.observacoes,
+          arquivo: arquivoFinal || undefined
         })
+      } else {
+        await criarProcessoComNovoCliente({
+          cliente: {
+            nome: formData.cliente.nome,
+            data_nascimento: formData.cliente.data_nascimento,
+            cpf: formData.cliente.cpf,
+            rg: formData.cliente.rg,
+            filiacao: formData.cliente.filiacao,
+            naturalidade: formData.cliente.naturalidade,
+            endereco: {
+              logradouro: formData.cliente.endereco.logradouro,
+              numero: formData.cliente.endereco.numero,
+              complemento: formData.cliente.endereco.complemento,
+              bairro: formData.cliente.endereco.bairro,
+              cidade: formData.cliente.endereco.cidade,
+              estado: formData.cliente.endereco.estado,
+              cep: formData.cliente.endereco.cep
+            }
+          },
+          colaboradorId: formData.colaboradorId,
+          beneficio: formData.beneficio,
+          olhar_inss: formData.olhar_inss,
+          olhar_pje_creta: formData.olhar_pje_creta,
+          data_cadastro: formData.data_cadastro,
+          data_ultima_atualizacao: new Date().toISOString().split('T')[0],
+          status: formData.status,
+          senha_inss: formData.senha_inss,
+          observacoes: formData.observacoes,
+          arquivo: arquivoFinal || undefined
+        })
+      }
+
+      toaster.create({
+        title: 'Sucesso',
+        description: `O processo do cliente ${formData.cliente.nome} foi criado com sucesso.`,
+        type: 'success',
+        duration: 5000
       })
     } catch (error) {
       console.error('Erro na requisição:', error)
@@ -344,6 +393,14 @@ const CadastrarProcessosPage = () => {
         )}
       </Steps.Root>
     </Box>
+  )
+}
+
+const CadastrarProcessosPage = () => {
+  return (
+    <Suspense fallback={<Box p={6}>Carregando...</Box>}>
+      <CadastrarProcessosContent />
+    </Suspense>
   )
 }
 
