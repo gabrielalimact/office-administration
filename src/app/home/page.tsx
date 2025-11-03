@@ -21,10 +21,14 @@ const Home = () => {
   const [processosPorBeneficio, setProcessosPorBeneficio] = useState<
     { beneficio: string; quantidade: number }[]
   >([])
+  const [processosPorStatus, setProcessosPorStatus] = useState<
+    { status: string; quantidade: number }[]
+  >([])
   const [processosPorTipoAgendamento, setProcessosPorTipoAgendamento] = useState<
     { tipo_agendamento: string; quantidade: number }[]
   >([])
   const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0)
+  const [isSocio, setIsSocio] = useState(false)
 
   useEffect(() => {
     setBreadcrumbs([{ label: 'Início', path: '/home' }])
@@ -37,6 +41,7 @@ const Home = () => {
       setProcessosArquivados(data.processosArquivados)
       setProcessosAtivos(data.processosAtivos)
       setProcessosPorBeneficio(data.processosPorBeneficio)
+      setProcessosPorStatus(data.processosPorStatus)
       setProcessosPorTipoAgendamento(data.processosPorTipoAgendamento)
       setClientesComProcessosAtivos(data.clientesComProcessosAtivos)
     })
@@ -175,16 +180,93 @@ const Home = () => {
         </SimpleGrid>
       </Box>
 
-      <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap={8}>
-        <Box>
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
-            <Heading size="md" color="var(--primary)" mb={4}>
-              Processos por Tipo de Benefício
-            </Heading>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
-              {processosPorBeneficio.map((item, index) => (
+      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr 1fr' }} gap={8} mb={6}>
+        <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Heading size="md" color="var(--primary)" mb={4}>
+            Benefícios
+          </Heading>
+          <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4}>
+            {processosPorBeneficio.map((item, index) => (
+              <Box
+                key={item.beneficio}
+                bg={getPastelColor(index)}
+                borderRadius={6}
+                p={4}
+                border="1px solid"
+                borderColor="gray.300"
+                transition="all 0.2s"
+                _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+                onClick={() =>
+                  router.push('/processos?tipoProcesso=' + encodeURIComponent(item.beneficio))
+                }
+                cursor={'pointer'}
+              >
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="gray.700"
+                  mb={2}
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  whiteSpace="nowrap"
+                >
+                  {item.beneficio}
+                </Text>
+                <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
+                  {item.quantidade}
+                </Text>
+              </Box>
+            ))}
+          </SimpleGrid>
+        </Box>
+        <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Heading size="md" color="var(--primary)" mb={4}>
+            Situação
+          </Heading>
+          <SimpleGrid columns={1} gap={4}>
+            {processosPorStatus.map((item, index) => (
+              <Box
+                key={item.status}
+                bg={getPastelColor(index)}
+                borderRadius={6}
+                p={4}
+                border="1px solid"
+                borderColor="gray.300"
+                transition="all 0.2s"
+                _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+                onClick={() =>
+                  router.push('/processos?situacao=' + encodeURIComponent(item.status))
+                }
+                cursor={'pointer'}
+              >
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="gray.700"
+                  mb={2}
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  whiteSpace="nowrap"
+                >
+                  {item.status}
+                </Text>
+                <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
+                  {item.quantidade}
+                </Text>
+              </Box>
+            ))}
+          </SimpleGrid>
+        </Box>
+        <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+          <Heading size="md" color="var(--primary)" mb={4}>
+            Agendamentos
+          </Heading>
+          <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4}>
+            {processosPorTipoAgendamento
+              .filter((item) => item.tipo_agendamento !== null)
+              .map((item, index) => (
                 <Box
-                  key={item.beneficio}
+                  key={item.tipo_agendamento}
                   bg={getPastelColor(index)}
                   borderRadius={6}
                   p={4}
@@ -193,7 +275,9 @@ const Home = () => {
                   transition="all 0.2s"
                   _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
                   onClick={() =>
-                    router.push('/processos?tipoProcesso=' + encodeURIComponent(item.beneficio))
+                    router.push(
+                      '/processos?tipoAgendamento=' + encodeURIComponent(item.tipo_agendamento)
+                    )
                   }
                   cursor={'pointer'}
                 >
@@ -206,123 +290,77 @@ const Home = () => {
                     textOverflow="ellipsis"
                     whiteSpace="nowrap"
                   >
-                    {item.beneficio}
+                    {item.tipo_agendamento}
                   </Text>
                   <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
                     {item.quantidade}
                   </Text>
                 </Box>
               ))}
-            </SimpleGrid>
-          </Box>
-        </Box>
-        <Box>
-          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
-            <Heading size="md" color="var(--primary)" mb={4}>
-              Processos por Tipo de Agendamento
-            </Heading>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
-              {processosPorTipoAgendamento
-                .filter((item) => item.tipo_agendamento !== null)
-                .map((item, index) => (
-                  <Box
-                    key={item.tipo_agendamento}
-                    bg={getPastelColor(index)}
-                    borderRadius={6}
-                    p={4}
-                    border="1px solid"
-                    borderColor="gray.300"
-                    transition="all 0.2s"
-                    _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
-                    onClick={() =>
-                      router.push(
-                        '/processos?tipoAgendamento=' + encodeURIComponent(item.tipo_agendamento)
-                      )
-                    }
-                    cursor={'pointer'}
-                  >
-                    <Text
-                      fontSize="sm"
-                      fontWeight="medium"
-                      color="gray.700"
-                      mb={2}
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      whiteSpace="nowrap"
-                    >
-                      {item.tipo_agendamento}
-                    </Text>
-                    <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
-                      {item.quantidade}
-                    </Text>
-                  </Box>
-                ))}
-            </SimpleGrid>
-          </Box>
-        </Box>
-
-        <Box>
-          <Box
-            bg="white"
-            borderRadius={5}
-            p={6}
-            border="1px solid"
-            borderColor="gray.300"
-            h="fit-content"
-          >
-            <Flex align="center" justify="space-between" mb={6}>
-              <Heading size="md" color="var(--primary)">
-                Distribuição por Funcionário
-              </Heading>
-              <Text fontSize="sm" color="gray.500">
-                {funcionarios.length} funcionários
-              </Text>
-            </Flex>
-
-            {funcionarios.length > 0 ? (
-              <Box>
-                {funcionarios.map((funcionario, index) => (
-                  <Flex
-                    key={funcionario.id}
-                    align="center"
-                    justify="space-between"
-                    p={3}
-                    borderRadius={6}
-                    _hover={{ bg: 'gray.50', scale: 1.01 }}
-                    borderBottom={index < funcionarios.length - 1 ? '1px solid' : 'none'}
-                    borderColor="gray.100"
-                    onClick={() => router.push('/visualizar-relatorio/' + funcionario.id)}
-                    cursor={'pointer'}
-                  >
-                    <Box>
-                      <Text fontWeight="medium" color="gray.800">
-                        {funcionario.nome}
-                      </Text>
-                      <Text fontSize="sm" color="gray.500">
-                        {funcionario.cargo}
-                      </Text>
-                    </Box>
-                    <Box textAlign="right">
-                      <Text fontSize="xl" fontWeight="bold" color="var(--primary)">
-                        {funcionario.totalProcessos}
-                      </Text>
-                      <Text fontSize="xs" color="gray.500">
-                        processos
-                      </Text>
-                    </Box>
-                  </Flex>
-                ))}
-              </Box>
-            ) : (
-              <Box textAlign="center" py={8}>
-                <Text color="gray.500" fontSize="sm">
-                  Nenhum funcionário encontrado
-                </Text>
-              </Box>
-            )}
-          </Box>
+          </SimpleGrid>
         </Box>
       </Grid>
+      {user?.isSocio && (
+        <Box
+          bg="white"
+          borderRadius={5}
+          p={6}
+          border="1px solid"
+          borderColor="gray.300"
+          h="fit-content"
+        >
+          <Flex align="center" justify="space-between" mb={6}>
+            <Heading size="md" color="var(--primary)">
+              Distribuição por Funcionário
+            </Heading>
+            <Text fontSize="sm" color="gray.500">
+              {funcionarios.length} funcionários
+            </Text>
+          </Flex>
+
+          {funcionarios.length > 0 ? (
+            <Box>
+              {funcionarios.map((funcionario, index) => (
+                <Flex
+                  key={funcionario.id}
+                  align="center"
+                  justify="space-between"
+                  p={3}
+                  borderRadius={6}
+                  _hover={{ bg: 'gray.50', scale: 1.01 }}
+                  borderBottom={index < funcionarios.length - 1 ? '1px solid' : 'none'}
+                  borderColor="gray.100"
+                  onClick={() => router.push('/visualizar-relatorio/' + funcionario.id)}
+                  cursor={'pointer'}
+                >
+                  <Box>
+                    <Text fontWeight="medium" color="gray.800">
+                      {funcionario.nome}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {funcionario.cargo}
+                    </Text>
+                  </Box>
+                  <Box textAlign="right">
+                    <Text fontSize="xl" fontWeight="bold" color="var(--primary)">
+                      {funcionario.totalProcessos}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      processos
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+            </Box>
+          ) : (
+            <Box textAlign="center" py={8}>
+              <Text color="gray.500" fontSize="sm">
+                Nenhum funcionário encontrado
+              </Text>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   )
 }
