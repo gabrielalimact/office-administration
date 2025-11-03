@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Box, Flex, Text, Button, Spinner } from '@chakra-ui/react'
 import { LuFilePlus2, LuPencil } from 'react-icons/lu'
 import Breadcrumb from '@/components/Breadcrumb'
@@ -15,6 +15,7 @@ import ListaProcessos from '@/components/ListaProcessos'
 
 function VisualizarClienteContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const clienteID = searchParams.get('cliente')
   const [cliente, setCliente] = useState<Cliente | null>(null)
   const [loading, setLoading] = useState(true)
@@ -51,10 +52,34 @@ function VisualizarClienteContent() {
         { label: cliente.nome, path: `/visualizar-cliente?cliente=${cliente.id}` }
       ])
     }
-  }, [cliente])
+  }, [cliente, setBreadcrumbs])
 
   const handleClienteUpdate = (clienteAtualizado: Cliente) => {
     setCliente(clienteAtualizado)
+  }
+
+  const handleAdicionarProcesso = () => {
+    if (!cliente) return
+    const params = new URLSearchParams({
+      clienteId: cliente.id.toString(),
+      clienteNome: cliente.nome,
+      clienteCpf: cliente.cpf || '',
+      clienteEmail: cliente.email || '',
+      clienteRg: cliente.rg || '',
+      clienteDataNascimento: cliente.data_nascimento || '',
+      clienteFiliacao: cliente.filiacao || '',
+      clienteNaturalidade: cliente.naturalidade || '',
+      // Endereço
+      endereco_logradouro: cliente.endereco?.logradouro || '',
+      endereco_numero: cliente.endereco?.numero || '',
+      endereco_complemento: cliente.endereco?.complemento || '',
+      endereco_bairro: cliente.endereco?.bairro || '',
+      endereco_cidade: cliente.endereco?.cidade || '',
+      endereco_estado: cliente.endereco?.estado || '',
+      endereco_cep: cliente.endereco?.cep || ''
+    })
+
+    router.push(`/cadastrar-processos?${params.toString()}`)
   }
 
   if (loading)
@@ -163,6 +188,7 @@ function VisualizarClienteContent() {
               color="white"
               fontWeight="bold"
               style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              onClick={handleAdicionarProcesso}
             >
               <LuFilePlus2 /> Adicionar Processo
             </Button>
