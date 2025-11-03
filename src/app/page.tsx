@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { useLoading } from '@/components/LoadingContext'
 import { useUserContext } from '@/components/UserContext'
 import { login } from '@/services/auth-service'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5'
 import maskCPF from '../../utils/maskCPF'
 import { toaster } from '@/components/ui/toaster'
@@ -23,10 +23,20 @@ import { toaster } from '@/components/ui/toaster'
 export default function Login() {
   const router = useRouter()
   const { setLoading } = useLoading()
-  const { setUser } = useUserContext()
+  const { setUser, user } = useUserContext()
   const [cpf, setCpf] = useState('')
   const [senha, setSenha] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true)
+      setTimeout(() => {
+        router.replace('/home')
+        setLoading(false)
+      }, 200)
+    }
+  }, [user, router, setLoading])
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
