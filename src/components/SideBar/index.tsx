@@ -11,6 +11,7 @@ import { FaFilePen } from 'react-icons/fa6'
 import { useRouter } from 'next/navigation'
 import { IoIosLogOut } from 'react-icons/io'
 import { Avatar } from '../Avatar'
+import { logout } from '@/services/api-service'
 
 if (typeof document !== 'undefined') {
   const style = document.createElement('style')
@@ -55,7 +56,7 @@ const SideBar = () => {
   const [hoveredUser, setHoveredUser] = useState<boolean>(false)
   const [hoveredLogout, setHoveredLogout] = useState<boolean>(false)
 
-  const { user } = useUserContext()
+  const { user, setUser } = useUserContext()
   const router = useRouter()
   const isSocio = user?.cargo === 'socio'
 
@@ -68,6 +69,12 @@ const SideBar = () => {
   useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  const handleLogout = () => {
+    logout()
+    setUser(null)
+    router.push('/')
+  }
 
   if (!hasMounted) {
     return null
@@ -245,7 +252,7 @@ const SideBar = () => {
 
             <Flex
               gap={2}
-              onClick={() => router.push('/')}
+              onClick={() => handleLogout()}
               onMouseEnter={() => setHoveredLogout(true)}
               onMouseLeave={() => setHoveredLogout(false)}
             >

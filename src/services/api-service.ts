@@ -98,6 +98,7 @@ export async function refreshTokenIfNeeded(): Promise<void> {
 }
 
 export function logout() {
+  localStorage.removeItem('user')
   Cookies.remove('access_token')
   Cookies.remove('refresh_token')
   const currentPath = window.location.pathname

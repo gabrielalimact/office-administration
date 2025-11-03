@@ -29,14 +29,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    if (user) {
-      setLoading(true)
-      setTimeout(() => {
-        router.replace('/home')
-        setLoading(false)
-      }, 200)
-    }
-  }, [user, router, setLoading])
+  if (typeof window === 'undefined') return
+
+  const storedUser = localStorage.getItem('user')
+
+  if (user || storedUser) {
+    setLoading(true)
+    router.replace('/home')
+    setTimeout(() => setLoading(false), 300)
+  }
+}, [])
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -63,6 +65,7 @@ export default function Login() {
           nome: res.nome,
           cpf: res.cpf,
           cargo: res.cargo,
+          isSocio: res.cargo === 'socio' ? true : false,
           email: res.email,
           avatar: res.avatar ? res.avatar.url : '/next.svg'
         })
