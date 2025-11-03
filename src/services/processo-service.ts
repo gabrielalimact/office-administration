@@ -29,7 +29,7 @@ export interface CriarProcessoComNovoClienteRequest {
 
 export interface CriarProcessoClienteExistenteRequest {
   statusId: number
-  tipoAgendamentoId: number
+  tipoAgendamentoId: number | null
   beneficioId: number
   colaboradorId: number
   olhar_inss: boolean
