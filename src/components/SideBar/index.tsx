@@ -50,9 +50,10 @@ const optionsMenu = [
 ]
 
 const SideBar = () => {
-  const [expanded, setExpanded] = useState(false)
   const [hasMounted, setHasMounted] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [hoveredUser, setHoveredUser] = useState<boolean>(false)
+  const [hoveredLogout, setHoveredLogout] = useState<boolean>(false)
 
   const { user } = useUserContext()
   const router = useRouter()
@@ -68,10 +69,6 @@ const SideBar = () => {
     setHasMounted(true)
   }, [])
 
-  const handleExpand = () => {
-    setExpanded(!expanded)
-  }
-
   if (!hasMounted) {
     return null
   }
@@ -82,8 +79,8 @@ const SideBar = () => {
         top: 0,
         left: 0,
         flexDirection: 'column',
-        alignItems: expanded ? 'center' : 'flex-start',
-        padding: expanded ? '20px' : '20px 8px',
+        alignItems: 'flex-start',
+        padding: '20px 8px',
         color: '#707488ff',
         backgroundColor: 'rgba(247, 247, 250, 0.85)',
         backdropFilter: 'blur(20px) saturate(180%)',
@@ -94,7 +91,7 @@ const SideBar = () => {
         `,
         backgroundSize: '20px 20px, 100% 100%',
         height: '100vh',
-        width: expanded ? 300 : 64,
+        width: 64,
         transition: 'width 0.2s',
         zIndex: 100,
         borderColor: 'rgba(0, 0, 0, 0.18)',
@@ -105,7 +102,7 @@ const SideBar = () => {
         style={{
           flexDirection: 'column',
           gap: '12px',
-          marginTop: expanded ? '24px' : '8px',
+          marginTop: '8px',
           width: '100%',
           height: '100%',
           flex: 1
@@ -113,7 +110,7 @@ const SideBar = () => {
       >
         <Flex
           style={{
-            justifyContent: expanded ? 'flex-start' : 'center',
+            justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'row',
             gap: 10,
@@ -122,14 +119,6 @@ const SideBar = () => {
           onClick={() => router.push('/home')}
         >
           <Image src="/images/balanca.svg" alt="Logo" width={10} height={10} />
-          {expanded && (
-            <Box>
-              <Text fontSize="md" fontWeight="bold">
-                Diego Oliveira Nascimento
-              </Text>
-              <Text fontSize="xs">Advocacia & Consultoria</Text>
-            </Box>
-          )}
         </Flex>
         <Flex direction="column" mt={8} gap={1} flex={1} justifyContent={'space-between'}>
           <Flex direction="column">
@@ -138,11 +127,10 @@ const SideBar = () => {
                 <Link href={option.href} style={{ textDecoration: 'none' }}>
                   <Flex
                     align="center"
-                    gap={expanded ? 2 : 0}
                     width="100%"
-                    justify={expanded ? 'flex-start' : 'center'}
+                    justify="center"
                     borderRadius="50px"
-                    padding={expanded ? '12px 16px' : '12px 0'}
+                    padding="12px 0"
                     _hover={{ background: 'rgba(255,255,255,0.18)' }}
                     style={{
                       cursor: 'pointer',
@@ -155,11 +143,10 @@ const SideBar = () => {
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
                     {option.icon}
-                    {expanded && <Text>{option.label}</Text>}
                   </Flex>
                 </Link>
 
-                {!expanded && hoveredIndex === index && (
+                {hoveredIndex === index && (
                   <Box
                     position="absolute"
                     left="70px"
@@ -204,9 +191,14 @@ const SideBar = () => {
             width="100%"
             align="center"
             style={{ cursor: 'pointer' }}
-            padding={expanded ? '12px 16px' : '12px 0'}
+            padding="12px 0"
           >
-            <Flex gap={4} onClick={() => router.push('/configuracoes')}>
+            <Flex
+              gap={4}
+              onClick={() => router.push('/configuracoes')}
+              onMouseEnter={() => setHoveredUser(true)}
+              onMouseLeave={() => setHoveredUser(false)}
+            >
               <Avatar
                 avatarPath={user?.avatar}
                 userName={user?.nome}
@@ -215,11 +207,35 @@ const SideBar = () => {
                 fallbackColor="white"
                 fallbackBg="#A8D0F0"
               />
-              {expanded && (
-                <Box>
-                  <Text fontSize="sm" fontWeight="bold">
-                    {user?.nome}
-                  </Text>
+              {hoveredUser && (
+                <Box
+                  position="absolute"
+                  left="70px"
+                  transform="translateY(-20%)"
+                  zIndex={1000}
+                  bg="rgba(32, 32, 32, 0.95)"
+                  color="white"
+                  px={3}
+                  py={2}
+                  borderRadius="8px"
+                  fontSize="sm"
+                  fontWeight="medium"
+                  whiteSpace="nowrap"
+                  boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    left: '-6px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderTop: '6px solid transparent',
+                    borderBottom: '6px solid transparent',
+                    borderRight: '6px solid rgba(32, 32, 32, 0.95)'
+                  }}
+                >
+                  {user?.nome}
                   <Text fontSize="xs">
                     {user?.cargo === 'socio' ? 'Sócio(a)' : 'Funcionário(a)'}
                   </Text>
@@ -227,10 +243,52 @@ const SideBar = () => {
               )}
             </Flex>
 
-            <Flex gap={2} onClick={() => router.push('/')}>
-              <IoIosLogOut size={24} />
+            <Flex
+              gap={2}
+              onClick={() => router.push('/')}
+              onMouseEnter={() => setHoveredLogout(true)}
+              onMouseLeave={() => setHoveredLogout(false)}
+            >
+              <IoIosLogOut
+                size={24}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  transform: hoveredLogout ? 'scale(1.3)' : 'scale(1)'
+                }}
+              />
 
-              {expanded && <Text>Sair</Text>}
+              {hoveredLogout && (
+                <Box
+                  position="absolute"
+                  left="70px"
+                  transform="translateY(-20%)"
+                  zIndex={1000}
+                  bg="rgba(32, 32, 32, 0.95)"
+                  color="white"
+                  px={3}
+                  py={2}
+                  borderRadius="8px"
+                  fontSize="sm"
+                  fontWeight="medium"
+                  whiteSpace="nowrap"
+                  boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    left: '-6px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 0,
+                    height: 0,
+                    borderTop: '6px solid transparent',
+                    borderBottom: '6px solid transparent',
+                    borderRight: '6px solid rgba(32, 32, 32, 0.95)'
+                  }}
+                >
+                  Sair
+                </Box>
+              )}
             </Flex>
           </Flex>
         </Flex>
