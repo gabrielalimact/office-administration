@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Fieldset, Field, Input, Textarea, Checkbox, Flex, Text, Grid } from '@chakra-ui/react'
+import { Fieldset, Field, Input, Textarea, Checkbox, Flex, Text, Grid, Box } from '@chakra-ui/react'
 import { CheckedChangeDetails } from '@zag-js/checkbox'
 import { StepProps } from '@/types/step-forms'
 import { getBeneficios, getStatus } from '@/services/processo-service'
@@ -80,35 +80,39 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   return (
     <Fieldset.Root minW="full" flex={1}>
       <Fieldset.Content display="flex" gap={6} flexDir="column">
-        <Grid templateColumns="1fr 1fr" gap={4}>
-          <CustomSelect
-            label="Benefício"
-            options={listaBeneficios}
-            placeholder="Selecione o tipo de benefício"
-            onValueChange={handleBeneficioChange}
-            value={selectedBeneficio}
-            isRequired
-            clearable
-          />
-          {(!data.beneficio.id || data.beneficio.id === 0) && (
-            <Text fontSize="xs" color="red.500" mt={1}>
-              Campo obrigatório
-            </Text>
-          )}
-          <CustomSelect
-            label="Situação"
-            options={listaStatus}
-            placeholder="Selecione a situação do processo"
-            onValueChange={handleStatusChange}
-            value={selectedStatus}
-            isRequired
-            clearable
-          />
-          {(!data.status.id || data.status.id === 0) && (
-            <Text fontSize="xs" color="red.500" mt={1}>
-              Campo obrigatório
-            </Text>
-          )}
+        <Grid gridTemplateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
+          <Box>
+            <CustomSelect
+              label="Benefício"
+              options={listaBeneficios}
+              placeholder="Selecione o tipo de benefício"
+              onValueChange={handleBeneficioChange}
+              value={selectedBeneficio}
+              isRequired
+              clearable
+            />
+            {(!data.beneficio.id || data.beneficio.id === 0) && (
+              <Text fontSize="xs" color="red.500" mt={1}>
+                Campo obrigatório
+              </Text>
+            )}
+          </Box>
+          <Box>
+            <CustomSelect
+              label="Situação"
+              options={listaStatus}
+              placeholder="Selecione a situação do processo"
+              onValueChange={handleStatusChange}
+              value={selectedStatus}
+              isRequired
+              clearable
+            />
+            {(!data.status.id || data.status.id === 0) && (
+              <Text fontSize="xs" color="red.500" mt={1}>
+                Campo obrigatório
+              </Text>
+            )}
+          </Box>
         </Grid>
 
         <Flex gap="2rem">
