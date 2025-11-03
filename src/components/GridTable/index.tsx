@@ -65,6 +65,7 @@ export function GridTable<T = Record<string, unknown>>({
             minHeight="50px"
             alignItems="center"
             px={4}
+            py={3}
             borderBottom={index < data.length - 1 ? '1px solid' : 'none'}
             borderColor="gray.300"
             cursor={onRowClick ? 'pointer' : 'default'}
