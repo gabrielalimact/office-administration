@@ -21,6 +21,9 @@ const Home = () => {
   const [processosPorBeneficio, setProcessosPorBeneficio] = useState<
     { beneficio: string; quantidade: number }[]
   >([])
+  const [processosPorTipoAgendamento, setProcessosPorTipoAgendamento] = useState<
+    { tipo_agendamento: string; quantidade: number }[]
+  >([])
   const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0)
 
   useEffect(() => {
@@ -34,6 +37,7 @@ const Home = () => {
       setProcessosArquivados(data.processosArquivados)
       setProcessosAtivos(data.processosAtivos)
       setProcessosPorBeneficio(data.processosPorBeneficio)
+      setProcessosPorTipoAgendamento(data.processosPorTipoAgendamento)
       setClientesComProcessosAtivos(data.clientesComProcessosAtivos)
     })
 
@@ -174,14 +178,9 @@ const Home = () => {
       <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap={8}>
         <Box>
           <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
-            <Flex align="center" justify="space-between" mb={6}>
-              <Heading size="md" color="var(--primary)">
-                Processos por Tipo de Benefício
-              </Heading>
-              <Text fontSize="sm" color="gray.500">
-                {processosPorBeneficio.length} tipos diferentes
-              </Text>
-            </Flex>
+            <Heading size="md" color="var(--primary)" mb={4}>
+              Processos por Tipo de Benefício
+            </Heading>
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
               {processosPorBeneficio.map((item, index) => (
                 <Box
@@ -214,6 +213,50 @@ const Home = () => {
                   </Text>
                 </Box>
               ))}
+            </SimpleGrid>
+          </Box>
+        </Box>
+        <Box>
+          <Box bg="white" borderRadius={5} p={6} border="1px solid" borderColor="gray.300">
+            <Heading size="md" color="var(--primary)" mb={4}>
+              Processos por Tipo de Agendamento
+            </Heading>
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} gap={4}>
+              {processosPorTipoAgendamento
+                .filter((item) => item.tipo_agendamento !== null)
+                .map((item, index) => (
+                  <Box
+                    key={item.tipo_agendamento}
+                    bg={getPastelColor(index)}
+                    borderRadius={6}
+                    p={4}
+                    border="1px solid"
+                    borderColor="gray.300"
+                    transition="all 0.2s"
+                    _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+                    onClick={() =>
+                      router.push(
+                        '/processos?tipoAgendamento=' + encodeURIComponent(item.tipo_agendamento)
+                      )
+                    }
+                    cursor={'pointer'}
+                  >
+                    <Text
+                      fontSize="sm"
+                      fontWeight="medium"
+                      color="gray.700"
+                      mb={2}
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {item.tipo_agendamento}
+                    </Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="var(--primary)">
+                      {item.quantidade}
+                    </Text>
+                  </Box>
+                ))}
             </SimpleGrid>
           </Box>
         </Box>
