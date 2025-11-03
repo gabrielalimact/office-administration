@@ -6,7 +6,7 @@ import { StepProps } from '@/types/step-forms'
 import maskCPF from '../../../../utils/maskCPF'
 import { getBeneficios, getStatus } from '@/services/processo-service'
 import { Beneficio, Status } from '../../../../types/processos'
-import formatDate from '../../../../utils/formatDate'
+import { formatDate } from '../../../../utils/formatDate'
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
   const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([])

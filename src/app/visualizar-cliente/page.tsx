@@ -7,7 +7,7 @@ import { LuFilePlus2, LuPencil } from 'react-icons/lu'
 import Breadcrumb from '@/components/Breadcrumb'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import { getClientePorId } from '@/services/cliente-service'
-import formatDate from '../../../utils/formatDate'
+import { formatDate } from '../../../utils/formatDate'
 import { Cliente } from '../../../types/cliente'
 import ListaProcessos from '@/components/ListaProcessos'
 

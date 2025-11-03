@@ -7,7 +7,7 @@ import { Tooltip } from '@/components/ui/tooltip'
 import { toaster } from '@/components/ui/toaster'
 import { downloadArquivoProcesso } from '@/services/processo-service'
 import { Cliente } from '../../../types/cliente'
-import formatDate from '../../../utils/formatDate'
+import { formatDate, formatDateHour } from '../../../utils/formatDate'
 import { InfoItem } from '../InfoItem'
 import { getStatusColors } from '../../utils/statusColors'
 import { ModalEditarProcesso } from '../ModalEditarProcesso'
@@ -132,7 +132,7 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
             },
             {
               label: 'Data do agendamento',
-              value: proc.data_agendamento ? formatDate(proc.data_agendamento) : '-'
+              value: proc.data_agendamento ? formatDateHour(proc.data_agendamento) : '-'
             }
           ].map(({ label, value }) => (
             <Box key={label}>

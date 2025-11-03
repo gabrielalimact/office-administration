@@ -46,7 +46,7 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
     data_cadastro: proc.data_cadastro ? proc.data_cadastro.split('T')[0] : '',
     observacoes: proc.observacoes || '',
     tipo_agendamento: proc.tipo_agendamento?.id || 0,
-    data_agendamento: proc.data_agendamento ? proc.data_agendamento.split('T')[0] : ''
+    data_agendamento: proc.data_agendamento ? proc.data_agendamento : ''
   })
 
   const [beneficios, setBeneficios] = useState<SelectOption[]>([])
@@ -179,7 +179,6 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
         payload.data_agendamento = null
       }
 
-      console.log('Payload enviado:', payload)
       updateProcesso(proc.id, payload)
         .then(() => {
           onClose()
@@ -284,10 +283,27 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
                     portalled={false}
                   />
                   <CustomInput
-                    label="Data do Agendamento"
-                    type="date"
-                    value={formData.data_agendamento}
-                    onChange={(e) => handleInputChange('data_agendamento', e.target.value)}
+                    type="datetime-local"
+                    label="Data de Agendamento"
+                    value={
+                      formData.data_agendamento
+                        ? (() => {
+                            const date = new Date(formData.data_agendamento)
+                            date.setHours(date.getHours() - 3)
+                            return date.toISOString().slice(0, 16)
+                          })()
+                        : ''
+                    }
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value) {
+                        const localDate = new Date(value)
+                        const isoValue = localDate.toISOString()
+                        setFormData((prev) => ({ ...prev, data_agendamento: isoValue }))
+                      } else {
+                        setFormData((prev) => ({ ...prev, data_agendamento: '' }))
+                      }
+                    }}
                   />
                 </Grid>
                 <CustomInput
