@@ -28,7 +28,7 @@ const Home = () => {
     { tipo_agendamento: string; quantidade: number }[]
   >([])
   const [clientesComProcessosAtivos, setClientesComProcessosAtivos] = useState(0)
-  const [isSocio, setIsSocio] = useState(false)
+  const [isSocio, setIsSocio] = useState(user?.isSocio || false)
 
   useEffect(() => {
     setBreadcrumbs([{ label: 'Início', path: '/home' }])
@@ -54,6 +54,10 @@ const Home = () => {
   useEffect(() => {
     fetchData()
   }, [])
+
+  useEffect(() => {
+    setIsSocio(user?.isSocio || false)
+  }, [user])
 
   const getPastelColor = (index: number) => {
     const pastelColors = [
@@ -300,7 +304,7 @@ const Home = () => {
           </SimpleGrid>
         </Box>
       </Grid>
-      {user?.isSocio && (
+      {isSocio && (
         <Box
           bg="white"
           borderRadius={5}
