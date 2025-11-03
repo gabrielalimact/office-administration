@@ -8,6 +8,10 @@ export interface DashboardData {
     beneficio: string
     quantidade: number
   }[]
+  processosPorTipoAgendamento: {
+    tipo_agendamento: string
+    quantidade: number
+  }[]
   clientesComProcessosAtivos: number
 }
 export async function getDashboardData() {
