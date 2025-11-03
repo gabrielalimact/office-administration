@@ -8,6 +8,7 @@ export interface User {
   cargo: string
   email: string
   avatar?: string
+  isSocio?: boolean
 }
 
 interface UserContextProps {
