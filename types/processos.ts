@@ -40,7 +40,7 @@ export interface Processo {
   data_cadastro: string
   data_ultima_atualizacao: string
   observacoes: string
-  arquivo_documentos: ArquivosDocumentos
+  documentos: ArquivosDocumentos[]
   arquivado: boolean
   cliente: {
     id: number
