@@ -176,7 +176,9 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
                   <Text fontSize="xs" color="gray.500">
                     {(doc.tamanho / 1024 / 1024).toFixed(2)} MB
                   </Text>
-                  <Text fontSize="sm" color="gray.500">Enviado {formatDateHour(doc.data_upload)}</Text>
+                  <Text fontSize="sm" color="gray.500">
+                    Enviado {formatDateHour(doc.data_upload)}
+                  </Text>
                 </Box>
                 <Tooltip content="Baixar documento">
                   <Button
