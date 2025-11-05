@@ -100,9 +100,9 @@ const ConfiguracoesPage = () => {
         const result = await updateUsuario({
           id: usuario.id,
           nome: usuario.name,
+          cpf: usuario.cpf,
           email: usuario.email,
-          cargo: usuario.cargo,
-          avatar: avatarFile || undefined
+          cargo: usuario.cargo
         })
 
         setUser({
@@ -111,8 +111,7 @@ const ConfiguracoesPage = () => {
           nome: result.usuario.nome || '',
           email: result.usuario.email || '',
           cargo: result.usuario.cargo || '',
-          isSocio: result.usuario.cargo === 'socio' ? true : false,
-          avatar: '/imagens/' + result.usuario.imagem.nome_arquivo || ''
+          isSocio: result.usuario.cargo === 'socio' ? true : false
         })
 
         toaster.create({
@@ -121,13 +120,6 @@ const ConfiguracoesPage = () => {
           type: 'success',
           duration: 3000
         })
-
-        setAvatarFile(null)
-
-        if (newAvatarPreview && newAvatarPreview.startsWith('blob:')) {
-          URL.revokeObjectURL(newAvatarPreview)
-          setNewAvatarPreview('')
-        }
       } catch (error) {
         console.error('Erro ao atualizar usuário:', error)
 
