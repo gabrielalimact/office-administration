@@ -75,3 +75,8 @@ export async function getLogDeAtividades(userID: number) {
   const response = await api.get(`/auditoria/logs?usuarioId=${userID}`)
   return response.data
 }
+
+export async function deletarUsuario(id: number) {
+  const response = await api.delete(`/usuario/${id}`)
+  return response.data
+}
