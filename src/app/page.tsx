@@ -29,16 +29,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-  if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return
 
-  const storedUser = localStorage.getItem('user')
+    const storedUser = localStorage.getItem('user')
 
-  if (user || storedUser) {
-    setLoading(true)
-    router.replace('/home')
-    setTimeout(() => setLoading(false), 300)
-  }
-}, [])
+    if (user || storedUser) {
+      setLoading(true)
+      router.replace('/home')
+      setTimeout(() => setLoading(false), 300)
+    }
+  }, [])
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)

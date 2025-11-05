@@ -61,7 +61,10 @@ export default function AdicionarFuncionarioPage() {
         router.push('/funcionarios')
       })
       .catch(() => {
-        toaster.create({ description: 'Erro ao cadastrar funcionário. Tente novamente.', type: 'error' })
+        toaster.create({
+          description: 'Erro ao cadastrar funcionário. Tente novamente.',
+          type: 'error'
+        })
       })
     setNome('')
     setEmail('')
@@ -86,37 +89,35 @@ export default function AdicionarFuncionarioPage() {
       <form onSubmit={handleSubmit} style={{ minWidth: 400 }}>
         <Flex direction={{ base: 'column', md: 'row' }} gap={6}>
           <Flex flex={1} direction="column" gap={4}>
+            <CustomInput
+              label="Nome completo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Nome completo"
+              required
+            />
+            <CustomInput
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="exemplo@dominio.com"
+              required
+            />
+            <CustomInput
+              label="CPF"
+              value={maskCPF(cpf)}
+              onChange={(e) => handleCPF(e as React.ChangeEvent<HTMLInputElement>)}
+              placeholder="000.000.000-00"
+              required
+            />
 
-              <CustomInput
-                label="Nome completo"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                placeholder="Nome completo"
-                required
-              />
-              <CustomInput
-                label="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="exemplo@dominio.com"
-                required
-              />
-              <CustomInput
-                label="CPF"
-                value={maskCPF(cpf)}
-                onChange={(e) => handleCPF(e as React.ChangeEvent<HTMLInputElement>)}
-                placeholder="000.000.000-00"
-                required
-              />
-
-              <CustomInput
-                label="Senha"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                placeholder="Senha de acesso"
-                required
-              />
-
+            <CustomInput
+              label="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              placeholder="Senha de acesso"
+              required
+            />
           </Flex>
           <Box flex={1} minW={220} ml={{ md: 2 }}>
             <label style={{ fontWeight: 500, marginBottom: 8, display: 'block' }}>Cargo</label>

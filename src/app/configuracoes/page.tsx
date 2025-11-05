@@ -152,7 +152,6 @@ const ConfiguracoesPage = () => {
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Breadcrumb />
       <Flex gap={10}>
-
         <Box w="full">
           <Fieldset.Root>
             <Fieldset.Content display="flex" flexDir="column">
@@ -191,7 +190,7 @@ const ConfiguracoesPage = () => {
                   const cargo = value === 'socio' ? 'socio' : 'funcionario'
                   setUsuario((prev) => ({ ...prev, cargo }))
                 }}
-                disabled={!editMode || (user?.cargo !== 'socio')}
+                disabled={!editMode || user?.cargo !== 'socio'}
               />
             </Fieldset.Content>
           </Fieldset.Root>

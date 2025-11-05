@@ -62,8 +62,7 @@ const SideBar = () => {
 
   const filteredMenu = optionsMenu.filter(
     (option) =>
-      isSocio ||
-      (option.href !== '/funcionarios' && option.href !== '/adicionar-funcionario')
+      isSocio || (option.href !== '/funcionarios' && option.href !== '/adicionar-funcionario')
   )
 
   useEffect(() => {

@@ -17,7 +17,6 @@ export const Avatar = ({
   fallbackBg = '#A8D0F0',
   borderRadius = '50%'
 }: AvatarProps) => {
-
   return (
     <Box
       width={size}
