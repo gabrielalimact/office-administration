@@ -26,52 +26,61 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
   })
 
   const handleInputChange = (field: string, value: string) => {
-    if(field === 'cpf') {
+    if (field === 'cpf') {
       value = value.replace(/\D/g, '')
     }
-    if(field === 'cep') {
+    if (field === 'cep') {
       const cepNumerico = value.replace(/\D/g, '')
       setFormData((prev) => ({
         ...prev,
         endereco: { ...prev.endereco, cep: cepNumerico }
       }))
 
-      if(cepNumerico.length === 8) {
-        getCepInfo(cepNumerico).then(response => {
-          const data = response.data
-          if(data.erro === 'true' || data.erro === true) {
-            console.log('CEP não encontrado:', data)
-            setFormData((prev) => ({
-              ...prev,
-              endereco: { ...prev.endereco, logradouro: '', bairro: '', cidade: '', estado: '', cep: cepNumerico }
-            }))
+      if (cepNumerico.length === 8) {
+        getCepInfo(cepNumerico)
+          .then((response) => {
+            const data = response.data
+            if (data.erro === 'true' || data.erro === true) {
+              console.log('CEP não encontrado:', data)
+              setFormData((prev) => ({
+                ...prev,
+                endereco: {
+                  ...prev.endereco,
+                  logradouro: '',
+                  bairro: '',
+                  cidade: '',
+                  estado: '',
+                  cep: cepNumerico
+                }
+              }))
+              setCepError(true)
+            } else {
+              console.log('CEP encontrado:', data)
+              setCepError(false)
+              setFormData((prev) => ({
+                ...prev,
+                endereco: {
+                  ...prev.endereco,
+                  cep: cepNumerico,
+                  logradouro: data.logradouro || '',
+                  bairro: data.bairro || '',
+                  cidade: data.localidade || '',
+                  estado: data.uf || ''
+                }
+              }))
+            }
+          })
+          .catch((error) => {
+            console.log('Erro ao buscar informações do CEP:', error)
             setCepError(true)
-          } else {
-            console.log('CEP encontrado:', data)
-            setCepError(false)
-            setFormData((prev) => ({
-              ...prev,
-              endereco: {
-                ...prev.endereco,
-                cep: cepNumerico,
-                logradouro: data.logradouro || '',
-                bairro: data.bairro || '',
-                cidade: data.localidade || '',
-                estado: data.uf || ''
-              }
-            }))
-          }
-        }).catch(error => {
-          console.log('Erro ao buscar informações do CEP:', error)
-          setCepError(true)
-        })
+          })
       } else {
         setCepError(false)
       }
       return
     }
 
-    if(field.startsWith('endereco.')) {
+    if (field.startsWith('endereco.')) {
       const enderecoField = field.replace('endereco.', '')
       setFormData((prev) => ({
         ...prev,
@@ -86,19 +95,21 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
     }))
   }
   const handleSubmit = () => {
-    atualizarCliente(cliente.id, formData).then(() => {
-      toaster.create({
-        description: 'Cliente atualizado com sucesso!',
-        type: 'success'
+    atualizarCliente(cliente.id, formData)
+      .then(() => {
+        toaster.create({
+          description: 'Cliente atualizado com sucesso!',
+          type: 'success'
+        })
+        onClose()
+        window.location.reload()
       })
-      onClose()
-      window.location.reload()
-    }).catch(() => {
-      toaster.create({
-        description: 'Falha ao atualizar o cliente. Por favor, tente novamente.',
-        type: 'error'
+      .catch(() => {
+        toaster.create({
+          description: 'Falha ao atualizar o cliente. Por favor, tente novamente.',
+          type: 'error'
+        })
       })
-    })
   }
   return (
     <Dialog.Root open size="xl" placement="center">
@@ -164,13 +175,17 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
                 </Box>
                 <Grid gridTemplateColumns={'1fr 1fr 1fr'} gap={4}>
                   <Box>
-                  <CustomInput
-                    label="CEP"
-                    type="text"
-                    value={formData.endereco.cep || ''}
-                    onChange={(e) => handleInputChange('cep', e.target.value)}
-                  />
-                  {cepError && (<Box color="red.500" fontSize="sm">CEP inválido ou não encontrado.</Box>)}
+                    <CustomInput
+                      label="CEP"
+                      type="text"
+                      value={formData.endereco.cep || ''}
+                      onChange={(e) => handleInputChange('cep', e.target.value)}
+                    />
+                    {cepError && (
+                      <Box color="red.500" fontSize="sm">
+                        CEP inválido ou não encontrado.
+                      </Box>
+                    )}
                   </Box>
                   <CustomInput
                     label="Logradouro"
@@ -208,7 +223,6 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
                     value={formData.endereco.estado || ''}
                     onChange={(e) => handleInputChange('endereco.estado', e.target.value)}
                   />
-
                 </Grid>
 
                 <Flex gap={3} mt={6} justify="flex-end">
