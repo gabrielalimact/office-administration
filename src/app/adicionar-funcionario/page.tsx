@@ -101,7 +101,6 @@ export default function AdicionarFuncionarioPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="exemplo@dominio.com"
-              required
             />
             <CustomInput
               label="CPF"
