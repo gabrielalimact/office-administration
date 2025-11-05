@@ -24,7 +24,7 @@ export const useAvatar = (avatarPath?: string) => {
       })
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${avatarPath}`)
+        const response = await fetch(`${avatarPath}`)
 
         if (response.ok) {
           const blob = await response.blob()

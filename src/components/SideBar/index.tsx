@@ -207,7 +207,6 @@ const SideBar = () => {
               onMouseLeave={() => setHoveredUser(false)}
             >
               <Avatar
-                avatarPath={user?.avatar}
                 userName={user?.nome}
                 size="40px"
                 fontSize="lg"

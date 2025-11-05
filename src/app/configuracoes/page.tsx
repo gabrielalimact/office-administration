@@ -151,78 +151,7 @@ const ConfiguracoesPage = () => {
   return (
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Breadcrumb />
-      {/* Seção do Avatar */}
       <Flex gap={10}>
-        <VStack align="center">
-          <Box position="relative" display="inline-block">
-            <Box
-              w="120px"
-              h="120px"
-              borderRadius="full"
-              overflow="hidden"
-              cursor={editMode ? 'pointer' : 'default'}
-              onClick={handleAvatarClick}
-              transition="all 0.2s ease"
-              _hover={
-                editMode
-                  ? {
-                      transform: 'scale(1.05)',
-                      filter: 'brightness(0.9)'
-                    }
-                  : {}
-              }
-              border="4px solid"
-              borderColor="white"
-              boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
-              bg="gray.200"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              {newAvatarPreview || currentAvatarUrl ? (
-                <Image
-                  src={newAvatarPreview || currentAvatarUrl}
-                  alt={usuario.name}
-                  w="100%"
-                  h="100%"
-                  objectFit="cover"
-                />
-              ) : (
-                <Text fontSize="2xl" fontWeight="bold" color="gray.500">
-                  {usuario.name.charAt(0).toUpperCase()}
-                </Text>
-              )}
-            </Box>
-            {editMode && (
-              <IconButton
-                position="absolute"
-                bottom="-2"
-                right="-2"
-                size="sm"
-                borderRadius="full"
-                bg="var(--primary)"
-                color="white"
-                _hover={{ bg: 'var(--primary)', opacity: 0.8 }}
-                onClick={handleAvatarClick}
-                aria-label="Alterar foto"
-                boxShadow="0 2px 8px rgba(0, 0, 0, 0.2)"
-              >
-                <FaCamera />
-              </IconButton>
-            )}
-          </Box>
-          <Text fontSize="sm" color="gray.600" textAlign="center" maxW="200px">
-            {editMode ? avisoImagem : ''}
-          </Text>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-        </VStack>
 
         <Box w="full">
           <Fieldset.Root>

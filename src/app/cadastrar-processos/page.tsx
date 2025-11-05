@@ -239,7 +239,6 @@ const CadastrarProcessosContent = () => {
       }
       setStepActive(steps.length)
 
-      // Verificar se é um cliente existente (veio da URL com ID)
       const isClienteExistente = formData.cliente.id > 0
 
       if (isClienteExistente) {
