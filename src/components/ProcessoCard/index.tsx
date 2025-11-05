@@ -28,10 +28,7 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
 
   const handleDownload = async (doc: ArquivosDocumentos) => {
     try {
-      await downloadArquivoProcesso(
-        doc.id,
-        doc.nome_original
-      )
+      await downloadArquivoProcesso(doc.id, doc.nome_original)
       toaster.create({
         title: 'Download feito com sucesso',
         description: `O arquivo "${doc.nome_arquivo}" foi baixado com sucesso.`,
@@ -158,41 +155,43 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
         )}
 
         {/* Documentos */}
-        <Box mt={4} >
+        {proc.documentos.length > 0 && (
+          <Box mt={4}>
             <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>
               Documentos
             </Text>
-        {proc.documentos.map((doc) => (
-
-            <Flex
-            key={doc.id}
-              align={{ base: 'flex-start', md: 'center' }}
-              direction={{ base: 'column', md: 'row' }}
-              justify="space-between"
-              bg="gray.50"
-              p={3}
-              borderRadius="sm"
-              gap={3}
-            >
-              <Box>
-                <Text fontWeight="medium">{doc.nome_arquivo}</Text>
-                <Text fontSize="xs" color="gray.500">
-                  {(doc.tamanho / 1024 / 1024).toFixed(2)} MB
-                </Text>
-              </Box>
-              <Tooltip content="Baixar documento">
-                <Button
-                  onClick={() => handleDownload(doc)}
-                  variant="ghost"
-                  size="sm"
-                  w={{ base: 'full', md: 'auto' }}
-                >
-                  <LuDownload /> Baixar
-                </Button>
-              </Tooltip>
-            </Flex>
-        ))}
-        </Box>
+            {proc.documentos.map((doc) => (
+              <Flex
+                key={doc.id}
+                align={{ base: 'flex-start', md: 'center' }}
+                direction={{ base: 'column', md: 'row' }}
+                justify="space-between"
+                bg="gray.50"
+                p={3}
+                borderRadius="sm"
+                mb={2}
+              >
+                <Box>
+                  <Text fontWeight="medium">{doc.nome_original}</Text>
+                  <Text fontSize="xs" color="gray.500">
+                    {(doc.tamanho / 1024 / 1024).toFixed(2)} MB
+                  </Text>
+                  <Text fontSize="sm" color="gray.500">Enviado {formatDateHour(doc.data_upload)}</Text>
+                </Box>
+                <Tooltip content="Baixar documento">
+                  <Button
+                    onClick={() => handleDownload(doc)}
+                    variant="ghost"
+                    size="sm"
+                    w={{ base: 'full', md: 'auto' }}
+                  >
+                    <LuDownload /> Baixar
+                  </Button>
+                </Tooltip>
+              </Flex>
+            ))}
+          </Box>
+        )}
       </Box>
 
       {/* Modal de Edição */}
