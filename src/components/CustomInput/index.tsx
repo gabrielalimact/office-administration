@@ -46,11 +46,15 @@ const CustomInput = ({
           }
         >
           <Input
-            placeholder={placeholder}
-            p={5}
-            borderRadius="4px"
-            border={'1px solid #717171ff'}
             {...rest}
+            placeholder={placeholder}
+            type={isPassword ? 'password' : type}
+            value={value}
+            onChange={onChange}
+            onKeyDown={onKeyDown}
+            px={3}
+            border={'1px solid #717171ff'}
+            borderRadius={'4px'}
           />
         </InputGroup>
       ) : isTextArea ? (
