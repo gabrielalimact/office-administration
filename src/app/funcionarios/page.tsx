@@ -10,11 +10,12 @@ import {
   Text,
   Dialog,
   Portal,
-  CloseButton
+  CloseButton,
+  Spinner
 } from '@chakra-ui/react'
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import { MdPersonAdd } from 'react-icons/md'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useUserContext } from '@/components/UserContext'
 import { useLoading } from '@/components/LoadingContext'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
@@ -34,7 +35,7 @@ export interface IFuncionarios {
   cpf: string
   email: string
 }
-const FuncionariosRelatoriosPage = () => {
+const FuncionariosRelatoriosContent = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [busca, setBusca] = useState('')
@@ -349,4 +350,20 @@ const FuncionariosRelatoriosPage = () => {
   )
 }
 
+const FuncionariosRelatoriosPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <Flex h="100vh" align="center" justify="center" direction="column" gap={3}>
+          <Spinner size="xl" color="blue.500" />
+          <Text fontSize="lg" color="gray.600">
+            Carregando funcionários ...
+          </Text>
+        </Flex>
+      }
+    >
+      <FuncionariosRelatoriosContent />
+    </Suspense>
+  )
+}
 export default FuncionariosRelatoriosPage
