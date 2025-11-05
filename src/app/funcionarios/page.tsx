@@ -20,7 +20,7 @@ import { useLoading } from '@/components/LoadingContext'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
 import { IoEyeOutline, IoTrash } from 'react-icons/io5'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { deletarUsuario, getFuncionarios, IUsuarioResponse } from '@/services/usuario-service'
 import CustomInput from '@/components/CustomInput'
 import maskCPF from '../../../utils/maskCPF'
@@ -36,6 +36,8 @@ export interface IFuncionarios {
 }
 const FuncionariosRelatoriosPage = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [busca, setBusca] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [funcionarios, setFuncionarios] = useState<IFuncionarios[]>([])
   const { setLoading } = useLoading()
@@ -59,6 +61,23 @@ const FuncionariosRelatoriosPage = () => {
     }
   }, [user, router])
 
+  const updateURLParams = (
+    newParams: Partial<{ busca: string; ativos: boolean; all: boolean }>
+  ) => {
+    const params = new URLSearchParams()
+
+    if (newParams.busca) params.set('busca', newParams.busca)
+    if (newParams.ativos) params.set('ativos', 'true')
+    if (newParams.all) params.set('all', 'true')
+
+    const queryString = params.toString()
+    router.push(`/funcionarios${queryString ? '?' + queryString : ''}`, { scroll: false })
+  }
+
+  const handleBuscaChange = (value: string) => {
+    setBusca(value)
+    updateURLParams({ busca: value })
+  }
   const handlePush = (path: string) => {
     setLoading(true)
     setTimeout(() => {
@@ -98,24 +117,26 @@ const FuncionariosRelatoriosPage = () => {
   const handleConfirmDelete = () => {
     if (!funcionarioToDelete) return
 
-    deletarUsuario(funcionarioToDelete.id).then(() => {
-      toaster.create({
-        title: 'Sucesso',
-        description: `Funcionário ${funcionarioToDelete.nome} excluído com sucesso.`,
-        type: 'success'
+    deletarUsuario(funcionarioToDelete.id)
+      .then(() => {
+        toaster.create({
+          title: 'Sucesso',
+          description: `Funcionário ${funcionarioToDelete.nome} excluído com sucesso.`,
+          type: 'success'
+        })
+        fetchFuncionarios()
+        setShowDeleteModal(false)
+        setFuncionarioToDelete(null)
       })
-      fetchFuncionarios()
-      setShowDeleteModal(false)
-      setFuncionarioToDelete(null)
-    }).catch(() => {
-      toaster.create({
-        title: 'Erro',
-        description: `Falha ao excluir o funcionário ${funcionarioToDelete.nome}. Tente novamente.`,
-        type: 'error'
+      .catch(() => {
+        toaster.create({
+          title: 'Erro',
+          description: `Falha ao excluir o funcionário ${funcionarioToDelete.nome}. Tente novamente.`,
+          type: 'error'
+        })
+        setShowDeleteModal(false)
+        setFuncionarioToDelete(null)
       })
-      setShowDeleteModal(false)
-      setFuncionarioToDelete(null)
-    })
   }
 
   const handleCancelDelete = () => {
@@ -126,14 +147,44 @@ const FuncionariosRelatoriosPage = () => {
   useEffect(() => {
     fetchFuncionarios()
   }, [])
+
+  useEffect(() => {
+    const buscaParam = searchParams.get('busca') || ''
+
+    setBusca(buscaParam)
+  }, [searchParams])
+
+  const funcionariosFiltrados = funcionarios.filter((c) => {
+    const buscaLower = busca.toLowerCase()
+    const buscaNumerica = busca.replace(/\D/g, '')
+
+    const matchNome = c.nome.toLowerCase().includes(buscaLower)
+    const matchCPF = buscaNumerica.length > 0 && c.cpf.replace(/\D/g, '').includes(buscaNumerica)
+
+    if (busca && !matchNome && !matchCPF) return false
+
+    return true
+  })
+
+  const totalItems = funcionariosFiltrados.length
+  const totalPages = Math.ceil(totalItems / pageSize)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const funcionariosPaginados = funcionariosFiltrados.slice(startIndex, endIndex)
+
   return (
-    <Flex direction='column' p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
+    <Flex direction="column" p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={6}>
         Funcionários
       </Text>
-      <Flex gap="1rem" mb={4} >
-        <CustomInput placeholder="Buscar funcionário..." isSearch />
+      <Flex gap="1rem" mb={4}>
+        <CustomInput
+          placeholder="Buscar funcionário..."
+          isSearch
+          value={busca}
+          onChange={(e) => handleBuscaChange(e.target.value)}
+        />
         <Flex justifyContent="flex-end">
           <Button
             variant="surface"
@@ -163,87 +214,97 @@ const FuncionariosRelatoriosPage = () => {
         </Stack>
       ) : (
         <GridTable<IFuncionarios>
-                  columns={[
-                    { key: 'nome', label: 'Nome', width: '2fr' },
-                    { key: 'cpf', label: 'CPF', width: '1fr' },
-                    { key: 'cargo', label: 'Cargo', width: '1fr' },
-                    { key: 'actions', label: '', width: '120px', align: 'right' }
-                  ]}
-                  data={funcionarios}
-                  onRowClick={(funcionario) => handlePush(`/visualizar-relatorio/${funcionario.id}`)}
-                  renderCell={(funcionario, column) => {
-                    if (column.key === 'cpf') return <Text>{maskCPF(funcionario.cpf)}</Text>
-                    if (column.key === 'cargo') return <Text>{funcionario.cargo ?? 'Não informado'}</Text>
-                    if (column.key === 'actions')
-                      return (
-                        <Flex gap={1}>
-                          <IconButton
-                            variant="ghost"
-                            aria-label="Visualizar cliente"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handlePush(`/visualizar-relatorio/${funcionario.id}`)
-                            }}
-                          >
-                            <IoEyeOutline />
-                          </IconButton>
-                          <IconButton
-                            variant="ghost"
-                            aria-label="Excluir cliente"
-                            size="sm"
-                            onClick={(e) => handleExcluirClick(e, funcionario)}
-                            _hover={{ color: 'red.500' }}
-                          >
-                            <IoTrash />
-                          </IconButton>
-                        </Flex>
-                      )
-                    const key = column.key as keyof IFuncionarios
-                    return <Text>{String(funcionario[key] ?? '')}</Text>
-                  }}
-                  emptyMessage="Nenhum cliente encontrado"
-                />
-
+          columns={[
+            { key: 'nome', label: 'Nome', width: '2fr' },
+            { key: 'cpf', label: 'CPF', width: '1fr' },
+            { key: 'cargo', label: 'Cargo', width: '1fr' },
+            { key: 'actions', label: '', width: '120px', align: 'right' }
+          ]}
+          data={funcionariosPaginados}
+          onRowClick={(funcionario) => handlePush(`/visualizar-relatorio/${funcionario.id}`)}
+          renderCell={(funcionario, column) => {
+            if (column.key === 'cpf') return <Text>{maskCPF(funcionario.cpf)}</Text>
+            if (column.key === 'cargo') return <Text>{funcionario.cargo ?? 'Não informado'}</Text>
+            if (column.key === 'actions')
+              return (
+                <Flex gap={1}>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Visualizar cliente"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handlePush(`/visualizar-relatorio/${funcionario.id}`)
+                    }}
+                  >
+                    <IoEyeOutline />
+                  </IconButton>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="Excluir cliente"
+                    size="sm"
+                    onClick={(e) => handleExcluirClick(e, funcionario)}
+                    _hover={{ color: 'red.500' }}
+                  >
+                    <IoTrash />
+                  </IconButton>
+                </Flex>
+              )
+            const key = column.key as keyof IFuncionarios
+            return <Text>{String(funcionario[key] ?? '')}</Text>
+          }}
+          emptyMessage="Nenhum cliente encontrado"
+        />
       )}
 
-      <Pagination.Root
-        count={funcionarios.length}
-        pageSize={pageSize}
-        page={currentPage}
-        onPageChange={(details) => setCurrentPage(details.page)}
-        display="flex"
-        justifyContent="flex-end"
-        mt={4}
-      >
-        <ButtonGroup variant="ghost" size="sm" wrap="wrap">
-          <Pagination.PrevTrigger asChild>
-            <IconButton>
-              <LuChevronLeft />
-            </IconButton>
-          </Pagination.PrevTrigger>
-
-          <Pagination.Items
-            render={(page) => (
-              <IconButton variant={{ base: 'ghost', _selected: 'outline' }}>
-                {page.value}
+      <Flex justifyContent="space-between" alignItems="center" my={4} ml={2}>
+        <Text fontSize="sm" color="gray.600">
+          Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} clientes
+        </Text>
+        <Pagination.Root
+          count={totalItems}
+          pageSize={pageSize}
+          page={currentPage}
+          onPageChange={(details) => setCurrentPage(details.page)}
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+            <Pagination.PrevTrigger asChild>
+              <IconButton disabled={currentPage === 1}>
+                <LuChevronLeft />
               </IconButton>
-            )}
-          />
+            </Pagination.PrevTrigger>
 
-          <Pagination.NextTrigger asChild>
-            <IconButton>
-              <LuChevronRight />
-            </IconButton>
-          </Pagination.NextTrigger>
-        </ButtonGroup>
-      </Pagination.Root>
+            <Pagination.Items
+              render={(page) => (
+                <IconButton
+                  key={page.value}
+                  variant={page.value === currentPage ? 'outline' : 'ghost'}
+                  onClick={() => setCurrentPage(page.value)}
+                >
+                  {page.value}
+                </IconButton>
+              )}
+            />
 
-      <Dialog.Root open={showDeleteModal} onOpenChange={({ open }) => !open && handleCancelDelete()}       placement="center"
->
+            <Pagination.NextTrigger asChild>
+              <IconButton disabled={currentPage === totalPages}>
+                <LuChevronRight />
+              </IconButton>
+            </Pagination.NextTrigger>
+          </ButtonGroup>
+        </Pagination.Root>
+      </Flex>
+
+      <Dialog.Root
+        open={showDeleteModal}
+        onOpenChange={({ open }) => !open && handleCancelDelete()}
+        placement="center"
+      >
         <Portal>
           <Dialog.Backdrop />
-          <Dialog.Positioner >
+          <Dialog.Positioner>
             <Dialog.Content maxW="md" p={6}>
               <Dialog.Header>
                 <Dialog.Title fontSize="lg" fontWeight="bold">
@@ -266,11 +327,7 @@ const FuncionariosRelatoriosPage = () => {
 
               <Dialog.Footer>
                 <Flex gap={3} justify="flex-end">
-                  <Button
-                    variant="outline"
-                    px={4}
-                    onClick={handleCancelDelete}
-                  >
+                  <Button variant="outline" px={4} onClick={handleCancelDelete}>
                     Cancelar
                   </Button>
                   <Button
