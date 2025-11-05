@@ -9,11 +9,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { toaster } from '@/components/ui/toaster'
 import { ProcessoData } from '@/types/step-forms'
 import { ClienteStep, ProcessoStep, DocumentosStep, PreviewStep } from '@/components/Steps'
-import JSZip from 'jszip'
 import {
   criarProcessoComNovoCliente,
   criarProcessoParaClienteExistente
 } from '@/services/processo-service'
+import { createZipFile } from '@/utils/zip'
 
 const CadastrarProcessosContent = () => {
   const { user } = useUserContext()
@@ -172,33 +172,6 @@ const CadastrarProcessosContent = () => {
       } else {
         setStepActive((prev) => prev + 1)
       }
-    }
-  }
-
-  const createZipFile = async (files: File[]) => {
-    try {
-      const zip = new JSZip()
-
-      for (const file of files) {
-        zip.file(file.name, file)
-      }
-
-      const zipBlob = await zip.generateAsync({ type: 'blob' })
-
-      const zipFile = new File([zipBlob], 'documentos.zip', {
-        type: 'application/zip'
-      })
-
-      return zipFile
-    } catch (error) {
-      console.error('Erro ao criar arquivo ZIP:', error)
-      toaster.create({
-        title: 'Erro na compactação',
-        description: 'Não foi possível compactar os arquivos.',
-        type: 'error',
-        duration: 5000
-      })
-      return null
     }
   }
 
