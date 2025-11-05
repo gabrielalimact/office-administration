@@ -30,6 +30,7 @@ import { Cliente } from '../../../types/cliente'
 import { CustomSelect, SelectOption } from '@/components/CustomSelect'
 import CustomInput from '@/components/CustomInput'
 import CustomCheckbox from '@/components/CustomCheckbox'
+import { createZipFile } from '@/utils/zip'
 
 interface ModalEditarProcessoProps {
   proc: Cliente['processos'][0]
@@ -182,11 +183,24 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
 
       updateProcesso(proc.id, payload)
         .then(async () => {
-          // Se há arquivos selecionados, fazer upload
           if (files.length > 0) {
             try {
-              for (const file of files) {
-                await uploadDocumentosProcesso(proc.id, file)
+              let arquivoFinal = null
+
+              if (files && files.length > 1) {
+                toaster.create({
+                  title: 'Compactando arquivos...',
+                  description: 'Criando arquivo ZIP dos documentos.',
+                  type: 'info',
+                  duration: 3000
+                })
+
+                arquivoFinal = await createZipFile(files)
+
+                if (arquivoFinal) await uploadDocumentosProcesso(proc.id, arquivoFinal)
+              } else {
+                arquivoFinal = files[0]
+                await uploadDocumentosProcesso(proc.id, arquivoFinal)
               }
               toaster.create({
                 title: 'Processo e documentos atualizados',
@@ -197,7 +211,8 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
               console.error('Erro no upload de documentos:', uploadError)
               toaster.create({
                 title: 'Processo atualizado',
-                description: 'O processo foi atualizado, mas houve erro no upload de alguns documentos.',
+                description:
+                  'O processo foi atualizado, mas houve erro no upload de alguns documentos.',
                 type: 'warning'
               })
             }
