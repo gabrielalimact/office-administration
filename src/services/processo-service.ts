@@ -1,6 +1,7 @@
 import { CriarProcessoRequest, Processo } from '../../types/processos'
 import { NovoCliente } from '../../types/cliente'
 import { api } from './api-service'
+import { toaster } from '@/components/ui/toaster'
 
 export interface CriarProcessoComNovoClienteRequest {
   cliente: NovoCliente
@@ -189,9 +190,10 @@ export async function downloadArquivoProcesso(arquivoId: number, nomeOriginal?: 
 
     link.remove()
     window.URL.revokeObjectURL(url)
+    toaster.create({ description: 'Download iniciado com sucesso!', type: 'success' })
   } catch (error) {
     console.error('Erro no download:', error)
-    alert('Falha ao baixar o arquivo.')
+    toaster.create({ description: 'Falha ao baixar o arquivo.', type: 'error' })
   }
 }
 
