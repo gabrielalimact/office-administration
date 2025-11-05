@@ -11,6 +11,7 @@ import { formatDate, formatDateHour } from '../../../utils/formatDate'
 import { InfoItem } from '../InfoItem'
 import { getStatusColors } from '../../utils/statusColors'
 import { ModalEditarProcesso } from '../ModalEditarProcesso'
+import { ArquivosDocumentos } from '../../../types/processos'
 
 interface ProcessoCardProps {
   proc: Cliente['processos'][0]
@@ -25,21 +26,21 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
     [proc.status?.nome, proc.arquivado]
   )
 
-  const handleDownload = async () => {
+  const handleDownload = async (doc: ArquivosDocumentos) => {
     try {
       await downloadArquivoProcesso(
-        proc.arquivo_documentos.id,
-        proc.arquivo_documentos.nome_original
+        doc.id,
+        doc.nome_original
       )
       toaster.create({
         title: 'Download feito com sucesso',
-        description: `O arquivo "${proc.arquivo_documentos.nome_arquivo}" foi baixado com sucesso.`,
+        description: `O arquivo "${doc.nome_arquivo}" foi baixado com sucesso.`,
         type: 'success'
       })
     } catch {
       toaster.create({
         title: 'Erro ao baixar arquivo',
-        description: `Não foi possível baixar "${proc.arquivo_documentos.nome_arquivo}".`,
+        description: `Não foi possível baixar "${doc.nome_arquivo}".`,
         type: 'error'
       })
     }
@@ -157,12 +158,14 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
         )}
 
         {/* Documentos */}
-        {proc.arquivo_documentos && (
-          <Box mt={4}>
+        <Box mt={4} >
             <Text fontSize="sm" fontWeight="bold" color="gray.600" mb={2}>
               Documentos
             </Text>
+        {proc.documentos.map((doc) => (
+
             <Flex
+            key={doc.id}
               align={{ base: 'flex-start', md: 'center' }}
               direction={{ base: 'column', md: 'row' }}
               justify="space-between"
@@ -172,14 +175,14 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
               gap={3}
             >
               <Box>
-                <Text fontWeight="medium">{proc.arquivo_documentos.nome_arquivo}</Text>
+                <Text fontWeight="medium">{doc.nome_arquivo}</Text>
                 <Text fontSize="xs" color="gray.500">
-                  {(proc.arquivo_documentos.tamanho / 1024 / 1024).toFixed(2)} MB
+                  {(doc.tamanho / 1024 / 1024).toFixed(2)} MB
                 </Text>
               </Box>
               <Tooltip content="Baixar documento">
                 <Button
-                  onClick={handleDownload}
+                  onClick={() => handleDownload(doc)}
                   variant="ghost"
                   size="sm"
                   w={{ base: 'full', md: 'auto' }}
@@ -188,8 +191,8 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
                 </Button>
               </Tooltip>
             </Flex>
-          </Box>
-        )}
+        ))}
+        </Box>
       </Box>
 
       {/* Modal de Edição */}

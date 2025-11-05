@@ -22,7 +22,8 @@ import {
   getBeneficios,
   getStatus,
   getTipoAgendamento,
-  updateProcesso
+  updateProcesso,
+  uploadDocumentosProcesso
 } from '@/services/processo-service'
 import { Beneficio, Status, Agendamento } from '../../../types/processos'
 import { Cliente } from '../../../types/cliente'
@@ -180,13 +181,34 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
       }
 
       updateProcesso(proc.id, payload)
-        .then(() => {
+        .then(async () => {
+          // Se há arquivos selecionados, fazer upload
+          if (files.length > 0) {
+            try {
+              for (const file of files) {
+                await uploadDocumentosProcesso(proc.id, file)
+              }
+              toaster.create({
+                title: 'Processo e documentos atualizados',
+                description: 'O processo e os documentos foram atualizados com sucesso.',
+                type: 'success'
+              })
+            } catch (uploadError) {
+              console.error('Erro no upload de documentos:', uploadError)
+              toaster.create({
+                title: 'Processo atualizado',
+                description: 'O processo foi atualizado, mas houve erro no upload de alguns documentos.',
+                type: 'warning'
+              })
+            }
+          } else {
+            toaster.create({
+              title: 'Processo atualizado',
+              description: 'O processo foi atualizado com sucesso.',
+              type: 'success'
+            })
+          }
           onClose()
-          toaster.create({
-            title: 'Processo atualizado',
-            description: 'O processo foi atualizado com sucesso.',
-            type: 'success'
-          })
         })
         .catch(() => {
           toaster.create({
