@@ -43,5 +43,5 @@ export function formatDateHour(value: string | Date): string {
   const hours = pad(date.getHours())
   const minutes = pad(date.getMinutes())
 
-  return `${hours}:${minutes} de ${day}/${month}/${year}`
+  return `às ${hours}:${minutes} de ${day}/${month}/${year}`
 }
