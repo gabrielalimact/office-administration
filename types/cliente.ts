@@ -16,6 +16,19 @@ export interface Cliente {
 
 export interface NovoCliente {
   nome: string
+  email?: string
+  data_nascimento: string
+  cpf: string
+  rg: string
+  filiacao: string
+  naturalidade: string
+  endereco: Endereco
+}
+
+export interface AtualizarCliente {
+  id: number
+  nome: string
+  email?: string
   data_nascimento: string
   cpf: string
   rg: string

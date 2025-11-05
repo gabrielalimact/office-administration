@@ -1,4 +1,4 @@
-import { Cliente } from '../../types/cliente'
+import { AtualizarCliente, Cliente } from '../../types/cliente'
 import { api } from './api-service'
 
 export async function getClientes() {
@@ -13,5 +13,10 @@ export async function deletarCliente(id: number) {
 
 export async function getClientePorId(id: number): Promise<Cliente> {
   const response = await api.get(`/cliente/${id}`)
+  return response.data
+}
+
+export async function atualizarCliente(id: number, data: AtualizarCliente) {
+  const response = await api.patch<AtualizarCliente>(`/cliente/${id}`, data)
   return response.data
 }

@@ -8,8 +8,10 @@ import Breadcrumb from '@/components/Breadcrumb'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import { getClientePorId } from '@/services/cliente-service'
 import { formatDate } from '../../../utils/formatDate'
-import { Cliente } from '../../../types/cliente'
+import { AtualizarCliente, Cliente } from '../../../types/cliente'
 import ListaProcessos from '@/components/ListaProcessos'
+import ModalEditarCliente from '@/components/ModalEditarCliente'
+import maskCPF from '../../../utils/maskCPF'
 
 /* -------------------------- Visualização de Cliente -------------------------- */
 
@@ -21,6 +23,7 @@ function VisualizarClienteContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { setBreadcrumbs } = useBreadcrumb()
+  const [modalEditarCliente, setModalEditarCliente] = useState(false)
 
   useEffect(() => {
     if (!clienteID) {
@@ -119,7 +122,7 @@ function VisualizarClienteContent() {
               {cliente.nome}
             </Text>
             {[
-              ['CPF', cliente.cpf],
+              ['CPF', maskCPF(cliente.cpf)],
               ['RG', cliente.rg],
               ['Data de Nascimento', formatDate(cliente.data_nascimento)],
               ['Email', cliente.email],
@@ -138,7 +141,7 @@ function VisualizarClienteContent() {
               <Text fontWeight="bold" mb={1}>
                 Endereço
               </Text>
-              {cliente.endereco.logradouro ? (
+              {cliente.endereco && cliente.endereco.logradouro ? (
                 <Text fontSize="sm">
                   {[
                     cliente.endereco.logradouro,
@@ -176,6 +179,7 @@ function VisualizarClienteContent() {
               color="white"
               fontWeight="bold"
               style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              onClick={() => setModalEditarCliente(true)}
             >
               <LuPencil /> Editar Cliente
             </Button>
@@ -195,6 +199,12 @@ function VisualizarClienteContent() {
           </Flex>
         </Box>
         <ListaProcessos cliente={cliente} onClienteUpdate={handleClienteUpdate} />
+        {modalEditarCliente && (
+          <ModalEditarCliente
+            onClose={() => setModalEditarCliente(false)}
+            cliente={cliente as AtualizarCliente}
+          />
+        )}
       </Flex>
     </Box>
   )
