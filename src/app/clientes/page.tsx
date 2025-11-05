@@ -23,6 +23,7 @@ import { maskCPF } from '../../../utils/maskCPF'
 import CustomInput from '@/components/CustomInput'
 import CustomCheckbox from '@/components/CustomCheckbox'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { toaster } from '@/components/ui/toaster'
 
 function ClientesPageContent() {
   const router = useRouter()
@@ -127,9 +128,9 @@ function ClientesPageContent() {
       setClientes((prev) => prev.filter((c) => c.id !== clienteParaExcluir.id))
       setModalAberto(false)
       setClienteParaExcluir(null)
+      toaster.create({ description: 'Cliente excluído com sucesso!', type: 'success' })
     } catch (error) {
-      console.error('Erro ao excluir cliente:', error)
-      alert('Erro ao excluir cliente. Tente novamente.')
+      toaster.create({ description: 'Erro ao excluir cliente. Tente novamente.', type: 'error' })
     } finally {
       setLoading(false)
     }

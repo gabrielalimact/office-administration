@@ -10,6 +10,7 @@ const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false }
 import 'easymde/dist/easymde.min.css'
 import { enviarNovoRelatorio } from '@/services/relatorios-service'
 import CustomInput from '@/components/CustomInput'
+import { toaster } from '@/components/ui/toaster'
 
 export default function EnviarRelatorioPage() {
   const { user } = useUserContext()
@@ -49,10 +50,11 @@ export default function EnviarRelatorioPage() {
         setTitulo('')
         setConteudo('')
         setTimeout(() => setSuccess(false), 3000)
+        toaster.create({ description: 'Relatório enviado com sucesso!', type: 'success' })
       })
       .catch((error) => {
         console.error('Erro ao enviar relatório:', error)
-        alert('Erro ao enviar relatório. Tente novamente.')
+        toaster.create({ description: 'Erro ao enviar relatório. Tente novamente.', type: 'error' })
       })
   }
   const handleNegritoClick = () => {
