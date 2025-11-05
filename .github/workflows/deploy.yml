@@ -20,7 +20,7 @@ jobs:
             echo "✅ Conectado ao servidor"
             cd /root/office-administration
             echo "📌 Atualizando código..."
-            git pull origin master
+            git pull origin main
             echo "📦 Instalando dependências..."
             npm ci --omit=dev
             echo "🏗️  Gerando build..."
