@@ -72,12 +72,6 @@ function ClientesPageContent() {
     updateURLParams({ busca, ativos: novoValor, all: showAll })
   }
 
-  const handleShowAllToggle = () => {
-    const novoValor = !showAll
-    setShowAll(novoValor)
-    updateURLParams({ busca, ativos, all: novoValor })
-  }
-
   useEffect(() => {
     const buscaParam = searchParams.get('busca') || ''
     const ativosParam = searchParams.get('ativos') === 'true'
@@ -88,13 +82,17 @@ function ClientesPageContent() {
     setShowAll(allParam)
   }, [searchParams])
 
-  const clientesFiltrados = clientes
-    .filter((c) => c.nome.toLowerCase().includes(busca.toLowerCase()))
-    .filter((c) => {
-      if (showAll) return true
-      if (ativos) return clientesAtivos.some((ativo) => ativo.id === c.id)
-      return true
-    })
+  const clientesFiltrados = clientes.filter((c) => {
+    const buscaLower = busca.toLowerCase()
+    const buscaNumerica = busca.replace(/\D/g, '')
+
+    const matchNome = c.nome.toLowerCase().includes(buscaLower)
+    const matchCPF = buscaNumerica.length > 0 && c.cpf.replace(/\D/g, '').includes(buscaNumerica)
+
+    if (busca && !matchNome && !matchCPF) return false
+
+    return true
+  })
 
   const totalItems = clientesFiltrados.length
   const totalPages = Math.ceil(totalItems / pageSize)
@@ -167,7 +165,7 @@ function ClientesPageContent() {
 
       <Grid gridTemplateColumns={'1fr 250px'} gap={4} alignItems="center">
         <CustomInput
-          placeholder="Buscar cliente..."
+          placeholder="Buscar por nome ou CPF..."
           isSearch
           value={busca}
           onChange={(e) => handleBuscaChange(e.target.value)}
@@ -224,45 +222,45 @@ function ClientesPageContent() {
           emptyMessage="Nenhum cliente encontrado"
         />
       </Box>
-      <Flex justifyContent="space-between" alignItems="center" mb={3} ml={2}>
+      <Flex justifyContent="space-between" alignItems="center" my={3} ml={2}>
         <Text fontSize="sm" color="gray.600">
           Mostrando {startIndex + 1} - {Math.min(endIndex, totalItems)} de {totalItems} clientes
         </Text>
-      </Flex>
-      <Pagination.Root
-        count={totalItems}
-        pageSize={pageSize}
-        page={currentPage}
-        onPageChange={(details) => setCurrentPage(details.page)}
-        display="flex"
-        justifyContent="flex-end"
-      >
-        <ButtonGroup variant="ghost" size="sm" wrap="wrap">
-          <Pagination.PrevTrigger asChild>
-            <IconButton disabled={currentPage === 1}>
-              <LuChevronLeft />
-            </IconButton>
-          </Pagination.PrevTrigger>
-
-          <Pagination.Items
-            render={(page) => (
-              <IconButton
-                key={page.value}
-                variant={page.value === currentPage ? 'outline' : 'ghost'}
-                onClick={() => setCurrentPage(page.value)}
-              >
-                {page.value}
+        <Pagination.Root
+          count={totalItems}
+          pageSize={pageSize}
+          page={currentPage}
+          onPageChange={(details) => setCurrentPage(details.page)}
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+            <Pagination.PrevTrigger asChild>
+              <IconButton disabled={currentPage === 1}>
+                <LuChevronLeft />
               </IconButton>
-            )}
-          />
+            </Pagination.PrevTrigger>
 
-          <Pagination.NextTrigger asChild>
-            <IconButton disabled={currentPage === totalPages}>
-              <LuChevronRight />
-            </IconButton>
-          </Pagination.NextTrigger>
-        </ButtonGroup>
-      </Pagination.Root>
+            <Pagination.Items
+              render={(page) => (
+                <IconButton
+                  key={page.value}
+                  variant={page.value === currentPage ? 'outline' : 'ghost'}
+                  onClick={() => setCurrentPage(page.value)}
+                >
+                  {page.value}
+                </IconButton>
+              )}
+            />
+
+            <Pagination.NextTrigger asChild>
+              <IconButton disabled={currentPage === totalPages}>
+                <LuChevronRight />
+              </IconButton>
+            </Pagination.NextTrigger>
+          </ButtonGroup>
+        </Pagination.Root>
+      </Flex>
 
       {modalAberto && (
         <Box
