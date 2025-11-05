@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
 import maskCPF from '../../../utils/maskCPF'
+import CustomInput from '@/components/CustomInput'
+import { toaster } from '@/components/ui/toaster'
 
 const cargos = [
   {
@@ -34,7 +36,7 @@ export default function AdicionarFuncionarioPage() {
   useEffect(() => {
     setBreadcrumbs([
       { label: 'Início', path: '/home' },
-      { label: 'Funcionários', path: '/funcionarios-relatorios' },
+      { label: 'Funcionários', path: '/funcionarios' },
       { label: 'Adicionar Funcionário', path: '/adicionar-funcionario' }
     ])
   }, [setBreadcrumbs])
@@ -55,12 +57,11 @@ export default function AdicionarFuncionarioPage() {
       cargo: cargoSelecionado
     } as IUsuario)
       .then(() => {
-        alert('Funcionário cadastrado com sucesso!')
-        router.push('/funcionarios-relatorios')
+        toaster.create({ description: 'Funcionário cadastrado com sucesso!', type: 'success' })
+        router.push('/funcionarios')
       })
-      .catch((error) => {
-        console.error('Erro ao cadastrar funcionário:', error)
-        alert('Erro ao cadastrar funcionário. Tente novamente.')
+      .catch(() => {
+        toaster.create({ description: 'Erro ao cadastrar funcionário. Tente novamente.', type: 'error' })
       })
     setNome('')
     setEmail('')
@@ -85,51 +86,37 @@ export default function AdicionarFuncionarioPage() {
       <form onSubmit={handleSubmit} style={{ minWidth: 400 }}>
         <Flex direction={{ base: 'column', md: 'row' }} gap={6}>
           <Flex flex={1} direction="column" gap={4}>
-            <Box mb={2}>
-              <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>
-                Nome completo *
-              </label>
-              <Input
-                p={3}
+
+              <CustomInput
+                label="Nome completo"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Nome completo"
                 required
               />
-            </Box>
-            <Box mb={2}>
-              <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Email *</label>
-              <Input
-                p={3}
-                type="email"
+              <CustomInput
+                label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="exemplo@dominio.com"
                 required
               />
-            </Box>
-            <Box mb={2}>
-              <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>CPF *</label>
-              <Input
-                p={3}
-                type="text"
+              <CustomInput
+                label="CPF"
                 value={maskCPF(cpf)}
-                onChange={(e) => handleCPF(e)}
-                placeholder="CPF"
+                onChange={(e) => handleCPF(e as React.ChangeEvent<HTMLInputElement>)}
+                placeholder="000.000.000-00"
                 required
               />
-            </Box>
-            <Box mb={2}>
-              <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Senha *</label>
-              <Input
-                p={3}
-                type="text"
+
+              <CustomInput
+                label="Senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                placeholder="Senha"
+                placeholder="Senha de acesso"
                 required
               />
-            </Box>
+
           </Flex>
           <Box flex={1} minW={220} ml={{ md: 2 }}>
             <label style={{ fontWeight: 500, marginBottom: 8, display: 'block' }}>Cargo</label>
