@@ -36,7 +36,7 @@ const optionsMenu = [
   {
     icon: <BsPersonVcard size={24} />,
     label: 'Funcionários',
-    href: '/funcionarios-relatorios'
+    href: '/funcionarios'
   },
   {
     icon: <HiUserPlus size={24} />,
@@ -63,7 +63,7 @@ const SideBar = () => {
   const filteredMenu = optionsMenu.filter(
     (option) =>
       isSocio ||
-      (option.href !== '/funcionarios-relatorios' && option.href !== '/adicionar-funcionario')
+      (option.href !== '/funcionarios' && option.href !== '/adicionar-funcionario')
   )
 
   useEffect(() => {
