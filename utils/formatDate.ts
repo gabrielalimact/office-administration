@@ -22,7 +22,7 @@ export function formatDate(value: string | Date): string {
     return formatDate(parsed)
   }
 
-  return ''
+  return '-'
 }
 
 export function formatDateHour(value: string | Date): string {
