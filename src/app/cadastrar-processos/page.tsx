@@ -63,9 +63,9 @@ const CadastrarProcessosContent = () => {
   const [formData, setFormData] = useState<ProcessoData>({
     cliente: {
       id: 0,
-      nome: 'Gabriel Lima',
+      nome: '',
       telefone: '',
-      cpf: '12345678901',
+      cpf: '',
       rg: '',
       data_nascimento: '',
       filiacao: '',
