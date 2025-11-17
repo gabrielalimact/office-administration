@@ -38,10 +38,12 @@ export interface Processo {
   olhar_pje_creta: boolean
   senha_inss: string
   data_cadastro: string
+  data_protocolo: string | null
   data_ultima_atualizacao: string
   observacoes: string
   documentos: ArquivosDocumentos[]
   arquivado: boolean
+  colaborador_responsavel?: string | null
   cliente: {
     id: number
     nome: string

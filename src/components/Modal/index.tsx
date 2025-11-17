@@ -48,7 +48,7 @@ export const Modal = ({
                 display="flex"
                 alignItems="center"
                 gap={2}
-                bgColor={isActive ? 'black' : ''}
+                bgColor={isActive ? '#4976e6' : ''}
                 onClick={() => setIsFilterModalOpen(true)}
               >
                 {icon}

@@ -225,7 +225,8 @@ const FuncionariosRelatoriosContent = () => {
           onRowClick={(funcionario) => handlePush(`/visualizar-relatorio/${funcionario.id}`)}
           renderCell={(funcionario, column) => {
             if (column.key === 'cpf') return <Text>{maskCPF(funcionario.cpf)}</Text>
-            if (column.key === 'cargo') return <Text>{(funcionario.cargo).toUpperCase() ?? 'Não informado'}</Text>
+            if (column.key === 'cargo')
+              return <Text>{funcionario.cargo.toUpperCase() ?? 'Não informado'}</Text>
             if (column.key === 'actions')
               return (
                 <Flex gap={1}>

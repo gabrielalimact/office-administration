@@ -47,7 +47,8 @@ const ProcessosContent = () => {
     tipoProcesso: '',
     responsavel: '',
     dataAgendamento: '',
-    tipoAgendamento: ''
+    tipoAgendamento: '',
+    dataProtocolo: ''
   })
 
   const [selectedResponsavel, setSelectedResponsavel] = useState<string[]>([])
@@ -80,6 +81,7 @@ const ProcessosContent = () => {
     if (newData.arquivados) params.set('arquivados', 'true')
     if (newData.dataAgendamento) params.set('dataAgendamento', newData.dataAgendamento)
     if (newData.tipoAgendamento) params.set('tipoAgendamento', newData.tipoAgendamento)
+    if (newData.dataProtocolo) params.set('dataProtocolo', newData.dataProtocolo)
 
     const queryString = params.toString()
     router.push(`/processos${queryString ? '?' + queryString : ''}`, { scroll: false })
@@ -91,7 +93,8 @@ const ProcessosContent = () => {
       tipoProcesso: '',
       responsavel: '',
       dataAgendamento: '',
-      tipoAgendamento: ''
+      tipoAgendamento: '',
+      dataProtocolo: ''
     })
     setSelectedResponsavel([])
     setSelectedTipoProcesso([])
@@ -149,10 +152,11 @@ const ProcessosContent = () => {
     const dataAgendamento = searchParams.get('dataAgendamento') || ''
     const tipoAgendamento = searchParams.get('tipoAgendamento') || ''
     const situacao = searchParams.get('situacao') || ''
+    const dataProtocolo = searchParams.get('dataProtocolo') || ''
     const arquivados = searchParams.get('arquivados') === 'true'
     const ativos = searchParams.get('arquivados') === 'false'
 
-    setFormData({ responsavel, tipoProcesso, situacao, dataAgendamento, tipoAgendamento })
+    setFormData({ responsavel, tipoProcesso, situacao, dataAgendamento, tipoAgendamento, dataProtocolo })
     setSelectedResponsavel(responsavel ? [responsavel] : [])
     setSelectedTipoAgendamento(tipoAgendamento ? [tipoAgendamento] : [])
     setSelectedSituacao(situacao ? [situacao] : [])
@@ -195,6 +199,21 @@ const ProcessosContent = () => {
 
     const matchTipoAgendamento =
       !formData.tipoAgendamento || proc.tipo_agendamento?.nome === formData.tipoAgendamento
+
+    const matchDataProtocolo =
+      !formData.dataProtocolo ||
+      (() => {
+        if (!proc.data_protocolo) return false
+        const filterDate = new Date(formData.dataProtocolo)
+        const procDate = new Date(proc.data_protocolo)
+
+        return (
+          filterDate.getFullYear() === procDate.getFullYear() &&
+          filterDate.getMonth() === procDate.getMonth() &&
+          filterDate.getDate() === procDate.getDate()
+        )
+      })()
+
     return (
       matchResponsavel &&
       matchTipo &&
@@ -202,7 +221,8 @@ const ProcessosContent = () => {
       matchArquivado &&
       matchAtivo &&
       matchDataAgendamento &&
-      matchTipoAgendamento
+      matchTipoAgendamento &&
+      matchDataProtocolo
     )
   })
 
@@ -257,22 +277,12 @@ const ProcessosContent = () => {
                   formData.situacao ||
                   formData.dataAgendamento ||
                   formData.tipoAgendamento ||
+                  formData.dataProtocolo ||
                   showArquivados
                 )
               }
             >
               <Grid gap={3}>
-                <CustomSelect
-                  label="Responsável"
-                  placeholder="Selecione o funcionário"
-                  options={responsaveisList}
-                  value={selectedResponsavel}
-                  onValueChange={(v) => {
-                    setSelectedResponsavel(v)
-                    setFormData((prev) => ({ ...prev, responsavel: v[0] || '' }))
-                  }}
-                  clearable
-                />
                 <CustomSelect
                   label="Tipo de Processo"
                   placeholder="Selecione o tipo"
@@ -324,10 +334,18 @@ const ProcessosContent = () => {
                     if (value) {
                       const localDate = new Date(value)
                       const isoValue = localDate.toISOString()
-                      setFormData((prev) => ({ ...prev, data_agendamento: isoValue }))
+                      setFormData((prev) => ({ ...prev, dataAgendamento: isoValue }))
                     } else {
-                      setFormData((prev) => ({ ...prev, data_agendamento: '' }))
+                      setFormData((prev) => ({ ...prev, dataAgendamento: '' }))
                     }
+                  }}
+                />
+                <CustomInput
+                  type="date"
+                  label="Data do Protocolo"
+                  value={formData.dataProtocolo}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, dataProtocolo: e.target.value }))
                   }}
                 />
                 <CustomCheckbox
@@ -361,8 +379,8 @@ const ProcessosContent = () => {
                 { key: 'cliente', label: 'Nome do cliente', width: '1.5fr' },
                 { key: 'beneficio', label: 'Tipo de processo', width: '1fr' },
                 { key: 'status', label: 'Situação', width: '1fr' },
-                { key: 'data_cadastro', label: 'Cadastro', width: '1fr' },
-                { key: 'colaborador', label: 'Responsável', width: '1fr' },
+                { key: 'data_protocolo', label: 'Data do Protocolo', width: '1fr' },
+                { key: 'colaborador_responsavel', label: 'Responsável', width: '1fr' },
                 { key: 'tipo_agendamento', label: 'Tipo de Agendamento', width: '1fr' },
                 { key: 'data_agendamento', label: 'Data de Agendamento', width: '1fr' }
               ]}
@@ -374,17 +392,12 @@ const ProcessosContent = () => {
                 if (col.key === 'cliente') return <Text>{proc.cliente?.nome || '-'}</Text>
                 if (col.key === 'beneficio') return <Text>{proc.beneficio?.nome || '-'}</Text>
                 if (col.key === 'status') return <Text>{proc.status?.nome || '-'}</Text>
+                if (col.key === 'colaborador_responsavel') return <Text>{proc.colaborador_responsavel !== '' ? proc.colaborador_responsavel : '-'}</Text>
+
                 if (col.key === 'tipo_agendamento')
                   return <Text>{proc.tipo_agendamento?.nome || '-'}</Text>
-                if (col.key === 'data_cadastro')
-                  return <Text>{formatDate(proc.data_cadastro)}</Text>
-                if (col.key === 'colaborador') {
-                  const nome =
-                    typeof proc.colaborador === 'object'
-                      ? proc.colaborador?.nome || ''
-                      : (proc.colaborador as string)
-                  return <Text>{nome}</Text>
-                }
+                if (col.key === 'data_protocolo')
+                  return <Text>{formatDate(proc.data_protocolo || '-')}</Text>
                 if (col.key === 'data_agendamento')
                   return <Text>{formatDateHour(proc.data_agendamento ?? '')}</Text>
                 return <Text>{String(proc[col.key as keyof Processo] ?? '-')}</Text>

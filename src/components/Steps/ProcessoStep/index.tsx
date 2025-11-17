@@ -48,6 +48,12 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
       case 'observations':
         onDataChange({ observacoes: value })
         break
+      case 'data-protocolo':
+        onDataChange({ data_protocolo: value })
+        break
+      case 'colaborador-responsavel':
+        onDataChange({ colaborador_responsavel: value })
+        break
       default:
         break
     }
@@ -135,12 +141,35 @@ const ProcessoStep: React.FC<StepProps> = ({ data, onDataChange }) => {
         </Flex>
 
         <Flex gap={4}>
-          <Field.Root minW="60%">
+          <Field.Root>
+            <Field.Label fontWeight="bold">Colaborador Responsável</Field.Label>
+            <Input
+              p={5}
+              name="colaborador-responsavel"
+              value={data.colaborador_responsavel || ''}
+              onChange={handleInputChange}
+              minW="40%"
+            />
+          </Field.Root>
+          <Field.Root minW="30%">
             <Field.Label fontWeight="bold">Senha MEU INSS</Field.Label>
             <Input
               p={5}
               name="senha-inss"
               value={data.senha_inss || ''}
+              onChange={handleInputChange}
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <Field.Label fontWeight="bold">Data do Protocolo</Field.Label>
+            <Input
+              p={5}
+              name="data-protocolo"
+              type="date"
+              value={
+                data.data_protocolo
+              }
               onChange={handleInputChange}
             />
           </Field.Root>

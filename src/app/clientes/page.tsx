@@ -20,6 +20,7 @@ import { useBreadcrumb } from '@/components/BreadcrumbContext'
 import Breadcrumb from '@/components/Breadcrumb'
 import GridTable from '@/components/GridTable'
 import { maskCPF } from '../../../utils/maskCPF'
+import { maskTelefone } from '../../../utils/maskTelefone'
 import CustomInput from '@/components/CustomInput'
 import CustomCheckbox from '@/components/CustomCheckbox'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -182,6 +183,7 @@ function ClientesPageContent() {
           columns={[
             { key: 'nome', label: 'Nome', width: '2fr' },
             { key: 'cpf', label: 'CPF', width: '1fr' },
+            { key: 'telefone', label: 'Telefone', width: '1fr' },
             { key: 'email', label: 'Email', width: '1fr' },
             { key: 'processosCount', label: 'Processos', width: '1fr' },
             { key: 'actions', label: '', width: '120px', align: 'right' }
@@ -190,6 +192,7 @@ function ClientesPageContent() {
           onRowClick={(cliente) => handleClienteClick(cliente.id)}
           renderCell={(cliente, column) => {
             if (column.key === 'cpf') return <Text>{maskCPF(cliente.cpf)}</Text>
+            if (column.key === 'telefone') return <Text>{cliente.telefone ? maskTelefone(cliente.telefone) : 'Não informado'}</Text>
             if (column.key === 'email') return <Text>{cliente.email ?? 'Não informado'}</Text>
             if (column.key === 'processosCount') return <Text>{cliente.processos.length ?? 0}</Text>
             if (column.key === 'actions')

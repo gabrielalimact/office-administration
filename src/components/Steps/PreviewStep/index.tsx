@@ -7,6 +7,7 @@ import maskCPF from '../../../../utils/maskCPF'
 import { getBeneficios, getStatus } from '@/services/processo-service'
 import { Beneficio, Status } from '../../../../types/processos'
 import { formatDate } from '../../../../utils/formatDate'
+import maskTelefone from '../../../../utils/maskTelefone'
 
 const PreviewStep: React.FC<StepProps> = ({ data }) => {
   const [listaBeneficios, setListaBeneficios] = useState<{ label: string; value: number }[]>([])
@@ -61,7 +62,7 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
           </Card.Header>
           <Card.Body>
             <Fieldset.Root>
-              <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+              <Fieldset.Content display="grid" gridTemplateColumns="1fr 1fr 1fr" gap={2}>
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Nome Completo</Field.Label>
                   <Text>{data.cliente.nome || '-'}</Text>
@@ -80,6 +81,11 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                 <Field.Root>
                   <Field.Label fontWeight="semibold">RG</Field.Label>
                   <Text>{data.cliente.rg || '-'}</Text>
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label fontWeight="semibold">Telefone</Field.Label>
+                  <Text>{maskTelefone(data.cliente.telefone || '-')}</Text>
                 </Field.Root>
 
                 <Field.Root>
@@ -166,6 +172,15 @@ const PreviewStep: React.FC<StepProps> = ({ data }) => {
                 <Field.Root>
                   <Field.Label fontWeight="semibold">Data do Cadastro</Field.Label>
                   <Text>{formatDate(data.data_cadastro) || '-'}</Text>
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label fontWeight="semibold">Data do Protocolo</Field.Label>
+                  <Text>{data.data_protocolo ? formatDate(data.data_protocolo) : '-'}</Text>
+                </Field.Root>
+                <Field.Root>
+                  <Field.Label fontWeight="semibold">Colaborador</Field.Label>
+                  <Text>{(data.colaborador_responsavel || '-').toUpperCase()}</Text>
                 </Field.Root>
 
                 <Field.Root>

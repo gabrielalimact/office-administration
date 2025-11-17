@@ -19,6 +19,7 @@ const CadastrarProcessosContent = () => {
   const { user } = useUserContext()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isClientExisting, setIsClientExisting] = useState(false)
   const [stepActive, setStepActive] = useState(0)
   const { setBreadcrumbs } = useBreadcrumb()
 
@@ -32,11 +33,14 @@ const CadastrarProcessosContent = () => {
   useEffect(() => {
     const clienteId = searchParams.get('clienteId')
     if (clienteId) {
+      setIsClientExisting(true)
+      setStepActive(1) // Pula para o step de informações do processo
       setFormData((prev) => ({
         ...prev,
         cliente: {
           id: parseInt(clienteId),
           nome: searchParams.get('clienteNome') || '',
+          telefone: searchParams.get('clienteTelefone') || '',
           cpf: searchParams.get('clienteCpf') || '',
           rg: searchParams.get('clienteRg') || '',
           data_nascimento: searchParams.get('clienteDataNascimento') || '',
@@ -59,8 +63,9 @@ const CadastrarProcessosContent = () => {
   const [formData, setFormData] = useState<ProcessoData>({
     cliente: {
       id: 0,
-      nome: '',
-      cpf: '',
+      nome: 'Gabriel Lima',
+      telefone: '',
+      cpf: '12345678901',
       rg: '',
       data_nascimento: '',
       filiacao: '',
@@ -75,11 +80,13 @@ const CadastrarProcessosContent = () => {
         estado: ''
       }
     },
-    colaboradorId: user ? user.id : 0,
+    funcionarioId: user ? user.id : 0,
+    colaborador_responsavel: '',
     beneficio: { id: 0 },
     olhar_inss: false,
     olhar_pje_creta: false,
     data_cadastro: new Date().toISOString().split('T')[0],
+    data_protocolo: '',
     senha_inss: '',
     status: { id: 0 }
   })
@@ -213,20 +220,22 @@ const CadastrarProcessosContent = () => {
       setStepActive(steps.length)
 
       const isClienteExistente = formData.cliente.id > 0
-
+      setIsClientExisting(isClienteExistente)
       if (isClienteExistente) {
         await criarProcessoParaClienteExistente(formData.cliente.id, {
           statusId: formData.status.id,
           tipoAgendamentoId: null,
           beneficioId: formData.beneficio.id,
-          colaboradorId: formData.colaboradorId,
+          funcionarioId: formData.funcionarioId,
           olhar_inss: formData.olhar_inss,
           olhar_pje_creta: formData.olhar_pje_creta,
           data_cadastro: formData.data_cadastro,
           data_ultima_atualizacao: new Date().toISOString().split('T')[0],
           senha_inss: formData.senha_inss,
           observacoes: formData.observacoes,
-          arquivo: arquivoFinal || undefined
+          arquivo: arquivoFinal || undefined,
+          colaborador_responsavel: formData.colaborador_responsavel,
+          data_protocolo: formData.data_protocolo || ''
         })
       } else {
         await criarProcessoComNovoCliente({
@@ -237,6 +246,7 @@ const CadastrarProcessosContent = () => {
             rg: formData.cliente.rg,
             filiacao: formData.cliente.filiacao,
             naturalidade: formData.cliente.naturalidade,
+            telefone: formData.cliente.telefone,
             endereco: {
               logradouro: formData.cliente.endereco.logradouro,
               numero: formData.cliente.endereco.numero,
@@ -247,7 +257,7 @@ const CadastrarProcessosContent = () => {
               cep: formData.cliente.endereco.cep
             }
           },
-          colaboradorId: formData.colaboradorId,
+          funcionarioId: formData.funcionarioId,
           beneficio: formData.beneficio,
           olhar_inss: formData.olhar_inss,
           olhar_pje_creta: formData.olhar_pje_creta,
@@ -256,6 +266,8 @@ const CadastrarProcessosContent = () => {
           status: formData.status,
           senha_inss: formData.senha_inss,
           observacoes: formData.observacoes,
+          colaborador_responsavel: formData.colaborador_responsavel,
+          data_protocolo: formData.data_protocolo || '',
           arquivo: arquivoFinal || undefined
         })
       }
@@ -301,7 +313,9 @@ const CadastrarProcessosContent = () => {
     <Box p={6} bg="#f4f8fb" minH="100vh" margin="0 auto">
       <Breadcrumb />
       <Text fontSize="2xl" fontWeight="bold" mb={4}>
-        Cadastrar Novo Processo
+        {isClientExisting
+          ? `Cadastrar Processo para ${formData.cliente.nome}`
+          : 'Cadastrar Novo Processo'}
       </Text>
       <Steps.Root
         defaultStep={1}

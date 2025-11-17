@@ -3,6 +3,7 @@ import CustomInput from '../CustomInput'
 import { AtualizarCliente } from '../../../types/cliente'
 import { useState } from 'react'
 import maskCPF from '../../../utils/maskCPF'
+import { maskTelefone } from '../../../utils/maskTelefone'
 import { getCepInfo } from '@/services/cep-service'
 import { atualizarCliente } from '@/services/cliente-service'
 import { toaster } from '../ui/toaster'
@@ -17,6 +18,7 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
     id: cliente.id,
     nome: cliente.nome || '',
     email: cliente.email || '',
+    telefone: cliente.telefone || '',
     data_nascimento: cliente.data_nascimento || '',
     cpf: cliente.cpf || '',
     rg: cliente.rg || '',
@@ -26,6 +28,9 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
   })
 
   const handleInputChange = (field: string, value: string) => {
+    if (field === 'telefone') {
+      value = value.replace(/\D/g, '').slice(0, 11)
+    }
     if (field === 'cpf') {
       value = value.replace(/\D/g, '')
     }
@@ -138,6 +143,13 @@ const ModalEditarCliente = ({ onClose, cliente }: Props) => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                  />
+                  <CustomInput
+                    label="Telefone"
+                    type="text"
+                    placeholder="(DD) 9XXXX-XXXX"
+                    value={maskTelefone(formData.telefone)}
+                    onChange={(e) => handleInputChange('telefone', e.target.value)}
                   />
                   <CustomInput
                     label="Data de Nascimento"

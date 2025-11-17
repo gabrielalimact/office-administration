@@ -5,15 +5,17 @@ import { toaster } from '@/components/ui/toaster'
 
 export interface CriarProcessoComNovoClienteRequest {
   cliente: NovoCliente
-  colaboradorId: number
+  funcionarioId: number
   beneficio: {
     id?: number
     nome?: string
   }
+  colaborador_responsavel?: string
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss?: string
   data_cadastro: string
+  data_protocolo?: string
   data_agendamento?: string
   tipo_agendamento?: {
     id?: number
@@ -32,7 +34,7 @@ export interface CriarProcessoClienteExistenteRequest {
   statusId: number
   tipoAgendamentoId: number | null
   beneficioId: number
-  colaboradorId: number
+  funcionarioId: number
   olhar_inss: boolean
   olhar_pje_creta: boolean
   senha_inss?: string
@@ -41,6 +43,8 @@ export interface CriarProcessoClienteExistenteRequest {
   data_ultima_atualizacao?: string
   observacoes?: string
   arquivo?: File
+  colaborador_responsavel?: string
+  data_protocolo?: string
 }
 
 export async function getStatus() {
@@ -83,15 +87,24 @@ export async function criarProcessoComNovoCliente(
   dados: CriarProcessoComNovoClienteRequest
 ): Promise<Processo> {
   const formData = new FormData()
-
   formData.append('cliente', JSON.stringify(dados.cliente))
-  formData.append('colaboradorId', dados.colaboradorId.toString())
+  formData.append('funcionarioId', dados.funcionarioId.toString())
   formData.append('beneficio', JSON.stringify(dados.beneficio))
   formData.append('olhar_inss', dados.olhar_inss.toString())
   formData.append('olhar_pje_creta', dados.olhar_pje_creta.toString())
   formData.append('data_cadastro', dados.data_cadastro)
   formData.append('data_ultima_atualizacao', dados.data_ultima_atualizacao)
   formData.append('status', JSON.stringify(dados.status))
+  formData.append('data_protocolo', dados.data_protocolo || '')
+  if (dados.data_agendamento) {
+    formData.append('data_agendamento', dados.data_agendamento)
+  }
+  if (dados.tipo_agendamento) {
+    formData.append('tipo_agendamento', JSON.stringify(dados.tipo_agendamento))
+  }
+  if (dados.colaborador_responsavel) {
+    formData.append('colaborador_responsavel', dados.colaborador_responsavel)
+  }
 
   if (dados.senha_inss) {
     formData.append('senha_inss', dados.senha_inss)
@@ -118,20 +131,23 @@ export async function criarProcessoParaClienteExistente(
   dados: CriarProcessoClienteExistenteRequest
 ): Promise<Processo> {
   const formData = new FormData()
-
   formData.append('statusId', dados.statusId.toString())
   formData.append('beneficioId', dados.beneficioId.toString())
-  formData.append('colaboradorId', dados.colaboradorId.toString())
+  formData.append('funcionarioId', dados.funcionarioId.toString())
   formData.append('olhar_inss', dados.olhar_inss.toString())
   formData.append('olhar_pje_creta', dados.olhar_pje_creta.toString())
   formData.append('data_cadastro', dados.data_cadastro)
+  formData.append('data_agendamento', dados.data_agendamento || '')
+  formData.append('tipoAgendamentoId', dados.tipoAgendamentoId?.toString() || '')
+  formData.append('data_ultima_atualizacao', dados.data_ultima_atualizacao || '')
+  formData.append('data_protocolo', dados.data_protocolo || '')
+
+  if (dados.colaborador_responsavel) {
+    formData.append('colaborador_responsavel', dados.colaborador_responsavel)
+  }
 
   if (dados.senha_inss) {
     formData.append('senha_inss', dados.senha_inss)
-  }
-
-  if (dados.data_ultima_atualizacao) {
-    formData.append('data_ultima_atualizacao', dados.data_ultima_atualizacao)
   }
 
   if (dados.observacoes) {

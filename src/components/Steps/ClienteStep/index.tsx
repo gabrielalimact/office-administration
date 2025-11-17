@@ -4,6 +4,8 @@ import React from 'react'
 import { Fieldset, Field, Input, Text } from '@chakra-ui/react'
 import { StepProps } from '@/types/step-forms'
 import maskCPF from '../../../../utils/maskCPF'
+import { maskTelefone, isValidTelefone } from '../../../../utils/maskTelefone'
+
 
 const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
   const isValidCPF = (cpf: string) => {
@@ -11,7 +13,7 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
     return cleanCPF.length === 11
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
 
     switch (name) {
@@ -44,6 +46,12 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
       case 'naturalidade':
         onDataChange({
           cliente: { ...data.cliente, naturalidade: value }
+        })
+        break
+      case 'telefone':
+        const telefoneDigits = value.replace(/\D/g, '').slice(0, 11)
+        onDataChange({
+          cliente: { ...data.cliente, telefone: telefoneDigits }
         })
         break
       case 'cep':
@@ -172,7 +180,8 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
 
         <Field.Root mt={2} required>
           <Field.Label fontWeight="bold">RG</Field.Label>
-          <Input p="12px" name="rg" value={data.cliente.rg} onChange={handleInputChange} />
+          <Input
+         p="12px" name="rg" value={data.cliente.rg} onChange={handleInputChange} />
         </Field.Root>
 
         <Field.Root mt={2}>
@@ -183,6 +192,21 @@ const ClienteStep: React.FC<StepProps> = ({ data, onDataChange }) => {
             value={data.cliente.filiacao}
             onChange={handleInputChange}
           />
+        </Field.Root>
+
+        <Field.Root mt={2}>
+          <Field.Label fontWeight="bold">Telefone</Field.Label>
+          <Input
+            p="12px"
+            name="telefone"
+            value={maskTelefone(data.cliente.telefone || '')}
+            onChange={handleInputChange}
+          />
+          {isValidTelefone(data.cliente.telefone || '') ? null : data.cliente.telefone ? (
+            <Text fontSize="xs" color="red.500" mt={1}>
+              Telefone inválido - Exemplo: (99) 9XXXX-XXXX
+            </Text>
+          ) : null}
         </Field.Root>
 
         <Field.Root mt={2}>

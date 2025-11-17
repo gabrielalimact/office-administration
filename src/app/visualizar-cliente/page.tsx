@@ -12,6 +12,7 @@ import { AtualizarCliente, Cliente } from '../../../types/cliente'
 import ListaProcessos from '@/components/ListaProcessos'
 import ModalEditarCliente from '@/components/ModalEditarCliente'
 import maskCPF from '../../../utils/maskCPF'
+import maskTelefone from '../../../utils/maskTelefone'
 
 /* -------------------------- Visualização de Cliente -------------------------- */
 
@@ -126,6 +127,7 @@ function VisualizarClienteContent() {
               ['RG', cliente.rg],
               ['Data de Nascimento', formatDate(cliente.data_nascimento)],
               ['Email', cliente.email],
+              ['Telefone', maskTelefone(cliente.telefone || '')],
               ['Filiação', cliente.filiacao],
               ['Naturalidade', cliente.naturalidade]
             ].map(([label, value]) => {
@@ -139,7 +141,7 @@ function VisualizarClienteContent() {
             })}
             <Box mt={4}>
               <Text fontWeight="bold" mb={1}>
-                Endereço
+                Endereço:
               </Text>
               {cliente.endereco && cliente.endereco.logradouro ? (
                 <Text fontSize="sm">

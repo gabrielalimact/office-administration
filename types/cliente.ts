@@ -5,6 +5,7 @@ export interface Cliente {
   id: number
   nome: string
   email: string | null
+  telefone?: string
   data_nascimento: string
   cpf: string
   rg: string
@@ -17,6 +18,7 @@ export interface Cliente {
 export interface NovoCliente {
   nome: string
   email?: string
+  telefone?: string
   data_nascimento: string
   cpf: string
   rg: string
@@ -29,6 +31,7 @@ export interface AtualizarCliente {
   id: number
   nome: string
   email?: string
+  telefone?: string
   data_nascimento: string
   cpf: string
   rg: string

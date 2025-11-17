@@ -12,6 +12,7 @@ import { InfoItem } from '../InfoItem'
 import { getStatusColors } from '../../utils/statusColors'
 import { ModalEditarProcesso } from '../ModalEditarProcesso'
 import { ArquivosDocumentos } from '../../../types/processos'
+import { capitalizeFirstLetters } from '../../../utils/string'
 
 interface ProcessoCardProps {
   proc: Cliente['processos'][0]
@@ -109,9 +110,14 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
             value={formatDate(proc.data_ultima_atualizacao)}
           />
           <InfoItem
+            icon={LuCalendarDays}
+            label="Data do Protocolo"
+            value={formatDate(proc.data_protocolo || '-')}
+          />
+          <InfoItem
             icon={LuUser}
             label="Responsável"
-            value={`${proc.colaborador?.nome || '-'} (${proc.colaborador?.cargo || '-'})`}
+            value={capitalizeFirstLetters(proc.colaborador_responsavel || '-')}
           />
           <InfoItem icon={LuFileArchive} label="Benefício" value={proc.beneficio?.nome} />
         </Stack>
