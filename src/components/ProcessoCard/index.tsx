@@ -129,15 +129,7 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
             { label: 'Olhar INSS', value: proc.olhar_inss ? 'Sim' : 'Não' },
             { label: 'Senha INSS', value: proc.olhar_inss ? proc.senha_inss : '-' },
             { label: 'PJE/CRETA', value: proc.olhar_pje_creta ? 'Sim' : 'Não' },
-            { label: 'Situação', value: proc.status ? proc.status.nome : '-' },
-            {
-              label: 'Agendamento',
-              value: proc.tipo_agendamento ? proc.tipo_agendamento.nome : 'Nenhum'
-            },
-            {
-              label: 'Data do agendamento',
-              value: proc.data_agendamento ? formatDateHour(proc.data_agendamento) : '-'
-            }
+            { label: 'Situação', value: proc.status ? proc.status.nome : '-' }
           ].map(({ label, value }) => (
             <Box key={label}>
               <Text fontSize="sm" fontWeight="bold" color="gray.600">
@@ -146,6 +138,23 @@ export const ProcessoCard = ({ proc, onUpdate }: ProcessoCardProps) => {
               <Text>{value}</Text>
             </Box>
           ))}
+
+          <Box>
+            <Text fontSize="sm" fontWeight="bold" color="gray.600">
+              Agendamentos:
+            </Text>
+            {proc.agendamentos && proc.agendamentos.length > 0 ? (
+              <Stack gap={1} mt={1}>
+                {proc.agendamentos.map((ag, index) => (
+                  <Text key={index} fontSize="sm">
+                    {ag.tipo_agendamento?.nome || 'Sem tipo'} - {formatDateHour(ag.data_agendamento)}
+                  </Text>
+                ))}
+              </Stack>
+            ) : (
+              <Text>Nenhum</Text>
+            )}
+          </Box>
         </Stack>
 
         {/* Observações */}

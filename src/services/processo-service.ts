@@ -221,9 +221,9 @@ export async function updateProcesso(
 
   Object.entries(dados).forEach(([key, value]) => {
     if (value === undefined || value === null) return
-    const camposJSON = ['cliente', 'beneficio', 'status', 'tipo_agendamento']
+    const camposJSON = ['cliente', 'beneficio', 'status', 'tipo_agendamento', 'agendamentos', 'funcionario']
 
-    if (camposJSON.includes(key)) {
+    if (camposJSON.includes(key) || Array.isArray(value)) {
       formData.append(key, JSON.stringify(value))
       return
     }

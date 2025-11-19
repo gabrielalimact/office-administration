@@ -9,6 +9,20 @@ export interface Agendamento {
   id: number
   nome: string
 }
+
+export interface AgendamentoProcesso {
+  id: number
+  data_agendamento: string
+  observacoes: string | null
+  concluido: boolean
+  created_at: string
+  updated_at: string
+  tipo_agendamento: {
+    id: number
+    nome: string
+  }
+}
+
 export interface Status {
   id: number
   nome: string
@@ -29,34 +43,35 @@ export interface CriarProcessoRequest {
 
 export interface Processo {
   id: number
-  colaborador: {
+  arquivado: boolean
+  olhar_inss: boolean
+  olhar_pje_creta: boolean
+  senha_inss: string | null
+  data_cadastro: string
+  colaborador_responsavel: string
+  data_ultima_atualizacao: string
+  data_protocolo: string | null
+  observacoes: string | null
+  cliente: {
+    id: number
+    nome: string
+    email: string | null
+    data_nascimento: string | null
+    cpf: string
+    rg: string | null
+    filiacao: string | null
+    naturalidade: string | null
+    telefone: string | null
+  }
+  status: Status
+  beneficio: Beneficio
+  documentos: ArquivosDocumentos[]
+  funcionario: {
     id: number
     nome: string
     cargo: string
   }
-  olhar_inss: boolean
-  olhar_pje_creta: boolean
-  senha_inss: string
-  data_cadastro: string
-  data_protocolo: string | null
-  data_ultima_atualizacao: string
-  observacoes: string
-  documentos: ArquivosDocumentos[]
-  arquivado: boolean
-  colaborador_responsavel?: string | null
-  cliente: {
-    id: number
-    nome: string
-    data_nascimento: string
-    cpf: string
-    rg: string
-    filiacao: string
-    naturalidade: string
-  }
-  status: Status
-  beneficio: Beneficio
-  tipo_agendamento?: Agendamento | null
-  data_agendamento?: string | null
+  agendamentos: AgendamentoProcesso[]
 }
 
 export interface ProcessosPorFuncionario {

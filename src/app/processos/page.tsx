@@ -112,11 +112,7 @@ const ProcessosContent = () => {
     setProcessos(processosList)
 
     const responsaveis = processosList
-      .map((p) => {
-        if (typeof p.colaborador === 'object' && p.colaborador !== null)
-          return (p.colaborador as { nome?: string }).nome || ''
-        return typeof p.colaborador === 'string' ? p.colaborador : ''
-      })
+      .map((p) => p.funcionario?.nome || '')
       .filter((v, i, a) => !!v && a.indexOf(v) === i)
       .map((r) => ({ label: r, value: r }))
     setResponsaveisList(responsaveis)
@@ -134,7 +130,8 @@ const ProcessosContent = () => {
     setStatusOptions(status)
 
     const tiposAgendamento = processosList
-      .map((p) => p.tipo_agendamento?.nome)
+      .flatMap((p) => p.agendamentos || [])
+      .map((agendamento) => agendamento.tipo_agendamento?.nome)
       .filter((v, i, a) => !!v && a.indexOf(v) === i)
       .map((t) => ({ label: t!, value: t! }))
     setTiposAgendamentoList(tiposAgendamento)
@@ -169,10 +166,8 @@ const ProcessosContent = () => {
     const nomeStatus = proc.status?.nome || ''
 
     let colaborador = ''
-    if (typeof proc.colaborador === 'object' && proc.colaborador !== null) {
-      colaborador = (proc.colaborador as { nome?: string }).nome || ''
-    } else if (typeof proc.colaborador === 'string') {
-      colaborador = proc.colaborador
+    if (proc.funcionario && typeof proc.funcionario === 'object') {
+      colaborador = proc.funcionario.nome || ''
     }
 
     const matchResponsavel = !formData.responsavel || colaborador === formData.responsavel
@@ -184,21 +179,26 @@ const ProcessosContent = () => {
     const matchDataAgendamento =
       !formData.dataAgendamento ||
       (() => {
-        if (!proc.data_agendamento) return false
+        if (!proc.agendamentos || proc.agendamentos.length === 0) return false
         const filterDate = new Date(formData.dataAgendamento)
-        const procDate = new Date(proc.data_agendamento)
 
-        return (
-          filterDate.getFullYear() === procDate.getFullYear() &&
-          filterDate.getMonth() === procDate.getMonth() &&
-          filterDate.getDate() === procDate.getDate() &&
-          filterDate.getHours() === procDate.getHours() &&
-          filterDate.getMinutes() === procDate.getMinutes()
-        )
+        return proc.agendamentos.some(agendamento => {
+          const procDate = new Date(agendamento.data_agendamento)
+          return (
+            filterDate.getFullYear() === procDate.getFullYear() &&
+            filterDate.getMonth() === procDate.getMonth() &&
+            filterDate.getDate() === procDate.getDate() &&
+            filterDate.getHours() === procDate.getHours() &&
+            filterDate.getMinutes() === procDate.getMinutes()
+          )
+        })
       })()
 
     const matchTipoAgendamento =
-      !formData.tipoAgendamento || proc.tipo_agendamento?.nome === formData.tipoAgendamento
+      !formData.tipoAgendamento ||
+      (proc.agendamentos && proc.agendamentos.some(agendamento =>
+        agendamento.tipo_agendamento?.nome === formData.tipoAgendamento
+      ))
 
     const matchDataProtocolo =
       !formData.dataProtocolo ||
@@ -394,12 +394,34 @@ const ProcessosContent = () => {
                 if (col.key === 'status') return <Text>{proc.status?.nome || '-'}</Text>
                 if (col.key === 'colaborador_responsavel') return <Text>{proc.colaborador_responsavel !== '' ? proc.colaborador_responsavel : '-'}</Text>
 
-                if (col.key === 'tipo_agendamento')
-                  return <Text>{proc.tipo_agendamento?.nome || '-'}</Text>
+                if (col.key === 'tipo_agendamento') {
+                  return (
+                    <Box>
+                      {proc.agendamentos && proc.agendamentos.length > 0
+                        ? proc.agendamentos.map((ag, index) => (
+                            <Text key={index} fontSize="sm">
+                              {ag.tipo_agendamento?.nome || '-'}
+                            </Text>
+                          ))
+                        : <Text>-</Text>}
+                    </Box>
+                  )
+                }
                 if (col.key === 'data_protocolo')
                   return <Text>{formatDate(proc.data_protocolo || '-')}</Text>
-                if (col.key === 'data_agendamento')
-                  return <Text>{formatDateHour(proc.data_agendamento ?? '')}</Text>
+                if (col.key === 'data_agendamento') {
+                  return (
+                    <Box>
+                      {proc.agendamentos && proc.agendamentos.length > 0
+                        ? proc.agendamentos.map((ag, index) => (
+                            <Text key={index} fontSize="sm">
+                              {formatDateHour(ag.data_agendamento)}
+                            </Text>
+                          ))
+                        : <Text>-</Text>}
+                    </Box>
+                  )
+                }
                 return <Text>{String(proc[col.key as keyof Processo] ?? '-')}</Text>
               }}
               emptyMessage="Nenhum processo encontrado"

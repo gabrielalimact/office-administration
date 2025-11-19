@@ -46,10 +46,15 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
     olhar_pje_creta: proc.olhar_pje_creta || false,
     senha_inss: proc.senha_inss || '',
     data_cadastro: proc.data_cadastro ? proc.data_cadastro.split('T')[0] : '',
-    observacoes: proc.observacoes || '',
-    tipo_agendamento: proc.tipo_agendamento?.id || 0,
-    data_agendamento: proc.data_agendamento ? proc.data_agendamento : ''
+    observacoes: proc.observacoes || ''
   })
+
+  const [agendamentos, setAgendamentos] = useState(
+    proc.agendamentos?.map(ag => ({
+      tipo_agendamento: ag.tipo_agendamento?.id || 0,
+      data_agendamento: ag.data_agendamento || ''
+    })) || [{ tipo_agendamento: 0, data_agendamento: '' }]
+  )
 
   const [beneficios, setBeneficios] = useState<SelectOption[]>([])
   const [tipoAgendamentoOptions, setTipoAgendamentoOptions] = useState<SelectOption[]>([])
@@ -65,6 +70,20 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
   const removeFile = (name: string) => {
     const updated = files.filter((f) => f.name !== name)
     setFiles(updated)
+  }
+
+  const addAgendamento = () => {
+    setAgendamentos(prev => [...prev, { tipo_agendamento: 0, data_agendamento: '' }])
+  }
+
+  const removeAgendamento = (index: number) => {
+    setAgendamentos(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateAgendamento = (index: number, field: 'tipo_agendamento' | 'data_agendamento', value: any) => {
+    setAgendamentos(prev => prev.map((ag, i) =>
+      i === index ? { ...ag, [field]: value } : ag
+    ))
   }
 
   useEffect(() => {
@@ -143,20 +162,18 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
             }
           : proc.status,
 
-        tipo_agendamento:
-          formData.tipo_agendamento === 0
-            ? null
-            : tipoAgendamentoOptions.find((t) => t.value === formData.tipo_agendamento.toString())
-                  ?.label
-              ? {
-                  id: formData.tipo_agendamento,
-                  nome:
-                    tipoAgendamentoOptions.find(
-                      (s) => s.value === formData.tipo_agendamento.toString()
-                    )?.label || ''
-                }
-              : proc.tipo_agendamento,
-        data_agendamento: formData.data_agendamento || null,
+        agendamentos: agendamentos.filter(ag => ag.tipo_agendamento !== 0 && ag.data_agendamento !== '').map((ag, index) => ({
+          id: proc.agendamentos?.[index]?.id || 0,
+          observacoes: proc.agendamentos?.[index]?.observacoes || null,
+          concluido: proc.agendamentos?.[index]?.concluido || false,
+          created_at: proc.agendamentos?.[index]?.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          tipo_agendamento: {
+            id: ag.tipo_agendamento,
+            nome: tipoAgendamentoOptions.find(t => t.value === ag.tipo_agendamento.toString())?.label || ''
+          },
+          data_agendamento: ag.data_agendamento
+        })),
         olhar_inss: formData.olhar_inss,
         olhar_pje_creta: formData.olhar_pje_creta,
         senha_inss: formData.senha_inss,
@@ -166,20 +183,21 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
       }
 
       onUpdate(updatedProcesso)
-      const payload = { ...updatedProcesso } as any
-      if (payload.cliente) delete payload.cliente
-
-      if (formData.tipo_agendamento === 0) {
-        payload.tipo_agendamento = null
+      const payload = {
+        id: proc.id,
+        beneficio: updatedProcesso.beneficio,
+        status: updatedProcesso.status,
+        agendamentos: updatedProcesso.agendamentos,
+        olhar_inss: formData.olhar_inss,
+        olhar_pje_creta: formData.olhar_pje_creta,
+        senha_inss: formData.senha_inss,
+        data_cadastro: formData.data_cadastro || undefined,
+        observacoes: formData.observacoes,
+        data_ultima_atualizacao: new Date().toISOString(),
+        arquivado: proc.arquivado || false
       }
 
-      if (!formData.data_cadastro || formData.data_cadastro === '') {
-        payload.data_cadastro = null
-      }
-
-      if (!formData.data_agendamento || formData.data_agendamento === '') {
-        payload.data_agendamento = null
-      }
+      console.log('Payload para atualização:', payload)
 
       updateProcesso(proc.id, payload)
         .then(async () => {
@@ -308,41 +326,69 @@ export const ModalEditarProcesso = ({ proc, onClose, onUpdate }: ModalEditarProc
                   />
                 </Flex>
 
-                <Grid gap={2} gridTemplateColumns={{ base: '1fr', md: '1.8fr 1fr' }}>
-                  <CustomSelect
-                    label="Agendamento"
-                    placeholder="Selecione o tipo"
-                    options={tipoAgendamentoOptions}
-                    value={
-                      formData.tipo_agendamento === 0 ? [] : [formData.tipo_agendamento.toString()]
-                    }
-                    onValueChange={(value) => handleInputChange('tipo_agendamento', value)}
-                    portalled={false}
-                  />
-                  <CustomInput
-                    type="datetime-local"
-                    label="Data de Agendamento"
-                    value={
-                      formData.data_agendamento
-                        ? (() => {
-                            const date = new Date(formData.data_agendamento)
-                            date.setHours(date.getHours() - 3)
-                            return date.toISOString().slice(0, 16)
-                          })()
-                        : ''
-                    }
-                    onChange={(e) => {
-                      const value = e.target.value
-                      if (value) {
-                        const localDate = new Date(value)
-                        const isoValue = localDate.toISOString()
-                        setFormData((prev) => ({ ...prev, data_agendamento: isoValue }))
-                      } else {
-                        setFormData((prev) => ({ ...prev, data_agendamento: '' }))
-                      }
-                    }}
-                  />
-                </Grid>
+                {/* Seção de Agendamentos */}
+                <Box>
+                  <Flex justify="space-between" align="center" mb={3}>
+                    <Text fontSize="md" fontWeight="bold">Agendamentos</Text>
+                    <Button size="sm" onClick={addAgendamento} bg="var(--primary)" color="white">
+                      + Adicionar
+                    </Button>
+                  </Flex>
+
+                  <Stack gap={3}>
+                    {agendamentos.map((agendamento, index) => (
+                      <Box key={index} p={3} border="1px solid" borderColor="gray.200" borderRadius="md">
+                        <Grid templateColumns="1.8fr 1fr auto" gap={3} alignItems="end">
+                          <CustomSelect
+                            label="Tipo de Agendamento"
+                            placeholder="Selecione o tipo"
+                            options={tipoAgendamentoOptions}
+                            value={agendamento.tipo_agendamento === 0 ? [] : [agendamento.tipo_agendamento.toString()]}
+                            onValueChange={(value) => {
+                              const newValue = value.length > 0 ? parseInt(value[0]) : 0
+                              updateAgendamento(index, 'tipo_agendamento', newValue)
+                            }}
+                            portalled={false}
+                          />
+                          <CustomInput
+                            type="datetime-local"
+                            label="Data de Agendamento"
+                            value={
+                              agendamento.data_agendamento
+                                ? (() => {
+                                    const date = new Date(agendamento.data_agendamento)
+                                    date.setHours(date.getHours() - 3)
+                                    return date.toISOString().slice(0, 16)
+                                  })()
+                                : ''
+                            }
+                            onChange={(e) => {
+                              const value = e.target.value
+                              if (value) {
+                                const localDate = new Date(value)
+                                const isoValue = localDate.toISOString()
+                                updateAgendamento(index, 'data_agendamento', isoValue)
+                              } else {
+                                updateAgendamento(index, 'data_agendamento', '')
+                              }
+                            }}
+                          />
+                          {agendamentos.length > 1 && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              color="red.500"
+                              onClick={() => removeAgendamento(index)}
+                              mt={5}
+                            >
+                              ✕
+                            </Button>
+                          )}
+                        </Grid>
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
                 <CustomInput
                   label="Observações"
                   placeholder="Digite as observações"
