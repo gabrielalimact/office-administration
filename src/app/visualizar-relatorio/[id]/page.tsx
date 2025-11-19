@@ -1,10 +1,11 @@
 'use client'
-import { Box, Flex, Skeleton, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, Skeleton, Stack, Text, HStack } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { marked } from 'marked'
 import { useParams } from 'next/navigation'
 import { getRelatoriosByFuncionarioID } from '@/services/relatorios-service'
 import { getFuncionariosByID, getLogDeAtividades } from '@/services/usuario-service'
+import { CustomSelect } from '@/components/CustomSelect'
 interface IFuncionario {
   id: number
   nome: string
@@ -89,6 +90,40 @@ function VisualizarRelatorioPage() {
   const [funcionario, setFuncionario] = useState<IFuncionario | null>(null)
   const [relatorio, setRelatorio] = useState<IRelatorio[] | null>(null)
   const [logs, setLogs] = useState<ILogsResponse | null>(null)
+  const [allLogs, setAllLogs] = useState<ILogAtividade[]>([])
+  const [filteredLogs, setFilteredLogs] = useState<ILogAtividade[]>([])
+  const [availableDates, setAvailableDates] = useState<string[]>([])
+  const [selectedDate, setSelectedDate] = useState<string>('')
+
+  // Função para extrair datas únicas dos logs
+  const extractUniqueDates = (logsList: ILogAtividade[]) => {
+    const dates = logsList.map(log => {
+      const date = new Date(log.data_acao)
+      return date.toLocaleDateString('pt-BR')
+    })
+    return [...new Set(dates)].sort((a, b) => {
+      const dateA = new Date(a.split('/').reverse().join('-'))
+      const dateB = new Date(b.split('/').reverse().join('-'))
+      return dateB.getTime() - dateA.getTime()
+    })
+  }
+
+  // Função para filtrar logs por data
+  const filterLogsByDate = (logsList: ILogAtividade[], date: string) => {
+    if (!date) return logsList
+    return logsList.filter(log => {
+      const logDate = new Date(log.data_acao).toLocaleDateString('pt-BR')
+      return logDate === date
+    })
+  }
+
+  // Função para lidar com mudança de data selecionada
+  const handleDateChange = (dateValue: string[]) => {
+    const newDate = dateValue.length > 0 ? dateValue[0] : ''
+    setSelectedDate(newDate)
+    setFilteredLogs(filterLogsByDate(allLogs, newDate))
+  }
+
   useEffect(() => {
     getRelatoriosByFuncionarioID(Number(id)).then((data) => {
       const relatorios = data.map((rel) => ({
@@ -96,17 +131,25 @@ function VisualizarRelatorioPage() {
         conteudo: rel.conteudo,
         titulo: rel.titulo
       }))
-      setFuncionario(funcionario)
       setRelatorio(relatorios)
       setIsLoading(false)
     })
 
     getLogDeAtividades(id).then((data: ILogsResponse) => {
       setLogs(data)
+      setAllLogs(data.logs)
+
+      // Extrair datas únicas e configurar o filtro
+      const uniqueDates = extractUniqueDates(data.logs)
+      setAvailableDates(uniqueDates)
+
+      // Mostrar todos os logs por padrão
+      setSelectedDate(uniqueDates[0] || '')
+      setFilteredLogs(data.logs)
     })
 
-    getFuncionariosByID(id).then((funcionario) => {
-      setFuncionario(funcionario)
+    getFuncionariosByID(id).then((funcionarioData) => {
+      setFuncionario(funcionarioData)
     })
   }, [id])
 
@@ -173,10 +216,37 @@ function VisualizarRelatorioPage() {
           <Text fontWeight="bold" mb={2} borderBottomWidth={1} borderColor="gray.100">
             Histórico de atividades:
           </Text>
+
+          {/* Filtro de Data */}
+          {availableDates.length > 0 && (
+            <Box mb={4} p={3} bg="gray.50" borderRadius={6}>
+              <HStack gap={4} align="center">
+                <Text fontSize="sm" fontWeight="medium" minW="fit-content">
+                  Filtrar por data:
+                </Text>
+                <Box minW={'200px'}>
+                  <CustomSelect
+                    placeholder="Selecione uma data"
+                    options={[
+                      { label: 'Todas as datas', value: '' },
+                      ...availableDates.map(date => ({
+                        label: date,
+                        value: date
+                      }))
+                    ]}
+                    value={selectedDate ? [selectedDate] : ['']}
+                    onValueChange={handleDateChange}
+                    portalled={false}
+                  />
+                </Box>
+              </HStack>
+            </Box>
+          )}
+
           <Box p={4} bg="white" borderRadius={8} boxShadow="sm">
-            {logs && logs.logs.length > 0 ? (
+            {filteredLogs && filteredLogs.length > 0 ? (
               <Stack gap={3}>
-                {logs.logs.map((log) => (
+                {filteredLogs.map((log) => (
                   <Box
                     key={log.id}
                     p={4}
@@ -214,10 +284,14 @@ function VisualizarRelatorioPage() {
                   </Box>
                 ))}
 
-                {logs.total > 0 && (
+                {logs && logs.total > 0 && (
                   <Box textAlign="center" pt={4} borderTop="1px solid" borderColor="gray.200">
                     <Text fontSize="sm" color="gray.600">
-                      Mostrando {logs.logs.length} de {logs.total} atividades
+                      {selectedDate ? (
+                        <>Mostrando {filteredLogs.length} atividades para {selectedDate}</>
+                      ) : (
+                        <>Mostrando {filteredLogs.length} de {logs.total} atividades</>
+                      )}
                     </Text>
                   </Box>
                 )}
